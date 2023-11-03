@@ -7,6 +7,11 @@ import (
 	"reflect"
 )
 
+// IsNil checks if the given input is a nil value.
+func IsNil(a any) bool {
+	return a == nil || reflect.ValueOf(a).IsNil()
+}
+
 // IsStringish checks if the given input is a string or string-like value.
 // To prevent code duplication, it employs panic recovery to handle type conversion
 // and is designed for use in testing code, where panics are acceptable.
