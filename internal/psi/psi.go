@@ -5,13 +5,14 @@
 package psi
 
 import (
+	psiMatchers "github.com/expectto/be/internal/psi/matchers"
 	"github.com/expectto/be/types"
 )
 
 // Psi is a main converter function that converts given input into a PsiMatcher
 func Psi(args ...any) types.BeMatcher {
 	if len(args) == 0 {
-		return Always()
+		return &psiMatchers.AlwaysMatcher{}
 	}
 	if len(args) == 1 {
 		return AsMatcher(args[0])
@@ -27,11 +28,11 @@ func Psi(args ...any) types.BeMatcher {
 		if IsTransformFunc(arg) { // 1
 			transformMatcher := WithFallibleTransform(arg, Psi(args[i+1:]...))
 			matchers = append(matchers, Psi(transformMatcher))
-			return All(matchers...)
+			return psiMatchers.NewAllMatcher(matchers...)
 		}
 
 		matchers = append(matchers, Psi(arg)) // 2 or 3
 	}
 
-	return All(matchers...)
+	return psiMatchers.NewAllMatcher(matchers...)
 }

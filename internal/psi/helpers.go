@@ -1,6 +1,7 @@
 package psi
 
 import (
+	psiMatchers "github.com/expectto/be/internal/psi/matchers"
 	"github.com/expectto/be/types"
 )
 
@@ -24,6 +25,6 @@ func AsMatcher(m any) types.BeMatcher {
 	case types.GomockMatcher:
 		return FromGomock(t)
 	default:
-		return Eq(m)
+		return &psiMatchers.EqMatcher{Expected: m}
 	}
 }
