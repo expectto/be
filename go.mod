@@ -4,7 +4,6 @@ go 1.21.2
 
 require (
 	github.com/onsi/gomega v1.29.0
-	go.uber.org/mock v0.3.0
 )
 
 require (
