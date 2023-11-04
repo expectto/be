@@ -3,7 +3,7 @@ package matchers
 import (
 	"fmt"
 	"github.com/expectto/be/internal/cast"
-	"github.com/expectto/be/internal/psi"
+	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/internal/reflect"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
@@ -16,7 +16,7 @@ type HaveLengthMatcher struct {
 	count    *int
 	matching types.BeMatcher
 
-	*psi.MixinMatcherGomock
+	*MixinMatcherGomock
 }
 
 var _ types.BeMatcher = &HaveLengthMatcher{}
@@ -27,17 +27,17 @@ func NewHaveLengthMatcher(args ...any) *HaveLengthMatcher {
 	}
 
 	matcher := &HaveLengthMatcher{}
-	matcher.MixinMatcherGomock = psi.NewMixinMatcherGomock(matcher, "HaveLen")
+	matcher.MixinMatcherGomock = NewMixinMatcherGomock(matcher, "HaveLen")
 
 	// if just argument was given, and it's not a matcher, then it must be an integer
-	if len(args) == 1 && !psi.IsMatcher(args[0]) {
+	if len(args) == 1 && !IsMatcher(args[0]) {
 		matcher.count = new(int)
 		*matcher.count = cast.AsInt(args[0])
 		return matcher
 	}
 
 	// compress all given args as group of matchers
-	matcher.matching = psi.Psi(args...)
+	matcher.matching = Psi(args...)
 	return matcher
 }
 

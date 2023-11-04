@@ -1,7 +1,7 @@
 package be
 
 import (
-	"github.com/expectto/be/internal/psi"
+	. "github.com/expectto/be/internal/psi"
 	psiMatchers "github.com/expectto/be/internal/psi/matchers"
 	"github.com/expectto/be/matchers"
 	"github.com/expectto/be/types"
@@ -29,7 +29,7 @@ func Eq(expected any) types.BeMatcher {
 
 // Not is like gomega.Not()
 func Not(matcher any) types.BeMatcher {
-	return &psiMatchers.NotMatcher{Matcher: psi.Psi(matcher)}
+	return &psiMatchers.NotMatcher{Matcher: Psi(matcher)}
 }
 
 // HaveLength is like gomega.HaveLen()

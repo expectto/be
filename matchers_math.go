@@ -2,7 +2,7 @@ package be
 
 import (
 	"github.com/expectto/be/internal/cast"
-	"github.com/expectto/be/internal/psi"
+	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
 )
@@ -12,23 +12,23 @@ import (
 // todo: Negative & Positive (syntax sugar)
 
 func GreaterThan(arg any) types.BeMatcher {
-	return psi.Psi(gomega.BeNumerically(">", arg))
+	return Psi(gomega.BeNumerically(">", arg))
 }
 
 func GreaterThanEqual(arg any) types.BeMatcher {
-	return psi.Psi(gomega.BeNumerically(">=", arg))
+	return Psi(gomega.BeNumerically(">=", arg))
 }
 
 func LessThan(arg any) types.BeMatcher {
-	return psi.Psi(gomega.BeNumerically("<", arg))
+	return Psi(gomega.BeNumerically("<", arg))
 }
 
 func LessThanEqual(arg any) types.BeMatcher {
-	return psi.Psi(gomega.BeNumerically("<=", arg))
+	return Psi(gomega.BeNumerically("<=", arg))
 }
 
 func ApproxEqual(compareTo, threshold any) types.BeMatcher {
-	return psi.Psi(gomega.BeNumerically("~", compareTo, threshold))
+	return Psi(gomega.BeNumerically("~", compareTo, threshold))
 }
 
 func InRange(from, fromInclusive bool, until any, untilInclusive bool) types.BeMatcher {
@@ -47,9 +47,9 @@ func InRange(from, fromInclusive bool, until any, untilInclusive bool) types.BeM
 }
 
 func Odd() types.BeMatcher {
-	return psi.Psi(
+	return Psi(
 		Numeric(),
-		psi.WithFallibleTransform(func(actual any) any {
+		WithFallibleTransform(func(actual any) any {
 			// todo: not accurate!
 			return int(cast.AsFloat(actual))%2 != 0
 		}, gomega.BeTrue()),
@@ -57,9 +57,9 @@ func Odd() types.BeMatcher {
 }
 
 func Even() types.BeMatcher {
-	return psi.Psi(
+	return Psi(
 		Numeric(),
-		psi.WithFallibleTransform(func(actual any) any {
+		WithFallibleTransform(func(actual any) any {
 			return int(cast.AsFloat(actual))%2 == 0
 		}, gomega.BeTrue()),
 	)

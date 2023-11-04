@@ -2,7 +2,7 @@ package matchers
 
 import (
 	"fmt"
-	"github.com/expectto/be/internal/psi"
+	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
 	"net/url"
@@ -19,7 +19,7 @@ type UrlFieldMatcher struct {
 	matching types.BeMatcher
 
 	// todo: adjust gomock methods work as intended
-	*psi.MixinMatcherGomock
+	*MixinMatcherGomock
 }
 
 func NewUrlFieldMatcher(publicName, fieldName string, cb func(*url.URL) any, args ...any) *UrlFieldMatcher {
@@ -29,14 +29,14 @@ func NewUrlFieldMatcher(publicName, fieldName string, cb func(*url.URL) any, arg
 		cb:         cb,
 	}
 
-	matcher.MixinMatcherGomock = psi.NewMixinMatcherGomock(matcher, "Url field of")
+	matcher.MixinMatcherGomock = NewMixinMatcherGomock(matcher, "Url field of")
 
 	// No args means that this matcher succeeds when actual url will have any non-empty {field value}
 	if len(args) > 0 {
 		// compressing the args as list of matchers
 		// or falling back to Equal matcher in case if len(args)==1
 		// see types.Psi() for more details
-		matcher.matching = psi.Psi(args...)
+		matcher.matching = Psi(args...)
 	}
 
 	// todo: pass fieldName as description to gomega

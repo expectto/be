@@ -2,7 +2,7 @@ package be
 
 import (
 	"github.com/expectto/be/internal/cast"
-	"github.com/expectto/be/internal/psi"
+	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/matchers"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
@@ -28,7 +28,7 @@ func HttpRequest(args ...any) types.BeMatcher {
 		}, gomega.Equal(strArg))
 	}
 
-	return psi.Psi(args...)
+	return Psi(args...)
 }
 
 func RequestHavingMethod(args ...any) types.BeMatcher {

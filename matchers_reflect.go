@@ -3,7 +3,7 @@ package be
 import (
 	"fmt"
 	"github.com/expectto/be/internal/cast"
-	"github.com/expectto/be/internal/psi"
+	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/matchers"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
@@ -26,7 +26,7 @@ func Chan() types.BeMatcher   { return Kind(reflect.Chan) }
 func Struct() types.BeMatcher { return Kind(reflect.Struct) }
 func Slice() types.BeMatcher  { return Kind(reflect.Slice) }
 func SliceOf[T any]() types.BeMatcher {
-	return psi.Psi(
+	return Psi(
 		Kind(reflect.Slice),
 		gomega.HaveEach(AssignableTo[T]()),
 	)
@@ -54,7 +54,7 @@ func Pointer() types.BeMatcher { return Kind(reflect.Pointer) }
 func FinalPointer() types.BeMatcher {
 	return All(
 		Pointer(),
-		psi.WithFallibleTransform(func(actual any) any {
+		WithFallibleTransform(func(actual any) any {
 			return reflect.ValueOf(actual).Elem()
 		}, gomega.Not(Pointer())),
 	)
@@ -75,7 +75,7 @@ func Floatish() types.BeMatcher {
 func NumericString() types.BeMatcher {
 	return All(
 		String(),
-		psi.WithFallibleTransform(func(actual any) any {
+		WithFallibleTransform(func(actual any) any {
 			_, err := strconv.ParseFloat(cast.AsString(actual), 64)
 			return err == nil
 		}, gomega.BeTrue()),

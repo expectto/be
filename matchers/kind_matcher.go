@@ -3,7 +3,7 @@ package matchers
 import (
 	"fmt"
 	"github.com/expectto/be/internal/cast"
-	"github.com/expectto/be/internal/psi"
+	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
 	"reflect"
@@ -19,7 +19,7 @@ type KindMatcher struct {
 
 	matching types.BeMatcher
 
-	*psi.MixinMatcherGomock
+	*MixinMatcherGomock
 }
 
 var _ types.BeMatcher = &KindMatcher{}
@@ -30,14 +30,14 @@ func NewKindMatcher(args ...any) *KindMatcher {
 	}
 
 	matcher := &KindMatcher{}
-	if len(args) == 1 && !psi.IsMatcher(args[0]) {
+	if len(args) == 1 && !IsMatcher(args[0]) {
 		matcher.kind = new(reflect.Kind)
 		*(matcher.kind) = cast.AsKind(args[0])
 		return matcher
 	}
 
-	matcher.matching = psi.Psi(args...)
-	matcher.MixinMatcherGomock = psi.NewMixinMatcherGomock(matcher, "Kind of")
+	matcher.matching = Psi(args...)
+	matcher.MixinMatcherGomock = NewMixinMatcherGomock(matcher, "Kind of")
 	return matcher
 }
 

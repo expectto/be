@@ -2,7 +2,7 @@ package matchers
 
 import (
 	"fmt"
-	"github.com/expectto/be/internal/psi"
+	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
 	"reflect"
@@ -11,7 +11,7 @@ import (
 type ImplementsMatcher struct {
 	implements reflect.Type
 
-	*psi.MixinMatcherGomock
+	*MixinMatcherGomock
 }
 
 var _ types.BeMatcher = &ImplementsMatcher{}
@@ -24,7 +24,7 @@ func NewImplementsMatcher[T any]() *ImplementsMatcher {
 	}
 
 	im := &ImplementsMatcher{implements: t}
-	im.MixinMatcherGomock = psi.NewMixinMatcherGomock(im, "Implements")
+	im.MixinMatcherGomock = NewMixinMatcherGomock(im, "Implements")
 
 	return im
 }

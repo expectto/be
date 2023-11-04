@@ -1,7 +1,7 @@
 package be
 
 import (
-	"github.com/expectto/be/internal/psi"
+	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/matchers"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
@@ -39,7 +39,7 @@ func URL(args ...any) types.BeMatcher {
 		}, gomega.Equal(strArg))
 	}
 
-	return psi.Psi(args...)
+	return Psi(args...)
 }
 
 func UrlHavingHost(args ...any) types.BeMatcher {
@@ -82,7 +82,7 @@ func UrlHavingPort(args ...any) types.BeMatcher {
 }
 
 func UrlNotHavingPort(args ...any) types.BeMatcher {
-	return psi.Psi(gomega.Not(UrlHavingPort(args...)))
+	return Psi(gomega.Not(UrlHavingPort(args...)))
 }
 
 func UrlHavingPath(args ...any) types.BeMatcher {

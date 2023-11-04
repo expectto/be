@@ -2,7 +2,7 @@ package matchers
 
 import (
 	"fmt"
-	"github.com/expectto/be/internal/psi"
+	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
 	"net/http"
@@ -30,11 +30,11 @@ func NewReqPropertyMatcher(publicName, fieldName string, cb func(r *http.Request
 		// compressing the args as list of matchers
 		// or falling back to Equal matcher in case if len(args)==1
 		// see types.Psi() for more details
-		matcher.matching = psi.Psi(args...)
+		matcher.matching = Psi(args...)
 	}
 
 	// todo: pass fieldName as description to gomega
-	return psi.Psi(matcher)
+	return Psi(matcher)
 }
 
 func (matcher *ReqPropertyMatcher) Match(actual any) (success bool, err error) {

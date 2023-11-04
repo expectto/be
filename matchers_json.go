@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/expectto/be/internal/cast"
-	"github.com/expectto/be/internal/psi"
+	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
 	"io"
@@ -79,12 +79,12 @@ func JSON(args ...any) gomega.OmegaMatcher {
 
 		// JSON expects arguments to be matchers upon map[string]any
 		// So let's perform a transform: raw => any
-		psi.WithFallibleTransform(func(actual any) any {
+		WithFallibleTransform(func(actual any) any {
 			// `actual` may be an io.Reader that is decoded directly
 			if reader, ok := actual.(io.Reader); ok {
 				var data any
 				if err := json.NewDecoder(reader).Decode(&data); err != nil {
-					return psi.NewTransformError(fmt.Errorf("to read json: %w", err), actual)
+					return NewTransformError(fmt.Errorf("to read json: %w", err), actual)
 				}
 				if closer, ok := actual.(io.Closer); ok {
 					_ = closer.Close()
@@ -98,7 +98,7 @@ func JSON(args ...any) gomega.OmegaMatcher {
 			if cast.IsStringish(actual) {
 				var data any
 				if err := json.Unmarshal(cast.AsBytes(actual), &data); err != nil {
-					return psi.NewTransformError(fmt.Errorf("be a valid json: %w", err), actual)
+					return NewTransformError(fmt.Errorf("be a valid json: %w", err), actual)
 				}
 
 				return data
@@ -112,7 +112,7 @@ func JSON(args ...any) gomega.OmegaMatcher {
 			func() types.BeMatcher {
 				// If we have just one arg then we match against it
 				// If it's a string, we're remarshalling it into object
-				if len(args) == 1 && !psi.IsMatcher(args[0]) {
+				if len(args) == 1 && !IsMatcher(args[0]) {
 					var argData any
 					if cast.IsStringish(args[0]) {
 						if err := json.Unmarshal(cast.AsBytes(args[0]), &argData); err != nil {
@@ -127,7 +127,7 @@ func JSON(args ...any) gomega.OmegaMatcher {
 					return Eq(argData)
 				}
 
-				return psi.Psi(args...)
+				return Psi(args...)
 			}(),
 		),
 	)
@@ -136,13 +136,13 @@ func JSON(args ...any) gomega.OmegaMatcher {
 // HaveKeyValue is a facade to gomega.HaveKey & gomega.HaveKeyWithValue
 func HaveKeyValue(key string, args ...any) types.BeMatcher {
 	if len(args) == 0 {
-		return psi.Psi(gomega.HaveKey(key))
+		return Psi(gomega.HaveKey(key))
 	}
 
 	// todo: optimize for gomock messages ?
 	// todo: should we optimize (check if len(args)==1,
 	// 		 to reduce level of wrapping) ?
-	return psi.Psi(
-		gomega.HaveKeyWithValue(key, psi.Psi(args...)),
+	return Psi(
+		gomega.HaveKeyWithValue(key, Psi(args...)),
 	)
 }

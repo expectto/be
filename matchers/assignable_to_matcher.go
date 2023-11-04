@@ -2,7 +2,7 @@ package matchers
 
 import (
 	"fmt"
-	"github.com/expectto/be/internal/psi"
+	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
 	"reflect"
@@ -11,7 +11,7 @@ import (
 type AssignableToMatcher struct {
 	assignableTo reflect.Type
 
-	*psi.MixinMatcherGomock
+	*MixinMatcherGomock
 }
 
 var _ types.BeMatcher = &AssignableToMatcher{}
@@ -20,7 +20,7 @@ func NewAssignableToMatcher[T any]() *AssignableToMatcher {
 	t := reflect.TypeOf((*T)(nil)).Elem()
 
 	im := &AssignableToMatcher{assignableTo: t}
-	im.MixinMatcherGomock = psi.NewMixinMatcherGomock(im, "AssignableTo")
+	im.MixinMatcherGomock = NewMixinMatcherGomock(im, "AssignableTo")
 
 	return im
 }
