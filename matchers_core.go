@@ -2,6 +2,7 @@ package be
 
 import (
 	psiMatchers "github.com/expectto/be/internal/psi/matchers"
+	"github.com/expectto/be/matchers"
 	"github.com/expectto/be/types"
 )
 
@@ -23,4 +24,12 @@ func All(ms ...types.BeMatcher) types.BeMatcher {
 // Eq is like gomega.Equal()
 func Eq(expected any) types.BeMatcher {
 	return &psiMatchers.EqMatcher{Expected: expected}
+}
+
+// HaveLength is like gomega.HaveLen()
+// HaveLength succeeds if the actual value has a length that matches the provided conditions.
+// It accepts either a count value or one or more Gomega matchers to specify the desired length conditions.
+// Todo move to other file?
+func HaveLength(args ...any) types.BeMatcher {
+	return matchers.NewHaveLengthMatcher(args...)
 }

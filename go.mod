@@ -2,9 +2,7 @@ module github.com/expectto/be
 
 go 1.21.2
 
-require (
-	github.com/onsi/gomega v1.29.0
-)
+require github.com/onsi/gomega v1.29.0
 
 require (
 	github.com/google/go-cmp v0.6.0 // indirect

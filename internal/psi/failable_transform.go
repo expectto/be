@@ -72,7 +72,6 @@ func (matcher *transformErrorMatcher) NegatedFailureMessage(actual any) string {
 	return fmt.Sprintf("Expected\n%s\nnot to %s", format.Object(matcher.actual, 1), matcher.err)
 }
 
-/*
 // TransformError is used to store error + actual value which caused the error
 type TransformError struct {
 	error
@@ -86,4 +85,3 @@ func NewTransformError(err error, actual any) *TransformError {
 func (terr *TransformError) Actual() any {
 	return terr.actual
 }
-*/
