@@ -1,6 +1,8 @@
 package psiMatchers
 
-import "github.com/expectto/be/types"
+import (
+	"github.com/expectto/be/types"
+)
 
 type NotMatcher struct {
 	Matcher         types.BeMatcher
