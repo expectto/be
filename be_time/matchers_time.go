@@ -27,6 +27,18 @@ func Approx(arg time.Time, threshold time.Duration) types.BeMatcher {
 	return Psi(gomega.BeTemporally("~", arg, threshold))
 }
 
+func SameSecond(compareTo time.Time) types.BeMatcher {
+	return Psi(gomega.BeTemporally("~", compareTo, time.Second))
+}
+
+func SameMinute(compareTo time.Time) types.BeMatcher {
+	return Psi(gomega.BeTemporally("~", compareTo, time.Minute))
+}
+
+func SameHour(compareTo time.Time) types.BeMatcher {
+	return Psi(gomega.BeTemporally("~", compareTo, time.Hour))
+}
+
 // todo:
-// SameSecond, SameMinute, SameHour, tz: SameDay, SameWeek, SameMonth, SameYear
-// BeSameTimezone()
+// SameTimezone()
+// SameDay, SameWeek, SameMonth, SameYear
