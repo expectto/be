@@ -1,12 +1,17 @@
-package psiMatchers
+package psi_matchers
 
 import (
+	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 )
 
 type NotMatcher struct {
 	Matcher         types.BeMatcher
 	lastActualValue any
+}
+
+func NewNotMatcher(m any) *NotMatcher {
+	return &NotMatcher{Matcher: AsMatcher(m)}
 }
 
 func (m *NotMatcher) Match(actual interface{}) (bool, error) {

@@ -1,4 +1,4 @@
-package be
+package be_time
 
 import (
 	. "github.com/expectto/be/internal/psi"
@@ -7,23 +7,23 @@ import (
 	"time"
 )
 
-func BeLaterThan(compareTo time.Time) types.BeMatcher {
+func LaterThan(compareTo time.Time) types.BeMatcher {
 	return Psi(gomega.BeTemporally(">", compareTo))
 }
 
-func BeLaterThanEqual(compareTo time.Time) types.BeMatcher {
+func LaterThanEqual(compareTo time.Time) types.BeMatcher {
 	return Psi(gomega.BeTemporally(">=", compareTo))
 }
 
-func BeEarlierThan(compareTo time.Time) types.BeMatcher {
+func EarlierThan(compareTo time.Time) types.BeMatcher {
 	return Psi(gomega.BeTemporally("<", compareTo))
 }
 
-func BeEarlierThanEqual(compareTo time.Time) types.BeMatcher {
+func EarlierThanEqual(compareTo time.Time) types.BeMatcher {
 	return Psi(gomega.BeTemporally("<=", compareTo))
 }
 
-func BeApproxTime(arg time.Time, threshold time.Duration) types.BeMatcher {
+func Approx(arg time.Time, threshold time.Duration) types.BeMatcher {
 	return Psi(gomega.BeTemporally("~", arg, threshold))
 }
 

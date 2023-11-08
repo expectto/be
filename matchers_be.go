@@ -1,41 +1,46 @@
 package be
 
+// matchers_core.go contains Public callers for core psi matchers
+
 import (
 	. "github.com/expectto/be/internal/psi"
-	psiMatchers "github.com/expectto/be/internal/psi/matchers"
-	"github.com/expectto/be/matchers"
+	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
 )
 
 // Always does always match
 func Always() types.BeMatcher {
-	return &psiMatchers.AlwaysMatcher{}
+	return psi_matchers.NewAlwaysMatcher()
 }
 
 // Never does never succeed (does always fail)
 func Never(err error) types.BeMatcher {
-	return psiMatchers.NewNeverMatcher(err)
+	return psi_matchers.NewNeverMatcher(err)
 }
 
 // All is like gomega.And()
-func All(ms ...types.BeMatcher) types.BeMatcher {
-	return psiMatchers.NewAllMatcher(ms...)
+func All(ms ...any) types.BeMatcher {
+	return psi_matchers.NewAllMatcher(Psi(ms...))
+}
+
+// Any is like gomega.Or()
+func Any(ms ...any) types.BeMatcher {
+	return psi_matchers.NewAnyMatcher(Psi(ms...))
 }
 
 // Eq is like gomega.Equal()
 func Eq(expected any) types.BeMatcher {
-	return &psiMatchers.EqMatcher{Expected: expected}
+	return psi_matchers.NewEqMatcher(expected)
 }
 
 // Not is like gomega.Not()
-func Not(matcher any) types.BeMatcher {
-	return &psiMatchers.NotMatcher{Matcher: Psi(matcher)}
+func Not(expected any) types.BeMatcher {
+	return psi_matchers.NewNotMatcher(Psi(expected))
 }
 
 // HaveLength is like gomega.HaveLen()
 // HaveLength succeeds if the actual value has a length that matches the provided conditions.
 // It accepts either a count value or one or more Gomega matchers to specify the desired length conditions.
-// Todo move to other file?
 func HaveLength(args ...any) types.BeMatcher {
-	return matchers.NewHaveLengthMatcher(args...)
+	return psi_matchers.NewHaveLengthMatcher(args...)
 }

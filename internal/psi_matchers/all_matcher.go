@@ -1,7 +1,10 @@
-package psiMatchers
+// Package psi_matchers is a package that contains core matchers required
+// Psi() to work properly
+package psi_matchers
 
 import (
 	"fmt"
+	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
 )
@@ -15,8 +18,13 @@ type AllMatcher struct {
 	firstFailedMatcher types.BeMatcher
 }
 
-func NewAllMatcher(ms ...types.BeMatcher) *AllMatcher {
-	return &AllMatcher{Matchers: ms}
+func NewAllMatcher(ms ...any) *AllMatcher {
+	matchers := []types.BeMatcher{}
+	for _, m := range ms {
+		matchers = append(matchers, AsMatcher(m))
+	}
+
+	return &AllMatcher{Matchers: matchers}
 }
 
 func (m *AllMatcher) Match(actual any) (success bool, err error) {

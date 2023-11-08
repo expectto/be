@@ -1,4 +1,4 @@
-package psiMatchers
+package psi_matchers
 
 // NeverMatcher always fails
 type NeverMatcher struct {

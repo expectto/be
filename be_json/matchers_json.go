@@ -1,10 +1,12 @@
-package be
+package be_json
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/expectto/be/be_reflected"
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
+	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
 	"io"
@@ -21,7 +23,7 @@ const (
 	JsonAsObjects
 )
 
-// JSON is a JSON matcher. "JSON" here means a []byte with JSON data in it
+// Matcher is a JSON matcher. "JSON" here means a []byte with JSON data in it
 // By default several input types are available: string(*) / []byte(*), fmt.Stringer, io.Reader
 //   - custom string-based or []byte-based types are available as well
 //
@@ -29,41 +31,41 @@ const (
 // must pass one of transforms as first argument:
 //   - JsonAsBytes/ JsonAsString / JsonAsStringer  / JsonAsReader (for string-like representation)
 //   - JsonAsObject / JsonAsObjects (for map[string]any representation)
-func JSON(args ...any) gomega.OmegaMatcher {
+func Matcher(args ...any) types.BeMatcher {
 	// Default input is ok to be any of these
-	inputMatcher := gomega.Or(
+	inputMatcher := psi_matchers.NewAnyMatcher(
 		// String-like inputs:
-		Bytes(), String(), Stringer(), Reader(),
+		be_reflected.AsBytes(), be_reflected.AsString(), be_reflected.AsStringer(), be_reflected.AsReader(),
 
 		// Object-like inputs:
 		// Here we accept map[string]any or []map[string]any
-		Objects(), Object(),
+		be_reflected.AsObject(), be_reflected.AsObjects(),
 	)
 
 	// Check if first argument was given as a JsonAs* constant
 	// that needs to be handled
 	if len(args) > 0 {
 		if t, ok := args[0].(JsonInputType); ok {
-			inputMatchers := make([]gomega.OmegaMatcher, 0)
+			inputMatchers := make([]types.BeMatcher, 0)
 			if t&JsonAsBytes != 0 {
-				inputMatchers = append(inputMatchers, Bytes())
+				inputMatchers = append(inputMatchers, be_reflected.AsBytes())
 			}
 			if t&JsonAsString != 0 {
-				inputMatchers = append(inputMatchers, String())
+				inputMatchers = append(inputMatchers, be_reflected.AsString())
 			}
 			if t&JsonAsStringer != 0 {
-				inputMatchers = append(inputMatchers, Stringer())
+				inputMatchers = append(inputMatchers, be_reflected.AsStringer())
 			}
 			if t&JsonAsReader != 0 {
-				inputMatchers = append(inputMatchers, Reader())
+				inputMatchers = append(inputMatchers, be_reflected.AsReader())
 			}
 			if t&JsonAsObject != 0 {
-				inputMatchers = append(inputMatchers, Object())
+				inputMatchers = append(inputMatchers, be_reflected.AsObject())
 			}
 			if t&JsonAsObjects != 0 {
-				inputMatchers = append(inputMatchers, Objects())
+				inputMatchers = append(inputMatchers, be_reflected.AsObjects())
 			}
-			inputMatcher = gomega.Or(inputMatchers...)
+			inputMatcher = psi_matchers.NewAnyMatcher(cast.AsSliceOfAny(inputMatchers)...)
 			args = args[1:]
 		}
 	}
@@ -74,7 +76,7 @@ func JSON(args ...any) gomega.OmegaMatcher {
 		return inputMatcher
 	}
 
-	return gomega.And(
+	return &psi_matchers.AllMatcher{Matchers: []types.BeMatcher{
 		inputMatcher,
 
 		// JSON expects arguments to be matchers upon map[string]any
@@ -116,7 +118,7 @@ func JSON(args ...any) gomega.OmegaMatcher {
 					var argData any
 					if cast.IsStringish(args[0]) {
 						if err := json.Unmarshal(cast.AsBytes(args[0]), &argData); err != nil {
-							return Never(err)
+							return psi_matchers.NewNeverMatcher(err)
 						}
 					} else {
 						// todo: check if it's actually object|objects
@@ -124,13 +126,13 @@ func JSON(args ...any) gomega.OmegaMatcher {
 						argData = args[0]
 					}
 
-					return Eq(argData)
+					return psi_matchers.NewEqMatcher(argData)
 				}
 
 				return Psi(args...)
 			}(),
 		),
-	)
+	}}
 }
 
 // HaveKeyValue is a facade to gomega.HaveKey & gomega.HaveKeyWithValue

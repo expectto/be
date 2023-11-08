@@ -1,4 +1,4 @@
-package matchers
+package psi_matchers
 
 import (
 	"fmt"

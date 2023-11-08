@@ -1,8 +1,8 @@
-package be
+package be_url
 
 import (
 	. "github.com/expectto/be/internal/psi"
-	"github.com/expectto/be/matchers"
+	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
 	"net/url"
@@ -24,7 +24,7 @@ func TransformUrlFromString() func(string) (*url.URL, error) {
 //   - AsStringUrl() transform can be given as first argument, so string->*url.URL transform is applied
 func URL(args ...any) types.BeMatcher {
 	if len(args) == 0 {
-		return matchers.NewUrlFieldMatcher("", "", nil)
+		return psi_matchers.NewUrlFieldMatcher("", "", nil)
 	}
 
 	// todo: support custom string types
@@ -34,7 +34,7 @@ func URL(args ...any) types.BeMatcher {
 		}
 
 		// match given string to whole url
-		return matchers.NewUrlFieldMatcher("Url", "", func(u *url.URL) any {
+		return psi_matchers.NewUrlFieldMatcher("Url", "", func(u *url.URL) any {
 			return u.String()
 		}, gomega.Equal(strArg))
 	}
@@ -43,7 +43,7 @@ func URL(args ...any) types.BeMatcher {
 }
 
 func UrlHavingHost(args ...any) types.BeMatcher {
-	return matchers.NewUrlFieldMatcher(
+	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingHost", "host",
 		func(u *url.URL) any { return u.Host },
 		args...,
@@ -51,7 +51,7 @@ func UrlHavingHost(args ...any) types.BeMatcher {
 }
 
 func UrlHavingHostname(args ...any) types.BeMatcher {
-	return matchers.NewUrlFieldMatcher(
+	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingHostname", "hostname",
 		func(u *url.URL) any { return u.Hostname() },
 		args...,
@@ -59,7 +59,7 @@ func UrlHavingHostname(args ...any) types.BeMatcher {
 }
 
 func UrlHavingScheme(args ...any) types.BeMatcher {
-	return matchers.NewUrlFieldMatcher(
+	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingScheme", "scheme",
 		func(u *url.URL) any { return u.Scheme },
 		args...,
@@ -74,7 +74,7 @@ func UrlWithHttp() types.BeMatcher {
 }
 
 func UrlHavingPort(args ...any) types.BeMatcher {
-	return matchers.NewUrlFieldMatcher(
+	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingPort", "port",
 		func(u *url.URL) any { return u.Port() },
 		args...,
@@ -86,7 +86,7 @@ func UrlNotHavingPort(args ...any) types.BeMatcher {
 }
 
 func UrlHavingPath(args ...any) types.BeMatcher {
-	return matchers.NewUrlFieldMatcher(
+	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingPath", "path",
 		func(u *url.URL) any { return u.Path },
 		args...,
@@ -94,7 +94,7 @@ func UrlHavingPath(args ...any) types.BeMatcher {
 }
 
 func UrlHavingRawQuery(args ...any) types.BeMatcher {
-	return matchers.NewUrlFieldMatcher(
+	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingRawQuery", "rawQuery",
 		func(u *url.URL) any { return u.RawQuery },
 		args...,
@@ -105,7 +105,7 @@ func UrlHavingRawQuery(args ...any) types.BeMatcher {
 // todo: UrlHavingDistinctSearchParams -> meaning no search params are repeated
 
 func UrlHavingSearchParam(searchParamName string, args ...any) types.BeMatcher {
-	return matchers.NewUrlFieldMatcher(
+	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingSearchParam", "searchParam",
 		func(u *url.URL) any { return u.Query().Get(searchParamName) },
 		args...,
@@ -113,7 +113,7 @@ func UrlHavingSearchParam(searchParamName string, args ...any) types.BeMatcher {
 }
 
 func UrlHavingUsername(args ...any) types.BeMatcher {
-	return matchers.NewUrlFieldMatcher(
+	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingUsername", "username",
 		func(u *url.URL) any { return u.User.Username() },
 		args...,
@@ -121,7 +121,7 @@ func UrlHavingUsername(args ...any) types.BeMatcher {
 }
 
 func UrlHavingUserinfo(args ...any) types.BeMatcher {
-	return matchers.NewUrlFieldMatcher(
+	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingUserinfo", "userinfo",
 		func(u *url.URL) any { return u.User.String() },
 		args...,
@@ -129,7 +129,7 @@ func UrlHavingUserinfo(args ...any) types.BeMatcher {
 }
 
 func UrlHavingPassword(args ...any) types.BeMatcher {
-	return matchers.NewUrlFieldMatcher(
+	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingPassword", "password",
 		func(u *url.URL) any { p, _ := u.User.Password(); return p },
 		args...,

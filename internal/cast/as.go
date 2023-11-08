@@ -346,3 +346,25 @@ func AsKind(a any) reflect.Kind {
 
 	panic(fmt.Sprintf("Expected a reflect.Kind!  Got <%T>: %#v", a, a))
 }
+
+func AsSliceOfAny(v any) []any {
+	// First start with a type casting
+	switch t := v.(type) {
+	case []any:
+		return t
+	}
+
+	// Then fallback to reflect
+	rv := reflect.ValueOf(v)
+	rv = reflect2.IndirectDeep(rv)
+
+	if rv.Kind() == reflect.Slice {
+		slice := make([]any, rv.Len())
+		for i := 0; i < rv.Len(); i++ {
+			slice[i] = rv.Index(i).Interface()
+		}
+		return slice
+	}
+
+	panic(fmt.Sprintf("Expected a slice! Got <%T>: %#v", v, v))
+}

@@ -1,4 +1,4 @@
-package psiMatchers
+package psi_matchers
 
 import (
 	"bytes"
@@ -10,6 +10,10 @@ import (
 type EqMatcher struct {
 	Expected        any
 	lastActualValue any
+}
+
+func NewEqMatcher(expected any) *EqMatcher {
+	return &EqMatcher{Expected: expected}
 }
 
 func (matcher *EqMatcher) Match(actual any) (success bool, err error) {

@@ -1,9 +1,10 @@
-package be
+package be_http
 
 import (
+	"github.com/expectto/be/be_json"
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
-	"github.com/expectto/be/matchers"
+	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
 	"net/http"
@@ -11,9 +12,9 @@ import (
 
 // todo:
 
-func HttpRequest(args ...any) types.BeMatcher {
+func Request(args ...any) types.BeMatcher {
 	if len(args) == 0 {
-		return matchers.NewReqPropertyMatcher("", "", nil)
+		return psi_matchers.NewReqPropertyMatcher("", "", nil)
 	}
 
 	// todo: support custom string types
@@ -23,7 +24,7 @@ func HttpRequest(args ...any) types.BeMatcher {
 		}
 
 		// match given string to whole url
-		return matchers.NewReqPropertyMatcher("Url", "", func(req *http.Request) any {
+		return psi_matchers.NewReqPropertyMatcher("Url", "", func(req *http.Request) any {
 			return req.URL.String()
 		}, gomega.Equal(strArg))
 	}
@@ -32,7 +33,7 @@ func HttpRequest(args ...any) types.BeMatcher {
 }
 
 func RequestHavingMethod(args ...any) types.BeMatcher {
-	return matchers.NewReqPropertyMatcher(
+	return psi_matchers.NewReqPropertyMatcher(
 		"RequestHavingMethod", "method",
 		func(req *http.Request) any { return req.Method },
 		args...,
@@ -42,7 +43,7 @@ func RequestHavingMethod(args ...any) types.BeMatcher {
 // todo syntax sugar for specific http methods
 
 func RequestHavingURL(args ...any) types.BeMatcher {
-	return matchers.NewReqPropertyMatcher(
+	return psi_matchers.NewReqPropertyMatcher(
 		"RequestHavingURL", "url",
 		func(req *http.Request) any { return req.URL },
 		args...,
@@ -50,7 +51,7 @@ func RequestHavingURL(args ...any) types.BeMatcher {
 }
 
 func RequestHavingHost(args ...any) types.BeMatcher {
-	return matchers.NewReqPropertyMatcher(
+	return psi_matchers.NewReqPropertyMatcher(
 		"RequestHavingHost", "host",
 		func(req *http.Request) any { return req.Host },
 		args...,
@@ -63,15 +64,15 @@ func RequestHavingHeader(args ...any) types.BeMatcher {
 	// 				 RequestHavingHeader("HeaderName", "HeaderValue")
 	if len(args) == 2 && cast.IsStringish(args[0]) && cast.IsStringish(args[1]) {
 		args = []any{
-			HaveKeyValue(args[0].(string), []string{args[1].(string)}),
+			be_json.HaveKeyValue(args[0].(string), []string{args[1].(string)}),
 		}
 	} else if len(args) == 1 && cast.IsStringish(args[0]) {
 		args = []any{
-			HaveKeyValue(args[0].(string)),
+			be_json.HaveKeyValue(args[0].(string)),
 		}
 	}
 
-	return matchers.NewReqPropertyMatcher(
+	return psi_matchers.NewReqPropertyMatcher(
 		"RequestHavingHeader", "header",
 		func(req *http.Request) any { return req.Header },
 		args...,

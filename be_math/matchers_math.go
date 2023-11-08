@@ -1,8 +1,10 @@
-package be
+package be_math
 
 import (
+	"github.com/expectto/be/be_reflected"
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
+	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
 )
@@ -43,12 +45,12 @@ func InRange(from, fromInclusive bool, until any, untilInclusive bool) types.BeM
 	} else {
 		group[1] = Lt(until)
 	}
-	return All(group...)
+	return psi_matchers.NewAllMatcher(cast.AsSliceOfAny(group)...)
 }
 
 func Odd() types.BeMatcher {
 	return Psi(
-		Numeric(),
+		be_reflected.AsNumeric(),
 		WithFallibleTransform(func(actual any) any {
 			// todo: not accurate!
 			return int(cast.AsFloat(actual))%2 != 0
@@ -58,7 +60,7 @@ func Odd() types.BeMatcher {
 
 func Even() types.BeMatcher {
 	return Psi(
-		Numeric(),
+		be_reflected.AsNumeric(),
 		WithFallibleTransform(func(actual any) any {
 			return int(cast.AsFloat(actual))%2 == 0
 		}, gomega.BeTrue()),
