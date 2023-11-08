@@ -1,6 +1,7 @@
 package be
 
-// matchers_core.go contains Public callers for core psi matchers
+// matchers_be.go contains Public callers for core psi matchers
+// For advances matchers check out `be_*` packages
 
 import (
 	. "github.com/expectto/be/internal/psi"
