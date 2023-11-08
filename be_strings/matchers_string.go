@@ -1,11 +1,15 @@
 package be_strings
 
 import (
+	"fmt"
+	"github.com/IGLOU-EU/go-wildcard"
 	"github.com/expectto/be/be_reflected"
+	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
+	"github.com/onsi/gomega/gcustom"
 )
 
 // Todo: add aliases for some string-related reflected matchers
@@ -24,7 +28,12 @@ func EmptyString() types.BeMatcher {
 	)
 }
 
-// todo implement... need to select third-party solution for wildcard
-func Wildcard(wildcard string) types.BeMatcher {
-	panic("not implemented")
+func Wildcard(pattern string) types.BeMatcher {
+	return Psi(gcustom.MakeMatcher("Wildcard", func(actual interface{}) (bool, error) {
+		if !cast.IsString(actual) {
+			return false, fmt.Errorf("string expected, got %T", actual)
+		}
+
+		return wildcard.Match(pattern, cast.AsString(actual)), nil
+	}))
 }
