@@ -2,7 +2,6 @@ package be_reflected
 
 import (
 	"fmt"
-	"github.com/expectto/be"
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/internal/psi_matchers"
@@ -53,7 +52,7 @@ func AsFinalPointer() types.BeMatcher {
 		AsPointer(),
 		WithFallibleTransform(func(actual any) any {
 			return reflect.ValueOf(actual).Elem()
-		}, be.Not(AsPointer())),
+		}, psi_matchers.NewNotMatcher(AsPointer())),
 	}}
 }
 
