@@ -1,6 +1,7 @@
 package be_url
 
 import (
+	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
@@ -11,9 +12,7 @@ import (
 // todo: RawPath/EscapedPath matchers
 
 // TransformUrlFromString returns string->*url.Url transform
-func TransformUrlFromString() func(string) (*url.URL, error) {
-	return url.Parse
-}
+var TransformUrlFromString = url.Parse
 
 // URL matches actual value to be a valid URL corresponding to given inputs
 // Possible inputs:
@@ -28,7 +27,7 @@ func URL(args ...any) types.BeMatcher {
 	}
 
 	// todo: support custom string types
-	if strArg, ok := args[0].(string); ok {
+	if cast.IsString(args[0], cast.AllowCustomTypes()) {
 		if len(args) != 1 {
 			panic("sting arg must be a single arg")
 		}
@@ -36,7 +35,7 @@ func URL(args ...any) types.BeMatcher {
 		// match given string to whole url
 		return psi_matchers.NewUrlFieldMatcher("Url", "", func(u *url.URL) any {
 			return u.String()
-		}, gomega.Equal(strArg))
+		}, gomega.Equal(args[0]))
 	}
 
 	return Psi(args...)

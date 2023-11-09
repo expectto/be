@@ -9,7 +9,19 @@ import (
 
 // IsNil checks if the given input is a nil value.
 func IsNil(a any) bool {
-	return a == nil || reflect.ValueOf(a).IsNil()
+	if a == nil {
+		return true
+	}
+
+	v := reflect.ValueOf(a)
+	k := v.Kind()
+	// check if v is OK to be used with IsNil
+	if k == reflect.Ptr || k == reflect.Interface || k == reflect.Chan ||
+		k == reflect.Func || k == reflect.Map || k == reflect.Slice {
+		return v.IsNil()
+	}
+
+	return false
 }
 
 // IsStringish checks if the given input is a string or string-like value.
@@ -46,14 +58,13 @@ func IsStringish(a any) (ok bool) {
 //
 // Example Usage:
 //
-//	// In a non-strict check, allows custom types, pointer dereferencing, and stringer interfaces
-//	isString := IsString(AllowCustomTypes(), AllowPointers(), AllowStringer())
-//	isString("example") // Returns true
+//		// In a non-strict check, allows custom types, pointer dereferencing, and stringer interfaces
+//		IsString("example", AllowCustomTypes(), AllowPointers(), AllowStringer()) // returns true
 //
-//	// In a strict check, only actual strings are accepted
-//	isStringStrict := IsString(Strict())
-//	isStringStrict("example") // Returns true
-//	s := "example"; isStringStrict(&s) // Returns false (as string is under a pointer)
+//		// In a strict check, only actual strings are accepted
+//		isStringStrict := IsString(Strict())
+//		IsString("example", Strict()) // Returns true
+//	 IsString([]byte("example"), Strict()) // Returns false
 func IsString(a any, opts ...optIsString) bool {
 	// Even before computing the config,
 	// if input is simply a string, return immediately
@@ -160,6 +171,9 @@ func SetDefaultIsStringConfig(opts ...optIsString) {
 	cfg := &configIsString{}
 	for _, opt := range opts {
 		opt(cfg)
+	}
+	if defaultConfigIsString == nil {
+		defaultConfigIsString = &configIsString{}
 	}
 	*defaultConfigIsString = *cfg
 }
