@@ -94,20 +94,41 @@ var _ = Describe("Is", func() {
 	Context("IsString", func() {
 		When("in strict mode", func() {
 			It("should return true for string", func() {
-				Expect(cast.IsString("something", cast.Strict())).To(BeTrue())
+				Expect(cast.IsString("something")).To(BeTrue())
 			})
 			It("should return true for empty string", func() {
-				Expect(cast.IsString("", cast.Strict())).To(BeTrue())
+				Expect(cast.IsString("")).To(BeTrue())
 			})
 			It("should return false for []byte", func() {
-				Expect(cast.IsString([]byte("foobar"), cast.Strict())).To(BeFalse())
+				Expect(cast.IsString([]byte("foobar"))).To(BeFalse())
 			})
 			It("should return false for empty []byte", func() {
-				Expect(cast.IsString([]byte{}, cast.Strict())).To(BeFalse())
+				Expect(cast.IsString([]byte{})).To(BeFalse())
 			})
 			It("should return false for stringer", func() {
-				Expect(cast.IsString(CustomStringer{v: "hello-world"}, cast.Strict())).To(BeFalse())
+				Expect(cast.IsString(CustomStringer{v: "hello-world"})).To(BeFalse())
 			})
 		})
+
+		When("allowing pointers", func() {
+			It("should return true for string under the pointer", func() {
+				Expect(cast.IsString(new(string), cast.AllowPointers())).To(BeTrue())
+				Expect(cast.IsString(new(string), cast.AllowDeepPointers())).To(BeTrue())
+			})
+
+			It("should return false for not-a-string under the pointer", func() {
+				Expect(cast.IsString(new(int), cast.AllowPointers())).To(BeFalse())
+			})
+
+			It("should return true for string under the pointer", func() {
+				x := new(string)
+				*x = "hello-world"
+				y := &x
+
+				Expect(cast.IsString(y, cast.AllowDeepPointers())).To(BeTrue())
+				Expect(cast.IsString(y, cast.AllowPointers())).To(BeFalse())
+			})
+		})
+
 	})
 })

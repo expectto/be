@@ -30,7 +30,7 @@ func EmptyString() types.BeMatcher {
 
 func Wildcard(pattern string) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher("Wildcard", func(actual interface{}) (bool, error) {
-		if !cast.IsString(actual) {
+		if !cast.IsString(actual, cast.AllowCustomTypes(), cast.AllowPointers()) {
 			return false, fmt.Errorf("string expected, got %T", actual)
 		}
 

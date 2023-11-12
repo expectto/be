@@ -26,8 +26,7 @@ func URL(args ...any) types.BeMatcher {
 		return psi_matchers.NewUrlFieldMatcher("", "", nil)
 	}
 
-	// todo: support custom string types
-	if cast.IsString(args[0], cast.AllowCustomTypes()) {
+	if cast.IsString(args[0], cast.AllowCustomTypes(), cast.AllowPointers()) {
 		if len(args) != 1 {
 			panic("sting arg must be a single arg")
 		}

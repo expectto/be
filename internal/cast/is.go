@@ -80,7 +80,7 @@ func IsString(a any, opts ...optIsString) bool {
 	}
 
 	// if it was a strict check, and simple casting failed, we can't continue
-	if cfg.Strict && !ok {
+	if cfg.Strict() && !ok {
 		return false
 	}
 
@@ -112,19 +112,22 @@ func IsString(a any, opts ...optIsString) bool {
 		}
 	}
 
-	if cfg.AllowCustomTypes {
-		v := reflect.ValueOf(a)
-		if cfg.AllowPointers {
-			if cfg.AllowDeepPointers {
-				v = reflect2.IndirectDeep(v)
-			} else {
-				v = reflect.Indirect(v)
-			}
-		}
+	v := reflect.ValueOf(a)
+	if cfg.AllowDeepPointers {
+		v = reflect2.IndirectDeep(v)
+	} else if cfg.AllowPointers {
+		v = reflect.Indirect(v)
+	}
 
+	if v.Type() == reflect2.TypeFor[string]() {
+		return true
+	}
+
+	if cfg.AllowCustomTypes {
 		if v.Kind() == reflect.String {
 			return true
 		}
+
 		if v.Kind() == reflect.Slice && v.Type().AssignableTo(reflect.TypeOf([]byte{})) {
 			return true
 		}
@@ -133,10 +136,9 @@ func IsString(a any, opts ...optIsString) bool {
 	return false
 }
 
+// configIsString is a configuration for IsString checks.
+// An empty config (all flags=false) is considered "strict mode"
 type configIsString struct {
-	Strict bool
-
-	// Non-strict mode:
 	AllowCustomTypes     bool
 	AllowBytesConversion bool
 	AllowPointers        bool
@@ -155,15 +157,14 @@ func (cis *configIsString) clone() *configIsString {
 	return &clone
 }
 
+func (cis *configIsString) Strict() bool {
+	// Strict mode is when all flags are false
+	marshalled, _ := json.Marshal(cis)
+	return string(marshalled) == "{}"
+}
+
 func init() {
-	// By default, it's not strict and allows all conversion options.
-	SetDefaultIsStringConfig(
-		AllowStringer(),
-		AllowBytesConversion(),
-		AllowCustomTypes(),
-		AllowPointers(),
-		AllowDeepPointers(),
-	)
+	SetDefaultIsStringConfig()
 }
 
 // SetDefaultIsStringConfig sets the default configuration for IsString checks.
@@ -180,10 +181,14 @@ func SetDefaultIsStringConfig(opts ...optIsString) {
 
 type optIsString func(config *configIsString)
 
-// Strict option enables strict mode. All other options are automatically ignored.
-func Strict() optIsString {
+// NonStrict option enables all flags
+func NonStrict() optIsString {
 	return func(cfg *configIsString) {
-		cfg.Strict = true
+		cfg.AllowCustomTypes = true
+		cfg.AllowBytesConversion = true
+		cfg.AllowPointers = true
+		cfg.AllowDeepPointers = true
+		cfg.AllowStringer = true
 	}
 }
 
