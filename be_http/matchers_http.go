@@ -10,15 +10,12 @@ import (
 	"net/http"
 )
 
-// todo:
-
 func Request(args ...any) types.BeMatcher {
 	if len(args) == 0 {
 		return psi_matchers.NewReqPropertyMatcher("", "", nil)
 	}
 
-	// todo: support custom string types
-	if strArg, ok := args[0].(string); ok {
+	if cast.IsString(args[0], cast.AllowCustomTypes(), cast.AllowPointers()) {
 		if len(args) != 1 {
 			panic("string arg must be a single arg")
 		}
@@ -26,7 +23,7 @@ func Request(args ...any) types.BeMatcher {
 		// match given string to whole url
 		return psi_matchers.NewReqPropertyMatcher("Url", "", func(req *http.Request) any {
 			return req.URL.String()
-		}, gomega.Equal(strArg))
+		}, gomega.Equal(cast.AsString(args[0])))
 	}
 
 	return Psi(args...)
@@ -59,16 +56,21 @@ func RequestHavingHost(args ...any) types.BeMatcher {
 }
 
 func RequestHavingHeader(args ...any) types.BeMatcher {
+	// todo: handle better:
+	// here we consider args[0] is header key, and args[1] is header value (single) or matcher for it
+	// otherwise we fallback to matching req.Header that is map[string][]string
+	// so value is OK to be string for our cases, but required to be []string when matching req.Header
+
 	// Syntax sugar: RequestHavingHeader("HeaderName)"
 	//               or
 	// 				 RequestHavingHeader("HeaderName", "HeaderValue")
 	if len(args) == 2 && cast.IsStringish(args[0]) && cast.IsStringish(args[1]) {
 		args = []any{
-			be_json.HaveKeyValue(args[0].(string), []string{args[1].(string)}),
+			be_json.HaveKeyValue(cast.AsString(args[0]), []string{cast.AsString(args[1])}),
 		}
-	} else if len(args) == 1 && cast.IsStringish(args[0]) {
+	} else if len(args) == 1 && cast.IsStringish(cast.AsString(args[0])) {
 		args = []any{
-			be_json.HaveKeyValue(args[0].(string)),
+			be_json.HaveKeyValue(cast.AsString(args[0])),
 		}
 	}
 
