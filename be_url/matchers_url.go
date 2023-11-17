@@ -40,7 +40,7 @@ func URL(args ...any) types.BeMatcher {
 	return Psi(args...)
 }
 
-func UrlHavingHost(args ...any) types.BeMatcher {
+func HavingHost(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingHost", "host",
 		func(u *url.URL) any { return u.Host },
@@ -48,7 +48,7 @@ func UrlHavingHost(args ...any) types.BeMatcher {
 	)
 }
 
-func UrlHavingHostname(args ...any) types.BeMatcher {
+func HavingHostname(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingHostname", "hostname",
 		func(u *url.URL) any { return u.Hostname() },
@@ -56,7 +56,7 @@ func UrlHavingHostname(args ...any) types.BeMatcher {
 	)
 }
 
-func UrlHavingScheme(args ...any) types.BeMatcher {
+func HavingScheme(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingScheme", "scheme",
 		func(u *url.URL) any { return u.Scheme },
@@ -64,14 +64,14 @@ func UrlHavingScheme(args ...any) types.BeMatcher {
 	)
 }
 
-func UrlWithHttps() types.BeMatcher {
-	return UrlHavingScheme("https")
+func WithHttps() types.BeMatcher {
+	return HavingScheme("https")
 }
-func UrlWithHttp() types.BeMatcher {
-	return UrlHavingScheme("http")
+func WithHttp() types.BeMatcher {
+	return HavingScheme("http")
 }
 
-func UrlHavingPort(args ...any) types.BeMatcher {
+func HavingPort(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingPort", "port",
 		func(u *url.URL) any { return u.Port() },
@@ -79,11 +79,11 @@ func UrlHavingPort(args ...any) types.BeMatcher {
 	)
 }
 
-func UrlNotHavingPort(args ...any) types.BeMatcher {
-	return Psi(gomega.Not(UrlHavingPort(args...)))
+func NotHavingPort(args ...any) types.BeMatcher {
+	return Psi(gomega.Not(HavingPort(args...)))
 }
 
-func UrlHavingPath(args ...any) types.BeMatcher {
+func HavingPath(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingPath", "path",
 		func(u *url.URL) any { return u.Path },
@@ -91,7 +91,7 @@ func UrlHavingPath(args ...any) types.BeMatcher {
 	)
 }
 
-func UrlHavingRawQuery(args ...any) types.BeMatcher {
+func HavingRawQuery(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingRawQuery", "rawQuery",
 		func(u *url.URL) any { return u.RawQuery },
@@ -102,7 +102,7 @@ func UrlHavingRawQuery(args ...any) types.BeMatcher {
 // todo: UrlHavingMultipleSearchParam -> the fact that param is found > 1 times
 // todo: UrlHavingDistinctSearchParams -> meaning no search params are repeated
 
-func UrlHavingSearchParam(searchParamName string, args ...any) types.BeMatcher {
+func HavingSearchParam(searchParamName string, args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingSearchParam", "searchParam",
 		func(u *url.URL) any { return u.Query().Get(searchParamName) },
@@ -110,7 +110,7 @@ func UrlHavingSearchParam(searchParamName string, args ...any) types.BeMatcher {
 	)
 }
 
-func UrlHavingUsername(args ...any) types.BeMatcher {
+func HavingUsername(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingUsername", "username",
 		func(u *url.URL) any { return u.User.Username() },
@@ -118,7 +118,7 @@ func UrlHavingUsername(args ...any) types.BeMatcher {
 	)
 }
 
-func UrlHavingUserinfo(args ...any) types.BeMatcher {
+func HavingUserinfo(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingUserinfo", "userinfo",
 		func(u *url.URL) any { return u.User.String() },
@@ -126,7 +126,7 @@ func UrlHavingUserinfo(args ...any) types.BeMatcher {
 	)
 }
 
-func UrlHavingPassword(args ...any) types.BeMatcher {
+func HavingPassword(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"UrlHavingPassword", "password",
 		func(u *url.URL) any { p, _ := u.User.Password(); return p },
