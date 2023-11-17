@@ -29,7 +29,7 @@ func Request(args ...any) types.BeMatcher {
 	return Psi(args...)
 }
 
-func RequestHavingMethod(args ...any) types.BeMatcher {
+func HavingMethod(args ...any) types.BeMatcher {
 	return psi_matchers.NewReqPropertyMatcher(
 		"RequestHavingMethod", "method",
 		func(req *http.Request) any { return req.Method },
@@ -39,7 +39,7 @@ func RequestHavingMethod(args ...any) types.BeMatcher {
 
 // todo syntax sugar for specific http methods
 
-func RequestHavingURL(args ...any) types.BeMatcher {
+func HavingURL(args ...any) types.BeMatcher {
 	return psi_matchers.NewReqPropertyMatcher(
 		"RequestHavingURL", "url",
 		func(req *http.Request) any { return req.URL },
@@ -47,7 +47,7 @@ func RequestHavingURL(args ...any) types.BeMatcher {
 	)
 }
 
-func RequestHavingHost(args ...any) types.BeMatcher {
+func HavingHost(args ...any) types.BeMatcher {
 	return psi_matchers.NewReqPropertyMatcher(
 		"RequestHavingHost", "host",
 		func(req *http.Request) any { return req.Host },
@@ -55,7 +55,7 @@ func RequestHavingHost(args ...any) types.BeMatcher {
 	)
 }
 
-func RequestHavingHeader(args ...any) types.BeMatcher {
+func HavingHeader(args ...any) types.BeMatcher {
 	// todo: handle better:
 	// here we consider args[0] is header key, and args[1] is header value (single) or matcher for it
 	// otherwise we fallback to matching req.Header that is map[string][]string
