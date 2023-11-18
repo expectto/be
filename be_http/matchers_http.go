@@ -31,7 +31,7 @@ func Request(args ...any) types.BeMatcher {
 
 func HavingMethod(args ...any) types.BeMatcher {
 	return psi_matchers.NewReqPropertyMatcher(
-		"RequestHavingMethod", "method",
+		"HavingMethod", "method",
 		func(req *http.Request) any { return req.Method },
 		args...,
 	)
@@ -41,15 +41,24 @@ func HavingMethod(args ...any) types.BeMatcher {
 
 func HavingURL(args ...any) types.BeMatcher {
 	return psi_matchers.NewReqPropertyMatcher(
-		"RequestHavingURL", "url",
+		"HavingURL", "url",
 		func(req *http.Request) any { return req.URL },
+		args...,
+	)
+}
+
+func HavingBody(args ...any) types.BeMatcher {
+	return psi_matchers.NewReqPropertyMatcher(
+		"HavingBody", "body",
+		// todo: re-stream body so it's available after matching
+		func(req *http.Request) any { return req.Body },
 		args...,
 	)
 }
 
 func HavingHost(args ...any) types.BeMatcher {
 	return psi_matchers.NewReqPropertyMatcher(
-		"RequestHavingHost", "host",
+		"HavingHost", "host",
 		func(req *http.Request) any { return req.Host },
 		args...,
 	)
@@ -75,7 +84,7 @@ func HavingHeader(args ...any) types.BeMatcher {
 	}
 
 	return psi_matchers.NewReqPropertyMatcher(
-		"RequestHavingHeader", "header",
+		"HavingHeader", "header",
 		func(req *http.Request) any { return req.Header },
 		args...,
 	)

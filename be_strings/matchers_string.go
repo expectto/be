@@ -37,3 +37,11 @@ func Wildcard(pattern string) types.BeMatcher {
 		return wildcard.Match(pattern, cast.AsString(actual)), nil
 	}))
 }
+
+func Template(pattern string, args ...any) types.BeMatcher {
+	return psi_matchers.NewAlwaysMatcher()
+}
+
+func With(key string, v any) types.BeMatcher {
+	return psi_matchers.NewAlwaysMatcher()
+}
