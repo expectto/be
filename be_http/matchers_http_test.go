@@ -64,6 +64,8 @@ var _ = Describe("MatchersHttp", func() {
 				// 2.3. Matching the headers
 
 				be_http.HavingHeader("X-Custom", "Hey-There"),
+				// todo: add example with Time in header
+				//       so we can test be_time
 				be_http.HavingHeader("Authorization",
 					be_strings.Template("Bearer {{jwt}}",
 						be_strings.MatchingPart("jwt",
