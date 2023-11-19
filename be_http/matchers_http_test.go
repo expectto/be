@@ -2,6 +2,7 @@ package be_http_test
 
 import (
 	"bytes"
+	"github.com/expectto/be"
 	"github.com/expectto/be/be_http"
 	"github.com/expectto/be/be_json"
 	"github.com/expectto/be/be_jwt"
@@ -9,7 +10,7 @@ import (
 	"github.com/expectto/be/be_strings"
 	"github.com/expectto/be/be_url"
 	. "github.com/onsi/ginkgo/v2"
-	"github.com/onsi/gomega"
+	. "github.com/onsi/gomega"
 	"net/http"
 )
 
@@ -30,7 +31,8 @@ var _ = Describe("MatchersHttp", func() {
 		req.Header.Set("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
 
 		// 2. Let's match everything about the request
-		gomega.Expect(req).To(be_http.Request(
+		Expect(req).To(be_http.Request(
+			// 2.1. Match the URL
 			be_http.HavingURL(be_url.URL(
 				be_url.WithHttps(),
 				be_url.HavingHost("example.com"),
@@ -39,33 +41,40 @@ var _ = Describe("MatchersHttp", func() {
 				be_url.HavingSearchParam("v", be_reflected.AsNumericString()), // any number
 				be_url.HavingSearchParam("q", "Hello World"),
 			)),
+
 			be_http.HavingMethod("POST"),
+
+			// 2.2. Match the body
 			be_http.HavingBody(
 				be_json.Matcher(
 					be_json.JsonAsReader,
 					be_json.HaveKeyValue("hello", "world"),
 					be_json.HaveKeyValue("n", be_reflected.AsIntish()), // any int number
-					// match ids to be sliceof strings
-					// and details ot
-					/*
-						"hello": "world",
-						"n": 3,
-						"details": [{"key":"foo"},{"key":"bar"}],
-						"ids":["id1", "id2", "id3"]
-					*/
+					be_json.HaveKeyValue("ids", be_reflected.AsSliceOf[string]),
+					be_json.HaveKeyValue("details", And(
+						be_reflected.AsObjects(),
+						be.HaveLength(2),
+						ContainElements(
+							be_json.HaveKeyValue("key", "foo"),
+							be_json.HaveKeyValue("key", "bar"),
+						),
+					)),
 				),
-			),
 
-			be_http.HavingHeader("X-Custom", "Hey-There"),
-			be_http.HavingHeader("Authorization"),
-			be_strings.Template("Bearer {{jwt}}",
-				be_strings.With("jwt",
-					be_jwt.Token(
-						be_jwt.BeingValid(),
-						be_jwt.HavingClaims("name", "John Doe"),
+				// 2.3. Matching the headers
+
+				be_http.HavingHeader("X-Custom", "Hey-There"),
+				be_http.HavingHeader("Authorization",
+					be_strings.Template("Bearer {{jwt}}",
+						be_strings.MatchingPart("jwt",
+							be_jwt.Token(
+								be_jwt.BeingValid(),
+								be_jwt.HavingClaims("name", "John Doe"),
+							),
+						),
 					),
 				),
 			),
-		)),
+		))
 	})
 })

@@ -42,6 +42,6 @@ func Template(pattern string, args ...any) types.BeMatcher {
 	return psi_matchers.NewAlwaysMatcher()
 }
 
-func With(key string, v any) types.BeMatcher {
+func MatchingPart(key string, v any) types.BeMatcher {
 	return psi_matchers.NewAlwaysMatcher()
 }
