@@ -73,6 +73,7 @@ func HavingHeader(args ...any) types.BeMatcher {
 	// Syntax sugar: RequestHavingHeader("HeaderName)"
 	//               or
 	// 				 RequestHavingHeader("HeaderName", "HeaderValue")
+	// todo: fixme, doesn't work for more than 1 header
 	if len(args) == 2 && cast.IsStringish(args[0]) && cast.IsStringish(args[1]) {
 		args = []any{
 			be_json.HaveKeyValue(cast.AsString(args[0]), []string{cast.AsString(args[1])}),
