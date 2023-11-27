@@ -11,8 +11,8 @@ import (
 	"net/url"
 )
 
-var _ = Describe("URL", func() {
-	Context("Function that returns a *url.URL", func() {
+var _ = Describe("Examples on matching URL", func() {
+	Context("*url.URL as a result of function being tested", func() {
 
 		It("should match against all parts of *url.URL", func() {
 			u, err := url.Parse(`https://example.com/path/to/?foo=bar_123&v=1&payload={"hello":"world"}`)
@@ -50,7 +50,7 @@ var _ = Describe("URL", func() {
 		})
 	})
 
-	Context("with gomock", func() {
+	Context("*url.URL being used as an argument: via gomock", func() {
 		var ctrl *gomock.Controller
 		BeforeEach(func() {
 			ctrl = gomock.NewController(GinkgoT())

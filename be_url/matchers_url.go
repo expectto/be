@@ -9,8 +9,6 @@ import (
 	"net/url"
 )
 
-// todo: RawPath/EscapedPath matchers
-
 // TransformUrlFromString returns string->*url.Url transform
 var TransformUrlFromString = url.Parse
 
@@ -28,7 +26,7 @@ func URL(args ...any) types.BeMatcher {
 
 	if cast.IsString(args[0], cast.AllowCustomTypes(), cast.AllowPointers()) {
 		if len(args) != 1 {
-			panic("sting arg must be a single arg")
+			panic("string arg must be a single arg")
 		}
 
 		// match given string to whole url
@@ -42,7 +40,7 @@ func URL(args ...any) types.BeMatcher {
 
 func HavingHost(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
-		"UrlHavingHost", "host",
+		"HavingHost", "host",
 		func(u *url.URL) any { return u.Host },
 		args...,
 	)
@@ -50,7 +48,7 @@ func HavingHost(args ...any) types.BeMatcher {
 
 func HavingHostname(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
-		"UrlHavingHostname", "hostname",
+		"HavingHostname", "hostname",
 		func(u *url.URL) any { return u.Hostname() },
 		args...,
 	)
@@ -58,7 +56,7 @@ func HavingHostname(args ...any) types.BeMatcher {
 
 func HavingScheme(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
-		"UrlHavingScheme", "scheme",
+		"HavingScheme", "scheme",
 		func(u *url.URL) any { return u.Scheme },
 		args...,
 	)
@@ -73,7 +71,7 @@ func WithHttp() types.BeMatcher {
 
 func HavingPort(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
-		"UrlHavingPort", "port",
+		"HavingPort", "port",
 		func(u *url.URL) any { return u.Port() },
 		args...,
 	)
@@ -85,26 +83,28 @@ func NotHavingPort(args ...any) types.BeMatcher {
 
 func HavingPath(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
-		"UrlHavingPath", "path",
+		"HavingPath", "path",
 		func(u *url.URL) any { return u.Path },
 		args...,
 	)
 }
 
+// todo: RawPath/EscapedPath matchers
+
 func HavingRawQuery(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
-		"UrlHavingRawQuery", "rawQuery",
+		"HavingRawQuery", "rawQuery",
 		func(u *url.URL) any { return u.RawQuery },
 		args...,
 	)
 }
 
-// todo: UrlHavingMultipleSearchParam -> the fact that param is found > 1 times
-// todo: UrlHavingDistinctSearchParams -> meaning no search params are repeated
+// todo:"HavingMultipleSearchParam -> the fact that param is found > 1 times
+// todo:"HavingDistinctSearchParams -> meaning no search params are repeated
 
 func HavingSearchParam(searchParamName string, args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
-		"UrlHavingSearchParam", "searchParam",
+		"HavingSearchParam", "searchParam",
 		func(u *url.URL) any { return u.Query().Get(searchParamName) },
 		args...,
 	)
@@ -112,7 +112,7 @@ func HavingSearchParam(searchParamName string, args ...any) types.BeMatcher {
 
 func HavingUsername(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
-		"UrlHavingUsername", "username",
+		"HavingUsername", "username",
 		func(u *url.URL) any { return u.User.Username() },
 		args...,
 	)
@@ -120,7 +120,7 @@ func HavingUsername(args ...any) types.BeMatcher {
 
 func HavingUserinfo(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
-		"UrlHavingUserinfo", "userinfo",
+		"HavingUserinfo", "userinfo",
 		func(u *url.URL) any { return u.User.String() },
 		args...,
 	)
@@ -128,7 +128,7 @@ func HavingUserinfo(args ...any) types.BeMatcher {
 
 func HavingPassword(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
-		"UrlHavingPassword", "password",
+		"HavingPassword", "password",
 		func(u *url.URL) any { p, _ := u.User.Password(); return p },
 		args...,
 	)
