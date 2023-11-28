@@ -1,7 +1,10 @@
 // Package psi contains helpers that extends gomega library
 // Name psi stands for previous letter from Omega
 // (as we want to have a name that is close to gomega, but not to be a gomega)
-// todo: rewrite better description
+//
+// Package psi is considered as internal package to be used only inside `be`
+// It's a core functionality that upgrades any matcher to be a `be` matcher
+// Also it contains some core matchers and upgraded things from `gomega/gcustom` package
 package psi
 
 import (
