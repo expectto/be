@@ -2,7 +2,6 @@ package cast
 
 import (
 	"encoding/json"
-	"fmt"
 	reflect2 "github.com/expectto/be/internal/reflect"
 	"reflect"
 )
@@ -12,12 +11,12 @@ import (
 // customizing the type-checking behavior, making it a versatile utility for testing code.
 // It supports both strict and non-strict mode checks, allowing you to precisely control
 // which types are considered string-like. It also provides options for handling custom types,
-// pointer dereferencing, and stringer interfaces.
+// pointer dereferencing..
 //
 // Example Usage:
 //
-//	// In a non-strict check, allows custom types, pointer dereferencing, and stringer interfaces
-//	IsString("example", AllowCustomTypes(), AllowPointers(), AllowStringer()) // returns true
+//	// In a non-strict check, allows custom types, pointer dereferencing
+//	IsString("example", AllowCustomTypes(), AllowPointers())) // returns true
 //
 //	// In a strict check, only actual strings are accepted
 //	isStringStrict := IsString(Strict())
@@ -47,8 +46,7 @@ func IsString(a any, opts ...optIsString) bool {
 		return IsStringish(a)
 	}
 
-	// We can still use type casting for simple cases
-	// like AllowBytesConversion, AllowPointers and AllowStringer:
+	// We can still use type casting for simple cases, like AllowBytesConversion, AllowPointer:
 
 	if cfg.AllowBytesConversion {
 		// First start with a type casting
@@ -62,12 +60,6 @@ func IsString(a any, opts ...optIsString) bool {
 			case *[]byte, *json.RawMessage:
 				return true
 			}
-		}
-	}
-
-	if cfg.AllowStringer {
-		if _, ok := a.(fmt.Stringer); ok {
-			return true
 		}
 	}
 
@@ -107,7 +99,6 @@ type isStringConfig struct {
 	AllowBytesConversion bool `json:"allow_bytes_conversion,omitempty"`
 	AllowPointers        bool `json:"allow_pointers,omitempty"`
 	AllowDeepPointers    bool `json:"allow_deep_pointers,omitempty"`
-	AllowStringer        bool `json:"allow_stringer,omitempty"`
 }
 
 var defaultIsStringConfig *isStringConfig
@@ -162,11 +153,6 @@ func ConfigureIsStringConfig(opts ...optIsString) {
 
 type optIsString func(config *isStringConfig)
 
-// AllowStringer option allows the use of fmt.Stringer for IsString checks.
-func AllowStringer() optIsString {
-	return func(cfg *isStringConfig) { cfg.AllowStringer = true }
-}
-
 // AllowCustomTypes option allows the use of custom string types for IsString checks.
 func AllowCustomTypes() optIsString {
 	return func(cfg *isStringConfig) { cfg.AllowCustomTypes = true }
@@ -185,4 +171,15 @@ func AllowPointers() optIsString {
 // AllowDeepPointers option allows deep checking of values under pointers for IsString checks.
 func AllowDeepPointers() optIsString {
 	return func(cfg *isStringConfig) { cfg.AllowDeepPointers = true }
+}
+
+// AllowAll option allows all options (makes it the most non-strict)
+func AllowAll() optIsString {
+	return func(cfg *isStringConfig) {
+		v := reflect.ValueOf(cfg).Elem()
+
+		for i := 0; i < v.NumField(); i++ {
+			v.Field(i).SetBool(true)
+		}
+	}
 }

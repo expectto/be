@@ -9,8 +9,8 @@ import (
 )
 
 // AsString converts the given input into a string or string-like representation.
-// It supports various input types, including actual strings, byte slices, JSON RawMessage, custom string types,
-// and types that implement the fmt.Stringer interface.
+// It supports various input types, including actual strings, byte slices, JSON RawMessage, custom string types.
+//
 // Input values may also be pointers.
 //
 // Note: If the input is []byte, and it contains a non-UTF-8 valid sequence, the resulting string may be invalid.
@@ -36,8 +36,9 @@ func AsString(a any) string {
 		return string(t)
 	case *json.RawMessage: // shortcut without reflect
 		return string(*t)
-	case fmt.Stringer:
-		return t.String()
+
+		// we intentionally do not support fmt.Stringer here
+		// it must be handled manually
 	}
 
 	// Then fallback to reflect, in case we have custom string/[]byte types
@@ -55,8 +56,8 @@ func AsString(a any) string {
 }
 
 // AsBytes converts the given input into a []byte or []byte-like representation.
-// It supports various input types, including byte slices, JSON RawMessage, strings,
-// and types that implement the fmt.Stringer interface.
+// It supports various input types, including byte slices, JSON RawMessage, strings.
+//
 // Input values may also be pointers.
 //
 // It panics in case it's not possible to perform the conversion.
@@ -80,8 +81,6 @@ func AsBytes(a any) []byte {
 		return *t
 	case string:
 		return []byte(t)
-	case fmt.Stringer:
-		return []byte(t.String())
 	}
 
 	// Then fallback to reflect, in case we have custom string/[]byte types

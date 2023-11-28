@@ -7,16 +7,6 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-type StringerFoobar struct{ v string }
-
-func (s StringerFoobar) String() string {
-	return s.v
-}
-
-func NewStringerFoobar(v string) *StringerFoobar {
-	return &StringerFoobar{v: v}
-}
-
 var _ = Describe("As", func() {
 	Context("AsString", func() {
 		It("should return string for string", func() {
@@ -51,10 +41,6 @@ var _ = Describe("As", func() {
 
 		It("should return string for a string under the pointer", func() {
 			Expect(cast.AsString(new(string))).To(Equal(""))
-		})
-
-		It("should return string for a stringer", func() {
-			Expect(cast.AsString(NewStringerFoobar("foobar"))).To(Equal("foobar"))
 		})
 
 		It("should panic for non-stringish", func() {
