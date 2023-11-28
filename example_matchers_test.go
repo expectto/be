@@ -17,17 +17,17 @@ var _ = Describe("matchers_http", func() {
 		req.Header.Set("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
 
 		Expect(req).To(be.HttpRequest(
-			be_http.RequestHavingURL(be.URL(
-				be_url.UrlHavingHost("example.com"),
-				be_url.UrlWithHttps(),
-				be_url.UrlHavingPath("/path"),
-				be_url.UrlHavingSearchParam("foo", "bar"),
+			be_http.HavingURL(be.URL(
+				be_url.HavingHost("example.com"),
+				be_url.WithHttps(),
+				be_url.HavingPath("/path"),
+				be_url.HavingSearchParam("foo", "bar"),
 			)),
-			be_http.RequestHavingMethod("POST"),
-			be_http.RequestHavingHeader(
+			be_http.POST(),
+			be_http.HavingHeader(
 				"X-Something", "something",
 			),
-			be_http.RequestHavingHeader(
+			be_http.HavingHeader(
 				"Authorization",
 				// TODO
 				//HavePrefix("Bearer "),

@@ -37,6 +37,21 @@ func HavingMethod(args ...any) types.BeMatcher {
 	)
 }
 
+func POST() types.BeMatcher {
+	return psi_matchers.NewReqPropertyMatcher(
+		"HavingMethod", "method",
+		func(req *http.Request) any { return req.Method },
+		"POST",
+	)
+}
+func GET() types.BeMatcher {
+	return psi_matchers.NewReqPropertyMatcher(
+		"HavingMethod", "method",
+		func(req *http.Request) any { return req.Method },
+		"GET",
+	)
+}
+
 // todo syntax sugar for specific http methods
 
 func HavingURL(args ...any) types.BeMatcher {
