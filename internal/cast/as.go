@@ -5,6 +5,7 @@ import (
 	"fmt"
 	reflect2 "github.com/expectto/be/internal/reflect"
 	"reflect"
+	"time"
 )
 
 // AsString converts the given input into a string or string-like representation.
@@ -367,4 +368,29 @@ func AsSliceOfAny(v any) []any {
 	}
 
 	panic(fmt.Sprintf("Expected a slice! Got <%T>: %#v", v, v))
+}
+
+// AsTime converts the given input into a time.Time
+// It supports various time.Time (or pointer to it)
+// or custom types that are convertable to time.Time
+//
+// It panics in case it's not possible to perform the conversion.
+func AsTime(a any) time.Time {
+	// First start with a type casting
+	switch t := a.(type) {
+	case time.Time:
+		return t
+	case *time.Time:
+		return *t
+	}
+
+	// fallback to reflect
+	v := reflect.ValueOf(a)
+	v = reflect2.IndirectDeep(v)
+
+	if v.CanConvert(reflect2.TypeFor[time.Time]()) {
+		return v.Interface().(time.Time)
+	}
+
+	panic(fmt.Sprintf("Expected a time.Time value! Got <%T>: %#v", a, a))
 }

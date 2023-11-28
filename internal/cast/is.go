@@ -49,6 +49,21 @@ func IsStringish(a any) (ok bool) {
 	return
 }
 
+// IsTime checks if the given input is a time.Time value (pointers and/or custom types are OK)
+// To prevent code duplication, it employs panic recovery to handle type conversion
+// and is designed for use in testing code, where panics are acceptable.
+func IsTime(a any) (ok bool) {
+	ok = true
+	defer func() {
+		if err := recover(); err != nil {
+			ok = false
+		}
+	}()
+
+	_ = AsTime(a)
+	return
+}
+
 // IsString checks if the given input is a string or string-like.
 // To avoid duplicating type-checking logic, it provides extensive configuration options for
 // customizing the type-checking behavior, making it a versatile utility for testing code.
