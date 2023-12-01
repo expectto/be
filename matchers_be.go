@@ -26,7 +26,7 @@ func All(ms ...any) types.BeMatcher {
 
 // Any is like gomega.Or()
 func Any(ms ...any) types.BeMatcher {
-	return psi_matchers.NewAnyMatcher(Psi(ms...))
+	return psi_matchers.NewAnyMatcher(ms...)
 }
 
 // Eq is like gomega.Equal()
