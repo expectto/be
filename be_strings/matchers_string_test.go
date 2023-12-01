@@ -9,7 +9,7 @@ import (
 
 var _ = Describe("MatchersString", func() {
 	It("should perform basic string & template matching", func() {
-		Expect("Hello Jack! Your email is ask!example.com. Bye Jack").To(
+		Expect("Hello Jack! Your email is ask@example.com. Bye Jack").To(
 			be_strings.MatchTemplate(
 				`Hello {{User}}! Your email is {{Email}}. Bye {{User}}`,
 
