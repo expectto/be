@@ -20,18 +20,4 @@ var _ = Describe("MatchersString", func() {
 			),
 		)
 	})
-
-	It("should perform matchin on a sparse template", func() {
-		Expect("Hello Jack! Your email is ask@example.com. Bye Jack").To(
-			be_strings.MatchTemplate(
-				// {{...}} means it can match ANYTHING (but not empty string)
-				// {{..?}} means it can match ANYTHING (even empty string)
-				// so here we actually simply check that email is somewhere in the middle of the string
-				`{{...}}{{Email}}{{..?}}`,
-
-				// any valid email with @example.com suffix
-				be_strings.Var("Email", be.All(be_strings.ValidEmail(), HaveSuffix("@example.com"))),
-			),
-		)
-	})
 })

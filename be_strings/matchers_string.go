@@ -162,11 +162,6 @@ func MatchTemplate(template string, vars ...*V) types.BeMatcher {
 		// {{Name}} => (?P<Name>.+)
 		variableRegex := regexp.MustCompile(`{{\s*([^}\s]+)\s*}}`)
 		regexStr := variableRegex.ReplaceAllString(template, "(?P<$1>.+)")
-		// special handling for core variables like `...`, `...?`
-		// we have to rename them for valid regex
-		for _, cv := range coreVariables {
-			regexStr = strings.ReplaceAll(regexStr, "?P<"+cv.Name+">.", "?P<"+cv.Placeholder+">.")
-		}
 
 		regex, err := regexp.Compile(regexStr)
 		if err != nil {
@@ -199,20 +194,6 @@ func MatchTemplate(template string, vars ...*V) types.BeMatcher {
 		if len(vars) == 0 {
 			return true, nil
 		}
-		for _, v := range coreVariables {
-			name := v.Placeholder
-			result, ok := results[name]
-			if !ok {
-				continue
-			}
-
-			if matched, err := v.Matcher.Match(result); err != nil {
-				return false, fmt.Errorf("core var %s failed: %w", name, err)
-			} else if !matched {
-				// todo: transmit failure to the error message
-				return false, nil
-			}
-		}
 
 		for _, v := range vars {
 			name := strings.ToLower(v.Name)
@@ -238,16 +219,6 @@ type V struct {
 	Matcher types.BeMatcher
 }
 
-type coreVariable struct {
-	*V
-	Placeholder string
-}
-
 func Var(name string, matching any) *V {
 	return &V{Name: name, Matcher: Psi(matching)}
-}
-
-var coreVariables = []*coreVariable{
-	{V: &V{Name: "...", Matcher: NonEmptyString()}, Placeholder: "__ANYTHING__"},
-	{V: &V{Name: "..?", Matcher: NonEmptyString()}, Placeholder: "__ANYTHING_OPTIONAL__"},
 }
