@@ -16,7 +16,9 @@ import (
 	"github.com/onsi/gomega/gcustom"
 	"net/mail"
 	"regexp"
+	"strconv"
 	"strings"
+	"unicode"
 )
 
 // todo: do a transform Stringish->String that is configurable (string/fuzzy strings)
@@ -56,8 +58,9 @@ func Alpha() types.BeMatcher {
 			return false, err
 		}
 
+		// Check if it contains only letters
 		for _, char := range cast.AsString(actual) {
-			if char < 'a' || char > 'Z' {
+			if !unicode.IsLetter(char) {
 				return false, nil
 			}
 		}
@@ -66,29 +69,45 @@ func Alpha() types.BeMatcher {
 	}))
 }
 
-// Num succeeds if actual contains only numeric values (with dots)
-func Num() types.BeMatcher {
+// Float succeeds if actual contains only float values
+func Float() types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
 
-		// todo:
-		// check if it's a numeric stirng
-
-		return true, nil
+		// Check if it's a numeric string
+		_, err := strconv.ParseFloat(cast.AsString(actual), 64)
+		return err == nil, nil
 	}))
 }
 
-// AlphaNum succeeds if actual contains only numeric values (with dots)
-func AlphaNum() types.BeMatcher {
+// Numeric succeeds if actual contains only integer numeric values
+func Numeric() types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
 
-		// todo:
-		// check if it's a numeric stirng + alpha
+		// Check if it's a numeric string
+		_, err := strconv.ParseInt(cast.AsString(actual), 10, 64)
+		return err == nil, nil
+	}))
+}
+
+// AlphaNumeric succeeds if actual contains only numeric values (with dots)
+func AlphaNumeric() types.BeMatcher {
+	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// Check if it's an alphanumeric string
+		for _, char := range cast.AsString(actual) {
+			if !(('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z') || ('0' <= char && char <= '9')) {
+				return false, nil
+			}
+		}
 
 		return true, nil
 	}))
@@ -102,7 +121,8 @@ func Titled() types.BeMatcher {
 
 		str := cast.AsString(actual)
 
-		return strings.ToTitle(str) == str, nil
+		// todo: switch to cases
+		return strings.Title(str) == str, nil
 	}))
 }
 
@@ -170,7 +190,8 @@ func MatchTemplate(template string, vars ...*V) types.BeMatcher {
 
 		match := regex.FindStringSubmatch(cast.AsString(actual))
 		if len(match) != len(regex.SubexpNames()) {
-			return false, fmt.Errorf("invalid template")
+			// todo: provide better error handling
+			return false, nil
 		}
 
 		results := make(map[string]string)
