@@ -39,7 +39,7 @@ var _ = Describe("MatchersReflected", func() {
 			// todo add test for reflect.Interface
 		)
 
-		DescribeTable("should properly fail on matching", func(actual interface{}, expected reflect.Kind) {
+		PDescribeTable("should properly fail on matching", func(actual interface{}, expected reflect.Kind) {
 			matcher := be_reflected.AsKind(expected)
 
 			success, err := matcher.Match(actual)

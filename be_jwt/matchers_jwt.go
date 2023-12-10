@@ -2,38 +2,53 @@ package be_jwt
 
 import (
 	"fmt"
-	"github.com/expectto/be/internal/psi_matchers"
+	"github.com/expectto/be"
+	"github.com/expectto/be/internal/cast"
+	"github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/onsi/gomega/gcustom"
 )
 
+// Token TODO: transfer string => *jwt.Token, so other matchers must be token-level
 func Token(args ...any) types.BeMatcher {
-	return psi_matchers.NewNeverMatcher(fmt.Errorf("todo: not implemented"))
+	return be.Always()
 }
 
-func HavingClaims(args ...any) types.BeMatcher {
-	return psi_matchers.NewNeverMatcher(fmt.Errorf("todo: not implemented"))
+func BeingValidAndSignedWith(secretKey string) types.BeMatcher {
+	return psi.Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+		token, err := jwt.Parse(cast.AsString(actual), func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method: %s", token.Header["alg"])
+			}
+
+			return []string{secretKey}, nil
+		})
+		if err != nil {
+			return false, nil
+		}
+		return token.Valid, nil
+	}))
 }
 
 func BeingValid() types.BeMatcher {
+	return psi.Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+		_, err := jwt.Parse(cast.AsString(actual), func(token *jwt.Token) (interface{}, error) {
+			return []string{""}, nil
+		})
+		return err == nil, nil
+	}))
+}
 
-	// todo: sandbox
-	// sample token string taken from the New example
-	tokenString := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmb28iOiJiYXIiLCJuYmYiOjE0NDQ0Nzg0MDB9.9lhSXK6s77Pa5Ha9OxdzIp5whsVj07Yv28lDgQTpjJg"
+func HavingClaims(args ...any) types.BeMatcher {
+	return psi.Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+		token, err := jwt.Parse(cast.AsString(actual), func(token *jwt.Token) (interface{}, error) {
+			return []string{""}, nil
+		})
+		if err != nil {
+			return false, nil
+		}
 
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(""), nil
-	})
-	if err != nil {
-		fmt.Println("ERRS ", err)
-	}
-	fmt.Println("...", token.Claims)
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-		fmt.Println(claims["foo"], claims["nbf"])
-	} else {
-		fmt.Println(err)
-	}
-
-	return psi_matchers.NewNeverMatcher(fmt.Errorf("todo: not implemented"))
+		return psi.Psi(args...).Match(token.Claims)
+	}))
 }

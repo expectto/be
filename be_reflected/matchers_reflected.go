@@ -1,3 +1,4 @@
+// Package be_reflected provides Be mathers for reflection in Go.
 package be_reflected
 
 import (
