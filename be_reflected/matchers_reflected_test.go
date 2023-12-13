@@ -3,6 +3,7 @@ package be_reflected_test
 import (
 	"fmt"
 	"github.com/expectto/be/be_reflected"
+	"github.com/expectto/be/types"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/format"
@@ -72,6 +73,31 @@ var _ = Describe("MatchersReflected", func() {
 			Entry("chan as not func", make(chan int), reflect.Func),
 			Entry("map", map[string]int{}, reflect.Ptr),
 			Entry("ptr", new(int), reflect.Map), // <*int | 0xc...>: de-referencad value
+		)
+	})
+
+	Context("AssignableTo", func() {
+
+		// Named booleans so table is more readable
+		const WillPass = true
+		const WontPass = false
+
+		type CustomString string
+
+		DescribeTable("should be assignable to a simple type", func(m types.BeMatcher, actual any, result bool) {
+			matched, err := m.Match(actual)
+			Expect(err).To(Succeed())
+			Expect(matched).To(Equal(result))
+		},
+			Entry("int", be_reflected.AssignableTo[int](), 5, WillPass),
+			Entry("uint", be_reflected.AssignableTo[uint8](), uint8(2), WillPass),
+			Entry("int vs uint", be_reflected.AssignableTo[uint8](), 2, WontPass),
+			Entry("float64", be_reflected.AssignableTo[float64](), 100.0, WillPass),
+			Entry("string", be_reflected.AssignableTo[string](), "hello world", WillPass),
+
+			Entry("CustomString", be_reflected.AssignableTo[CustomString](), CustomString("hello world"), WillPass),
+			Entry("CustomString as string: no", be_reflected.AssignableTo[string](), CustomString("hello world"), WontPass),
+			Entry("string as CustomString: no", be_reflected.AssignableTo[CustomString](), "hello world", WontPass),
 		)
 	})
 })
