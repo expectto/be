@@ -63,6 +63,7 @@ func (matcher *KindMatcher) FailureMessage(actual any) string {
 	//		Expect [ ] to <>
 	// into
 	//		Expect [ ] kind to <>
+	// Note: probably a weak solution: consider better
 	failureMessage := matcher.matching.FailureMessage(actual)
 	failureMessage = strings.Replace(failureMessage, "\nto", "\nkind to", 1)
 	return failureMessage
