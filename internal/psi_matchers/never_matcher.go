@@ -1,6 +1,6 @@
 package psi_matchers
 
-// NeverMatcher always fails
+// NeverMatcher never matches (always fails)
 type NeverMatcher struct {
 	err error
 }

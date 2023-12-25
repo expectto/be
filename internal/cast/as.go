@@ -8,14 +8,14 @@ import (
 	"time"
 )
 
-// AsString converts the given input into a string or string-like representation.
-// It supports various input types, including actual strings, byte slices, JSON RawMessage, custom string types.
+// AsString converts the given input into a string or a string-like representation.
+// It supports various input types, including actual strings, byte slices, JSON RawMessage, and custom string types.
 //
 // Input values may also be pointers.
 //
-// Note: If the input is []byte, and it contains a non-UTF-8 valid sequence, the resulting string may be invalid.
+// Note: If the input is []byte and contains a non-UTF-8 valid sequence, the resulting string may be invalid.
 //
-// It panics in case it's not possible to perform the conversion.
+// It panics if it's not possible to perform the conversion.
 //
 // Example Usage:
 //
@@ -24,7 +24,7 @@ import (
 //	str = AsString(CustomStringType("example")) // Converts a custom string type
 //
 // This function is useful for converting diverse input types into a string representation,
-// and it is designed to provide convenient string conversion for various testing scenarios.
+// and it is designed to provide a convenient string conversion for various testing scenarios.
 func AsString(a any) string {
 	// First start with a type casting
 	switch t := a.(type) {
@@ -55,12 +55,12 @@ func AsString(a any) string {
 	panic(fmt.Sprintf("Expected a string-ish/[]byte-ish thing! Got <%T>", a))
 }
 
-// AsBytes converts the given input into a []byte or []byte-like representation.
-// It supports various input types, including byte slices, JSON RawMessage, strings.
+// AsBytes converts the given input into a []byte or a []byte-like representation.
+// It supports various input types, including byte slices, JSON RawMessage, and strings.
 //
 // Input values may also be pointers.
 //
-// It panics in case it's not possible to perform the conversion.
+// It panics if it's not possible to perform the conversion.
 //
 // Example Usage:
 //
@@ -69,7 +69,7 @@ func AsString(a any) string {
 //	bytes = AsBytes("example") // Converts a string, returns the corresponding []byte
 //
 // This function is useful for converting diverse input types into a []byte representation,
-// and it is designed to provide convenient []byte conversion for various testing scenarios.
+// and it is designed to provide a convenient []byte conversion for various testing scenarios.
 func AsBytes(a any) []byte {
 	// First start with a type casting
 	switch t := a.(type) {
@@ -101,7 +101,7 @@ func AsBytes(a any) []byte {
 // It supports various input types, including actual bool values and pointers to bool.
 // Input values may also be pointers.
 //
-// It panics in case it's not possible to perform the conversion.
+// It panics if it's not possible to perform the conversion.
 //
 // Example Usage:
 //
@@ -138,13 +138,13 @@ func AsBool(a any) bool {
 // Note (1): Float64 values are converted to int only if they are integral floats (e.g., 42.0). Otherwise, use AsFloat.
 // Note (2): Depending on the machine where the code is compiled, the resulting int may be of different sizes (e.g., int32).
 //
-// It panics in case it's not possible to perform the conversion.
+// It panics if it's not possible to perform the conversion.
 //
 // Example Usage:
 //
-//	intValue = AsInt(42) // Converts an int, returns 42
-//	intValue = AsInt(&intValuePtr) // Converts a pointer to int, returns the int value
-//	intValue = AsInt(42.0) // Converts an integral float, returns 42
+//	intValue := AsInt(42) // Converts an int, returns 42
+//	intValue := AsInt(&intValuePtr) // Converts a pointer to int, returns the int value
+//	intValue := AsInt(42.0) // Converts an integral float, returns 42
 //
 // This function is designed for converting different input types into int values,
 // and it is useful for various testing scenarios where integer values are expected.
@@ -240,7 +240,7 @@ func AsInt(a any) int {
 // It supports various input types, including float64 values and int values (converted to float64).
 // Input values may also be pointers.
 //
-// It panics in case it's not possible to perform the conversion.
+// It panics if it's not possible to perform the conversion.
 //
 // Example Usage:
 //
@@ -322,7 +322,7 @@ func AsFloat(a any) float64 {
 // It supports various input types, including reflect.Kind values and pointers to reflect.Kind.
 // Input values may also be pointers.
 //
-// It panics in case it's not possible to perform the conversion.
+// It panics if it's not possible to perform the conversion.
 //
 // Example Usage:
 //
@@ -347,6 +347,18 @@ func AsKind(a any) reflect.Kind {
 	panic(fmt.Sprintf("Expected a reflect.Kind!  Got <%T>: %#v", a, a))
 }
 
+// AsSliceOfAny converts the given input into a []any.
+// It supports various input types, including slices, arrays, and pointers to slices or arrays of any type.
+//
+// It panics if it's not possible to perform the conversion.
+//
+// Example Usage:
+//
+//	anySlice := AsSliceOfAny([]string{"a", "b", "c"}) // Converts a string slice, returns []any{"a", "b", "c"}
+//	anySlice := AsSliceOfAny(&intArrayPtr) // Converts a pointer to an array, returns []any with the array content
+//
+// This function is designed for converting different input types into a []any,
+// and it is useful for various testing scenarios where a slice of arbitrary types is expected.
 func AsSliceOfAny(v any) []any {
 	// First start with a type casting
 	switch t := v.(type) {
@@ -365,16 +377,24 @@ func AsSliceOfAny(v any) []any {
 		}
 		return slice
 	}
+	// todo: support arrays
 
 	panic(fmt.Sprintf("Expected a slice! Got <%T>: %#v", v, v))
 }
 
-// AsTime converts the given input into a time.Time
-// It supports various time.Time (or pointer to it)
-// or custom types that are convertable to time.Time
+// AsTime converts the given input into a time.Time.
+// It supports various input types, including time.Time values and pointers to time.Time.
 //
-// It panics in case it's not possible to perform the conversion.
+// It panics if it's not possible to perform the conversion.
+//
+// Example Usage:
+//
+//	timestamp = AsTime(time.Now()) // Converts a time.Time, returns the current time
+//	timestamp = AsTime(&timeValuePtr) // Converts a pointer to time.Time, returns the time.Time value
+//
+// This function is designed for converting different input types into time.Time values.
 func AsTime(a any) time.Time {
+
 	// First start with a type casting
 	switch t := a.(type) {
 	case time.Time:

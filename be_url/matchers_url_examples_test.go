@@ -34,9 +34,7 @@ var _ = Describe("Examples on matching URL", func() {
 			u, err := url.Parse("https://example.com/?foo=bar&v=1")
 			Expect(err).Should(Succeed())
 
-			Expect(u).To(be_url.URL(
-				be_url.HavingSearchParam("foo"),
-			))
+			Expect(u).To(be_url.HavingSearchParam("foo"))
 		})
 
 		It("should ensure a given url is a valid *urlURL", func() {
@@ -46,6 +44,17 @@ var _ = Describe("Examples on matching URL", func() {
 				be_url.NotHavingPort(),
 				be_url.HavingPath("/foo/bar"),
 				Not(be_url.HavingRawQuery()),
+			))
+		})
+
+		It("should match url parts even without a scheme given", func() {
+			Expect("example.com/foo/bar?v=1").To(be_url.URL(
+				be_url.TransformSchemelessUrlFromString,
+				be_url.HavingHostname("example.com"),
+				be_url.NotHavingPort(),
+				be_url.NotHavingScheme(),
+				be_url.HavingPath("/foo/bar"),
+				be_url.HavingSearchParam("v", be_reflected.AsNumericString()),
 			))
 		})
 	})

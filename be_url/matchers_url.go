@@ -12,13 +12,26 @@ import (
 // TransformUrlFromString returns string->*url.Url transform
 var TransformUrlFromString = url.Parse
 
+// TransformSchemelessUrlFromString returns string->*url.Url transform
+// It allows string to be a scheme-less url
+var TransformSchemelessUrlFromString = func(rawURL string) (*url.URL, error) {
+	result, err := url.Parse(rawURL)
+	if err == nil && result.Scheme == "" {
+		result, err = url.Parse("http://" + rawURL)
+		if err == nil {
+			result.Scheme = ""
+		}
+	}
+	return result, err
+}
+
 // URL matches actual value to be a valid URL corresponding to given inputs
 // Possible inputs:
 // 1. Nil args -> so actual value MUST be any valid *url.URL
 // 2. Single arg <string>. Actual value MUST be a *url.URL, whose .String() compared against args[0]
 // 3. Single arg <*url.Url>. Actual value MUST be a *url.URL, whose .String() compared against args[0].String()
 // 4. List of Omega/Gomock/Psi matchers, that are applied to *url.URL object
-//   - AsStringUrl() transform can be given as first argument, so string->*url.URL transform is applied
+//   - TransformUrlFromString() transform can be given as first argument, so string->*url.URL transform is applied
 func URL(args ...any) types.BeMatcher {
 	if len(args) == 0 {
 		return psi_matchers.NewUrlFieldMatcher("", "", nil)
@@ -60,6 +73,10 @@ func HavingScheme(args ...any) types.BeMatcher {
 		func(u *url.URL) any { return u.Scheme },
 		args...,
 	)
+}
+
+func NotHavingScheme(args ...any) types.BeMatcher {
+	return Psi(gomega.Not(HavingScheme(args...)))
 }
 
 func WithHttps() types.BeMatcher {
