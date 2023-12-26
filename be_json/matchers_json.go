@@ -33,7 +33,7 @@ const (
 //   - JsonAsObject / JsonAsObjects (for map[string]any representation)
 func Matcher(args ...any) types.BeMatcher {
 	// Default input is ok to be any of these
-	inputMatcher := psi_matchers.NewAnyMatcher(
+	var inputMatcher types.BeMatcher = psi_matchers.NewAnyMatcher(
 		// String-like inputs:
 		be_reflected.AsBytes(), be_reflected.AsString(), be_reflected.AsStringer(), be_reflected.AsReader(),
 
@@ -65,7 +65,13 @@ func Matcher(args ...any) types.BeMatcher {
 			if t&JsonAsObjects != 0 {
 				inputMatchers = append(inputMatchers, be_reflected.AsObjects())
 			}
-			inputMatcher = psi_matchers.NewAnyMatcher(cast.AsSliceOfAny(inputMatchers)...)
+
+			// To avoid extra "Any" matching logic, let's simplify case when we have single input matcher
+			if len(inputMatchers) == 1 {
+				inputMatcher = inputMatchers[0]
+			} else {
+				inputMatcher = psi_matchers.NewAnyMatcher(cast.AsSliceOfAny(inputMatchers)...)
+			}
 			args = args[1:]
 		}
 	}
@@ -73,6 +79,7 @@ func Matcher(args ...any) types.BeMatcher {
 	// If no args (after handling JsonAs* constants)
 	// then we just match if it's valid json
 	if len(args) == 0 {
+		// TODO: it must validate if it's actualy a valid JSON
 		return inputMatcher
 	}
 
