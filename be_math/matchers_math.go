@@ -11,7 +11,6 @@ import (
 
 // Todo: Integral (means its an integral float, so zero decimals)
 // todo: DivisibleBy
-// todo: Negative & Positive (syntax sugar)
 
 func GreaterThan(arg any) types.BeMatcher {
 	return Psi(gomega.BeNumerically(">", arg))
@@ -66,6 +65,10 @@ func Even() types.BeMatcher {
 		}, gomega.BeTrue()),
 	)
 }
+
+func Negative() types.BeMatcher { return LessThan(0.0) }
+func Positive() types.BeMatcher { return GreaterThan(0.0) }
+func Zero() types.BeMatcher     { return ApproxEqual(0, 0) } // any type of int/float will work here
 
 // Shorter Names:
 
