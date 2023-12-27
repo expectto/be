@@ -22,6 +22,8 @@ type UrlFieldMatcher struct {
 	*MixinMatcherGomock
 }
 
+var _ types.BeMatcher = &UrlFieldMatcher{}
+
 func NewUrlFieldMatcher(publicName, fieldName string, cb func(*url.URL) any, args ...any) *UrlFieldMatcher {
 	matcher := &UrlFieldMatcher{
 		publicName: publicName,
