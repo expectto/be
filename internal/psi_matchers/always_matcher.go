@@ -1,7 +1,11 @@
 package psi_matchers
 
+import "github.com/expectto/be/types"
+
 // AlwaysMatcher always matches
 type AlwaysMatcher struct{}
+
+var _ types.BeMatcher = &AlwaysMatcher{}
 
 func NewAlwaysMatcher() *AlwaysMatcher {
 	return &AlwaysMatcher{}

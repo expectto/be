@@ -16,10 +16,12 @@ type AnyMatcher struct {
 	firstSuccessfulMatcher types.BeMatcher
 }
 
+var _ types.BeMatcher = &AnyMatcher{}
+
 func NewAnyMatcher(ms ...any) *AnyMatcher {
-	matchers := []types.BeMatcher{}
-	for _, m := range ms {
-		matchers = append(matchers, AsMatcher(m))
+	matchers := make([]types.BeMatcher, len(ms))
+	for i, m := range ms {
+		matchers[i] = AsMatcher(m)
 	}
 
 	return &AnyMatcher{Matchers: matchers}
@@ -28,11 +30,11 @@ func NewAnyMatcher(ms ...any) *AnyMatcher {
 func (m *AnyMatcher) Match(actual any) (success bool, err error) {
 	m.firstSuccessfulMatcher = nil
 	for _, matcher := range m.Matchers {
-		success, err := matcher.Match(actual)
+		currentSuccess, err := matcher.Match(actual)
 		if err != nil {
 			return false, err
 		}
-		if success {
+		if currentSuccess {
 			m.firstSuccessfulMatcher = matcher
 			return true, nil
 		}

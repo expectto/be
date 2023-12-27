@@ -3,6 +3,7 @@ package psi_matchers
 import (
 	"bytes"
 	"fmt"
+	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
 	"reflect"
 )
@@ -11,6 +12,8 @@ type EqMatcher struct {
 	Expected        any
 	lastActualValue any
 }
+
+var _ types.BeMatcher = &EqMatcher{}
 
 func NewEqMatcher(expected any) *EqMatcher {
 	return &EqMatcher{Expected: expected}

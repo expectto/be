@@ -10,6 +10,8 @@ type NotMatcher struct {
 	lastActualValue any
 }
 
+var _ types.BeMatcher = &NotMatcher{}
+
 func NewNotMatcher(m any) *NotMatcher {
 	return &NotMatcher{Matcher: AsMatcher(m)}
 }

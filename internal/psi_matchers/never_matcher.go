@@ -1,9 +1,13 @@
 package psi_matchers
 
+import "github.com/expectto/be/types"
+
 // NeverMatcher never matches (always fails)
 type NeverMatcher struct {
 	err error
 }
+
+var _ types.BeMatcher = &NeverMatcher{}
 
 func NewNeverMatcher(err error) *NeverMatcher {
 	return &NeverMatcher{err: err}

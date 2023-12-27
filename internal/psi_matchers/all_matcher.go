@@ -18,10 +18,12 @@ type AllMatcher struct {
 	firstFailedMatcher types.BeMatcher
 }
 
+var _ types.BeMatcher = &AllMatcher{}
+
 func NewAllMatcher(ms ...any) *AllMatcher {
-	matchers := []types.BeMatcher{}
-	for _, m := range ms {
-		matchers = append(matchers, AsMatcher(m))
+	matchers := make([]types.BeMatcher, len(ms))
+	for i, m := range ms {
+		matchers[i] = AsMatcher(m)
 	}
 
 	return &AllMatcher{Matchers: matchers}
