@@ -35,8 +35,15 @@ func IsTransformFunc(v any) bool {
 }
 
 // WithFallibleTransform creates a gomega transform matcher that can nicely handle failures
+// Also it allows to have nil matcher, meaning that we're OK unless transform failed
 func WithFallibleTransform(transform any, matcher gomega.OmegaMatcher) types.BeMatcher {
-	return Psi(gomega.WithTransform(transform, gomega.And(WithTransformError(), matcher)))
+	if matcher != nil {
+		matcher = gomega.And(WithTransformError(), matcher)
+	} else {
+		matcher = WithTransformError()
+	}
+
+	return Psi(gomega.WithTransform(transform, matcher))
 }
 
 // transformErrorMatcher is actually a matcher

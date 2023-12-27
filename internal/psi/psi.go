@@ -19,6 +19,11 @@ func Psi(args ...any) types.BeMatcher {
 		return &allMatcher{} // will always match
 	}
 	if len(args) == 1 {
+		if IsTransformFunc(args[0]) {
+			// not sure, add more tests here
+			return WithFallibleTransform(args[0], nil)
+		}
+
 		return AsMatcher(args[0])
 	}
 
