@@ -143,7 +143,7 @@ func Matcher(args ...any) types.BeMatcher {
 }
 
 // HaveKeyValue is a facade to gomega.HaveKey & gomega.HaveKeyWithValue
-func HaveKeyValue(key string, args ...any) types.BeMatcher {
+func HaveKeyValue(key any, args ...any) types.BeMatcher {
 	if len(args) == 0 {
 		return Psi(gomega.HaveKey(key))
 	}

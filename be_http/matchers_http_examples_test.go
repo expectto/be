@@ -5,7 +5,9 @@ import (
 	"github.com/expectto/be"
 	"github.com/expectto/be/be_http"
 	"github.com/expectto/be/be_json"
+	"github.com/expectto/be/be_jwt"
 	"github.com/expectto/be/be_reflected"
+	"github.com/expectto/be/be_strings"
 	"github.com/expectto/be/be_url"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -58,23 +60,23 @@ var _ = Describe("MatchersHttp", func() {
 						),
 					)),
 				),
-
-				// 2.3. Matching the headers
-
-				//be_http.HavingHeader("X-Custom", "Hey-There"),
-				//// todo: add example with Time in header
-				////       so we can test be_time
-				//be_http.HavingHeader("Authorization",
-				//	be_strings.MatchTemplate("Bearer {{jwt}}",
-				//		be_strings.Var("jwt",
-				//			be_jwt.Token(
-				//				be_jwt.BeingValid(),
-				//				be_jwt.HavingClaims("name", "John Doe"),
-				//			),
-				//		),
-				//	),
-				//),
 			),
+
+			// 2.3. Matching the headers
+
+			//be_http.HavingHeader("X-Custom", "Hey-There"),
+			be_http.HavingHeader("Authorization",
+				be_strings.MatchTemplate("Bearer {{jwt}}",
+					be_strings.Var("jwt",
+						be_jwt.Token(
+							be_jwt.TransformJwtFromString,
+							be_jwt.Valid(),
+							be_jwt.HavingClaims("name", "John Doe"),
+						),
+					),
+				),
+			),
+			// todo: add example with Time in header, so we can test be_time
 		))
 	})
 })

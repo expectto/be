@@ -79,29 +79,46 @@ func HavingHost(args ...any) types.BeMatcher {
 	)
 }
 
-func HavingHeader(args ...any) types.BeMatcher {
-	// todo: handle better:
-	// here we consider args[0] is header key, and args[1] is header value (single) or matcher for it
-	// otherwise we fallback to matching req.Header that is map[string][]string
-	// so value is OK to be string for our cases, but required to be []string when matching req.Header
+// HavingHeader matches requests that have header with a given key.
+// (1) If no args are given, it simply matches a request with existed header by key.
+// (2) If len(args) == 1 && args[0] is a stringish, it matches a request with header `Key: Args[0]`
+// (3) if len(args) == 1 && args[0] is not stringish, it is considered to be matcher for header's value
+// Examples:
+// - HavingHeader("X-Header") matches request with non-empty X-Header header
+// - HavingHeader("X-Header", "X-Value") matches request with X-Header: X-Value
+// - HavingHeader("X-Header", HavePrefix("Bearer ")) matchers request with header(X-Header)'s value matching given HavePrefix matcher
+// -
+// todo: support multiple header values
+// todo: fixme I'm ugly for now
+func HavingHeader(key string, args ...any) types.BeMatcher {
+	if len(args) == 0 {
+		return psi_matchers.NewReqPropertyMatcher(
+			"HavingHeader", "header",
+			func(req *http.Request) any { return req.Header },
+			be_json.HaveKeyValue(key),
+		)
+	}
+	if len(args) != 1 {
+		panic("len(args) must be 0 or 1")
+	}
 
-	// Syntax sugar: RequestHavingHeader("HeaderName)"
-	//               or
-	// 				 RequestHavingHeader("HeaderName", "HeaderValue")
-	// todo: fixme, doesn't work for more than 1 header
-	if len(args) == 2 && cast.IsStringish(args[0]) && cast.IsStringish(args[1]) {
-		args = []any{
-			be_json.HaveKeyValue(cast.AsString(args[0]), []string{cast.AsString(args[1])}),
-		}
-	} else if len(args) == 1 && cast.IsStringish(cast.AsString(args[0])) {
-		args = []any{
-			be_json.HaveKeyValue(cast.AsString(args[0])),
-		}
+	var headerValue []string
+	if cast.IsStringish(args[0]) {
+		headerValue = []string{cast.AsString(args[0])}
+	} else if cast.IsStrings(args[0]) {
+		headerValue = cast.AsStrings(args[0])
+	}
+	if headerValue != nil {
+		return psi_matchers.NewReqPropertyMatcher(
+			"HavingHeader", "header",
+			func(req *http.Request) any { return req.Header },
+			be_json.HaveKeyValue(key, headerValue),
+		)
 	}
 
 	return psi_matchers.NewReqPropertyMatcher(
-		"HavingHeader", "header",
-		func(req *http.Request) any { return req.Header },
-		args...,
+		"HavingHeader", "header[key]",
+		func(req *http.Request) any { return req.Header[key][0] },
+		args[0],
 	)
 }
