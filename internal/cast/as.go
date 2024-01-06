@@ -382,6 +382,34 @@ func AsSliceOfAny(v any) []any {
 	panic(fmt.Sprintf("Expected a slice! Got <%T>: %#v", v, v))
 }
 
+func AsStrings(v any) []string {
+	// First start with a type casting
+	switch t := v.(type) {
+	case []string:
+		return t
+	}
+
+	// Then fallback to reflect
+	rv := reflect.ValueOf(v)
+	rv = reflect2.IndirectDeep(rv)
+	st := reflect.TypeOf("")
+
+	// todo: support arrays?
+	if rv.Kind() == reflect.Slice {
+		slice := make([]string, rv.Len())
+		for i := 0; i < rv.Len(); i++ {
+			if !rv.Index(i).Type().ConvertibleTo(st) {
+				panic(fmt.Sprintf("expected a slice string! Got s[%d] <%T>: %#v", i, v, v))
+			}
+
+			slice[i] = rv.Index(i).String()
+		}
+		return slice
+	}
+
+	panic(fmt.Sprintf("Expected a slice! Got <%T>: %#v", v, v))
+}
+
 // AsTime converts the given input into a time.Time.
 // It supports various input types, including time.Time values and pointers to time.Time.
 //
