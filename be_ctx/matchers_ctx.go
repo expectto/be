@@ -128,8 +128,17 @@ func NewCtxMatcher() *CtxMatcher {
 	return &CtxMatcher{}
 }
 
-func NewCtxValueMatcher(key string, m types.BeMatcher) *CtxMatcher {
-	return &CtxMatcher{expectedValueKey: key, valueMatcher: m}
+func NewCtxValueMatcher(key string, mArg ...types.BeMatcher) *CtxMatcher {
+	matcher := &CtxMatcher{expectedValueKey: key}
+	switch len(mArg) {
+	case 0:
+		return matcher
+	case 1:
+		matcher.valueMatcher = mArg[0]
+		return matcher
+	default:
+		panic("NewCtxValueMatcher expects either 0 or 1 value matcher")
+	}
 }
 
 func NewCtxDeadlineMatcher(m types.BeMatcher) *CtxMatcher {
