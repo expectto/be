@@ -27,7 +27,7 @@ To use Be in your Golang project, simply import it:
 import "github.com/expectto/be"
 ```
 
-👨🏼‍## Core Matchers
+## Core Matchers
 
 Be provides a set of core matchers for common testing scenarios:
 
