@@ -12,12 +12,12 @@ var _ = Describe("MatchersCtx", func() {
 	ctx := context.Background()
 
 	It("should match a ctx", func() {
-		Expect(ctx).To(be_ctx.NewCtxMatcher())
+		Expect(ctx).To(be_ctx.Ctx())
 	})
 
 	It("should match a ctx with a value", func() {
 		ctx := context.WithValue(ctx, "foo", "bar")
-		Expect(ctx).To(be_ctx.NewCtxValueMatcher("foo"))
-		Expect(ctx).To(be_ctx.NewCtxValueMatcher("foo", psi_matchers.NewEqMatcher("bar")))
+		Expect(ctx).To(be_ctx.CtxWithValue("foo"))
+		Expect(ctx).To(be_ctx.CtxWithValue("foo", psi_matchers.NewEqMatcher("bar")))
 	})
 })

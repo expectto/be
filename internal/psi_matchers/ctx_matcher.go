@@ -1,8 +1,9 @@
-package be_ctx
+package psi_matchers
 
 import (
 	"context"
 	"fmt"
+	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
 	"go.uber.org/mock/gomock"
@@ -23,17 +24,17 @@ type CtxMatcher struct {
 	failReason error
 
 	// 1.  Matching inner ctx value:
-	expectedValueKey string
-	valueMatcher     types.BeMatcher
+	key   string
+	value any
 
 	// 2. Error matching
-	errMatcher types.BeMatcher
+	errFn any
 
 	// 3. Deadline matching
-	deadlineMatcher types.BeMatcher
+	deadline any
 
 	// 4. Done matching
-	doneMatcher types.BeMatcher
+	//doneMatcher types.BeMatcher
 }
 
 var _ gomock.Matcher = &CtxMatcher{}
@@ -67,10 +68,10 @@ func (cm *CtxMatcher) match(v any) (bool, error) {
 		return false, nil
 	}
 	// (1) matching context value
-	if cm.expectedValueKey != "" {
-		foundValue := ctx.Value(cm.expectedValueKey)
+	if cm.key != "" {
+		foundValue := ctx.Value(cm.key)
 
-		if cm.valueMatcher == nil {
+		if cm.value == nil {
 			// simply match existance of a value
 			if foundValue == nil {
 				cm.failReason = FailCtxValueExpected
@@ -80,28 +81,30 @@ func (cm *CtxMatcher) match(v any) (bool, error) {
 			return true, nil
 		}
 
-		succeed, err := cm.valueMatcher.Match(foundValue)
+		valueMatcher := Psi(cm.value)
+		succeed, err := valueMatcher.Match(foundValue)
 		if err != nil {
 			return false, err
 		}
 		if !succeed {
-			cm.failReason = fmt.Errorf("%w: %s", FailCtxValueNotMatched, cm.valueMatcher.FailureMessage(foundValue))
+			cm.failReason = fmt.Errorf("%w: %s", FailCtxValueNotMatched, valueMatcher.FailureMessage(foundValue))
 		}
 		return succeed, nil
 	}
 	// (2) matching context err
-	if cm.errMatcher != nil {
-		succeed, err := cm.errMatcher.Match(ctx.Err())
+	if cm.errFn != nil {
+		errMatcher := Psi(cm.errFn)
+		succeed, err := errMatcher.Match(ctx.Err())
 		if err != nil {
 			return false, err
 		}
 		if !succeed {
-			cm.failReason = FailCtxErrNotMatched
+			cm.failReason = fmt.Errorf("%w: %s", FailCtxErrNotMatched, errMatcher.FailureMessage(ctx.Err()))
 		}
 		return succeed, nil
 	}
 	// (3) matching context deadline
-	if cm.deadlineMatcher != nil {
+	if cm.deadline != nil {
 		// first simple check if deadline exists
 		deadline, ok := ctx.Deadline()
 		if !ok {
@@ -109,12 +112,13 @@ func (cm *CtxMatcher) match(v any) (bool, error) {
 			return false, nil
 		}
 
-		succeed, err := cm.deadlineMatcher.Match(deadline)
+		deadlineMatcher := Psi(cm.deadline)
+		succeed, err := deadlineMatcher.Match(deadline)
 		if err != nil {
 			return false, err
 		}
 		if !succeed {
-			cm.failReason = fmt.Errorf("%w: %s", FailCtxDeadlineNotMatched, cm.deadlineMatcher.FailureMessage(deadline))
+			cm.failReason = fmt.Errorf("%w: %s", FailCtxDeadlineNotMatched, deadlineMatcher.FailureMessage(deadline))
 		}
 		return succeed, nil
 	}
@@ -128,23 +132,23 @@ func NewCtxMatcher() *CtxMatcher {
 	return &CtxMatcher{}
 }
 
-func NewCtxValueMatcher(key string, mArg ...types.BeMatcher) *CtxMatcher {
-	matcher := &CtxMatcher{expectedValueKey: key}
-	switch len(mArg) {
+func NewCtxValueMatcher(key string, valueArg ...any) *CtxMatcher {
+	matcher := &CtxMatcher{key: key}
+	switch len(valueArg) {
 	case 0:
 		return matcher
 	case 1:
-		matcher.valueMatcher = mArg[0]
+		matcher.value = valueArg[0]
 		return matcher
 	default:
 		panic("NewCtxValueMatcher expects either 0 or 1 value matcher")
 	}
 }
 
-func NewCtxDeadlineMatcher(m types.BeMatcher) *CtxMatcher {
-	return &CtxMatcher{deadlineMatcher: m}
+func NewCtxDeadlineMatcher(deadline any) *CtxMatcher {
+	return &CtxMatcher{deadline: deadline}
 }
 
-func NewCtxErrMatcher(m types.BeMatcher) *CtxMatcher {
-	return &CtxMatcher{errMatcher: m}
+func NewCtxErrMatcher(errFn any) *CtxMatcher {
+	return &CtxMatcher{errFn: errFn}
 }
