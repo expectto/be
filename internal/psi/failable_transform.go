@@ -10,7 +10,7 @@ import (
 )
 
 // IsTransformFunc checks if given thing is a Gomega-compatible transform
-// todo: update docs here to be consistent wigh gomega's transforms docs
+// For v to be a transform it must be a function of one parameter that returns one value and an optional error
 func IsTransformFunc(v any) bool {
 	if v == nil {
 		return false
@@ -23,11 +23,11 @@ func IsTransformFunc(v any) bool {
 		return false
 	}
 
-	numout := txType.NumOut()
-	if numout == 1 {
+	numOut := txType.NumOut()
+	if numOut == 1 {
 		return true
 	}
-	if numout == 2 {
+	if numOut == 2 {
 		return txType.Out(1).AssignableTo(reflect2.TypeFor[error]())
 	}
 
@@ -46,17 +46,17 @@ func WithFallibleTransform(transform any, matcher gomega.OmegaMatcher) types.BeM
 	return Psi(gomega.WithTransform(transform, matcher))
 }
 
-// transformErrorMatcher is actually a matcher
-type transformErrorMatcher struct {
+// TransformErrorMatcher is actually a matcher
+type TransformErrorMatcher struct {
 	actual any
 	err    error
 }
 
-func WithTransformError() *transformErrorMatcher {
-	return &transformErrorMatcher{}
+func WithTransformError() *TransformErrorMatcher {
+	return &TransformErrorMatcher{}
 }
 
-func (matcher *transformErrorMatcher) Match(actual any) (success bool, err error) {
+func (matcher *TransformErrorMatcher) Match(actual any) (success bool, err error) {
 	if err, ok := actual.(error); ok {
 		matcher.err = err
 	}
@@ -71,11 +71,11 @@ func (matcher *transformErrorMatcher) Match(actual any) (success bool, err error
 	return matcher.err == nil, nil
 }
 
-func (matcher *transformErrorMatcher) FailureMessage(actual any) string {
+func (matcher *TransformErrorMatcher) FailureMessage(actual any) string {
 	return fmt.Sprintf("Expected\n%s\nto %s", format.Object(matcher.actual, 1), matcher.err)
 }
 
-func (matcher *transformErrorMatcher) NegatedFailureMessage(actual any) string {
+func (matcher *TransformErrorMatcher) NegatedFailureMessage(actual any) string {
 	return fmt.Sprintf("Expected\n%s\nnot to %s", format.Object(matcher.actual, 1), matcher.err)
 }
 

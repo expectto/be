@@ -56,7 +56,7 @@ type allMatcher struct {
 	firstFailedMatcher types.BeMatcher
 }
 
-func (m *allMatcher) Match(actual any) (success bool, err error) {
+func (m *allMatcher) Match(actual any) (bool, error) {
 	m.firstFailedMatcher = nil
 	for _, matcher := range m.matchers {
 		success, err := matcher.Match(actual)
