@@ -10,12 +10,12 @@ import (
 )
 
 var (
-	FailCtxNotAContext        = fmt.Errorf("ctx is not a context")
-	FailCtxValueExpected      = fmt.Errorf("ctx value expected but not found")
-	FailCtxValueNotMatched    = fmt.Errorf("ctx value failed to match")
-	FailCtxErrNotMatched      = fmt.Errorf("ctx err() failed to match")
-	FailCtxDeadlineExpected   = fmt.Errorf("ctx deadlined expected but not found")
-	FailCtxDeadlineNotMatched = fmt.Errorf("ctx deadlined failed to match")
+	FailCtxNotAContext        = fmt.Errorf("be a ctx")
+	FailCtxValueExpected      = fmt.Errorf("have the ctx.value")
+	FailCtxValueNotMatched    = fmt.Errorf("have the ctx.value") // same text as won't be used directly (but still can be distinguished via errors.Is()
+	FailCtxErrNotMatched      = fmt.Errorf("todo...")
+	FailCtxDeadlineExpected   = fmt.Errorf("todo...")
+	FailCtxDeadlineNotMatched = fmt.Errorf("todo...")
 )
 
 // CtxMatcher is a matcher for ctx// Each instance of CtxMatcher can match across only one thing:// (1) ctx value or (2) error or (3) deadline or (4) done signal
@@ -45,11 +45,11 @@ func (cm *CtxMatcher) Match(v any) (success bool, err error) {
 }
 
 func (cm *CtxMatcher) FailureMessage(v any) (message string) {
-	return format.Message(v, "failed")
+	return format.Message(v, fmt.Sprintf("to %s", cm.failReason))
 }
 
 func (cm *CtxMatcher) NegatedFailureMessage(v any) (message string) {
-	return format.Message(v, "not failed")
+	return format.Message(v, fmt.Sprintf("not to %s", cm.failReason))
 }
 
 func (cm *CtxMatcher) Matches(v any) bool {
@@ -67,14 +67,15 @@ func (cm *CtxMatcher) match(v any) (bool, error) {
 		cm.failReason = FailCtxNotAContext
 		return false, nil
 	}
+
 	// (1) matching context value
 	if cm.key != "" {
 		foundValue := ctx.Value(cm.key)
 
 		if cm.value == nil {
-			// simply match existance of a value
+			// simply match existence of a value
 			if foundValue == nil {
-				cm.failReason = FailCtxValueExpected
+				cm.failReason = fmt.Errorf("%w key=`%s`", FailCtxValueExpected, cm.key)
 				return false, nil
 			}
 
@@ -87,7 +88,7 @@ func (cm *CtxMatcher) match(v any) (bool, error) {
 			return false, err
 		}
 		if !succeed {
-			cm.failReason = fmt.Errorf("%w: %s", FailCtxValueNotMatched, valueMatcher.FailureMessage(foundValue))
+			cm.failReason = fmt.Errorf("%w key=`%s` that failed on match:\n%s", FailCtxValueNotMatched, cm.key, valueMatcher.FailureMessage(foundValue))
 		}
 		return succeed, nil
 	}
