@@ -1,12 +1,13 @@
-# ExpectTo/Be: Versatile Golang Matcher Library Designed for Testing with Ginkgo and Gomock.
+# ExpectTo/Be: Versatile Golang Matcher Library Designed for Testing with [Ginkgo](https://github.com/onsi/ginkgo) and [Gomock](https://github.com/uber-go/mock).
 
 ## Expect(👨🏼‍💻).To(Be(🚀))
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/expectto/be/blob/main/LICENSE)
 [![Go Reference](https://pkg.go.dev/badge/github.com/expectto/be.svg)](https://pkg.go.dev/github.com/expectto/be)
 
-`expectto/be` is a Golang package that offers a substantial collection of matchers, compatible with both Ginkgo/Gomega
-and Gomock. Employing `expectto/be` matchers enables you to create straightforward, readable, and maintainable unit or
+`expectto/be` is a Golang package that offers a substantial collection of `Be` matchers. Every `Be` matcher is compatible with both [Ginkgo](https://github.com/onsi/ginkgo)/[Gomega](https://github.com/onsi/gomega)
+and [Gomock](https://github.com/uber-go/mock). Where possible, arguments of matchers can be either finite values or matchers (Be/Gomega/Gomock).<br>
+Employing `expectto/be` matchers enables you to create straightforward, readable, and maintainable unit or
 integration tests in Golang. Tasks such as testing HTTP requests, validating JSON responses, and more become remarkably
 comprehensive and straightforward.
 
