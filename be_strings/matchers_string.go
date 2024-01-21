@@ -1,12 +1,9 @@
-// Package be_strings provides Be matchers for string-related assertions.
-// It includes some experimental matchers like Alpha/UpperCaseOnly/LowerCaseOnly/etc
-//
-// Note: The package relies on the IGLOU-EU/go-wildcard libraries for wildcard mathcing.
+// Package be_strings provides Be matchers for string-related assertions
 package be_strings
 
 import (
 	"fmt"
-	"github.com/IGLOU-EU/go-wildcard"
+	"github.com/IGLOU-EU/go-wildcard" // used specifically for MatchWildcard matcher
 	"github.com/expectto/be/be_reflected"
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"

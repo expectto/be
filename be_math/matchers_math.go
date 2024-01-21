@@ -31,8 +31,8 @@ func LessThanEqual(arg any) types.BeMatcher {
 	return Psi(gomega.BeNumerically("<=", arg))
 }
 
-// ApproxEqual succeeds if actual is numerically approximately equal to the passed-in value within the specified threshold.
-func ApproxEqual(compareTo, threshold any) types.BeMatcher {
+// Approx succeeds if actual is numerically approximately equal to the passed-in value within the specified threshold.
+func Approx(compareTo, threshold any) types.BeMatcher {
 	return Psi(gomega.BeNumerically("~", compareTo, threshold))
 }
 
@@ -40,7 +40,7 @@ func ApproxEqual(compareTo, threshold any) types.BeMatcher {
 // The range is defined by the 'from' and 'until' values, and inclusivity is determined
 // by the 'fromInclusive' and 'untilInclusive' flags.
 func InRange(from any, fromInclusive bool, until any, untilInclusive bool) types.BeMatcher {
-	group := make([]types.BeMatcher, 2, 2)
+	group := make([]types.BeMatcher, 2)
 	if fromInclusive {
 		group[0] = Gte(from)
 	} else {
@@ -82,7 +82,7 @@ func Positive() types.BeMatcher { return GreaterThan(0.0) }
 
 // Zero succeeds if actual is numerically approximately equal to zero.
 // Any type of int/float will work for comparison.
-func Zero() types.BeMatcher { return ApproxEqual(0, 0) }
+func Zero() types.BeMatcher { return Approx(0, 0) }
 
 // Integral succeeds if actual is an integral float, meaning it has zero decimal places.
 // This matcher checks if the numeric value has no fractional component.
@@ -113,6 +113,3 @@ func Lt(arg any) types.BeMatcher { return LessThan(arg) }
 
 // Lte is an alias for LessThanEqual, succeeding if actual is numerically less than or equal to the passed-in value.
 func Lte(arg any) types.BeMatcher { return LessThanEqual(arg) }
-
-// Approx is an alias for ApproxEqual, succeeding if actual is numerically approximately equal to the passed-in value within the specified threshold.
-func Approx(c, t any) types.BeMatcher { return ApproxEqual(c, t) }

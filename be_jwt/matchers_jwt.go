@@ -74,7 +74,7 @@ func Token(args ...any) types.BeMatcher {
 	return Psi(args...)
 }
 
-// Valid checks if the jwt.Token is valid.
+// Valid succeeds if the actual value is a JWT token and it's valid
 func Valid() types.BeMatcher {
 	return psi_matchers.NewJwtTokenMatcher(
 		"Valid",
@@ -83,7 +83,7 @@ func Valid() types.BeMatcher {
 	)
 }
 
-// HavingClaims checks if the jwt.Token matches given claims.
+// HavingClaims succeeds if the actual value is a JWT token and its claims match the provided value or matchers.
 func HavingClaims(args ...any) types.BeMatcher {
 	return psi_matchers.NewJwtTokenMatcher(
 		"Claims",
@@ -92,7 +92,7 @@ func HavingClaims(args ...any) types.BeMatcher {
 	)
 }
 
-// HavingMethodAlg checks if the jwt.Token has a method and algorithm matching given arguments.
+// HavingMethodAlg succeeds if the actual value is a JWT token and its method algorithm match the provided value or matchers.
 func HavingMethodAlg(args ...any) types.BeMatcher {
 	return psi_matchers.NewJwtTokenMatcher(
 		"Method.Alg()",
@@ -101,11 +101,15 @@ func HavingMethodAlg(args ...any) types.BeMatcher {
 	)
 }
 
-// SignedVia matches a valid & signed token (with a given secret).
-// Token(TransformSignedJwtFromString(secret), Valid()) is the same as
-// Token(TransformJwtFromString, SignedVia(secret)).
-// It's useful when you already have matching against a secret-less token,
-// and need the secret only for one specific matching.
+// SignedVia succeeds if the actual value is a valid and signed JWT token,
+// verified using the specified secret key.
+// It's intended for matching against a secret-less token
+// and applying the secret only for this specific matching.
+//
+// Example:
+//
+// Token(TransformJwtFromString, SignedVia(secret)) // works similar to:
+// Token(TransformSignedJwtFromString(secret), Valid())
 func SignedVia(secret string) types.BeMatcher {
 	return psi_matchers.NewJwtTokenMatcher(
 		"Method.Verify()",

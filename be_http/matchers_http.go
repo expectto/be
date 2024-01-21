@@ -10,6 +10,13 @@ import (
 	"net/http"
 )
 
+// Request matches an actual value to be a valid *http.Request corresponding to given inputs.
+// Possible inputs:
+// 1. Nil args -> so actual value MUST be any valid *http.Request.
+// 2. Single arg <string>. Actual value MUST be a *http.Request, whose .URL.String() is compared against args[0].
+// 3. List of Omega/Gomock/Psi matchers, that are applied to *http.Request object.
+//   - Supports matching http.Request properties like method, URL, body, host, proto, and headers.
+//   - Additional arguments can be used for matching specific headers, e.g., WithHeader("Content-Type", "application/json").
 func Request(args ...any) types.BeMatcher {
 	if len(args) == 0 {
 		return psi_matchers.NewReqPropertyMatcher("", "", nil)
@@ -29,6 +36,7 @@ func Request(args ...any) types.BeMatcher {
 	return Psi(args...)
 }
 
+// HavingMethod succeeds if the actual value is a *http.Request and its HTTP method matches the provided arguments.
 func HavingMethod(args ...any) types.BeMatcher {
 	return psi_matchers.NewReqPropertyMatcher(
 		"HavingMethod", "method",
@@ -37,23 +45,37 @@ func HavingMethod(args ...any) types.BeMatcher {
 	)
 }
 
-func POST() types.BeMatcher {
-	return psi_matchers.NewReqPropertyMatcher(
-		"HavingMethod", "method",
-		func(req *http.Request) any { return req.Method },
-		"POST",
-	)
-}
+// GET returns a matcher that succeeds if the actual *http.Request has a method "GET".
 func GET() types.BeMatcher {
-	return psi_matchers.NewReqPropertyMatcher(
-		"HavingMethod", "method",
-		func(req *http.Request) any { return req.Method },
-		"GET",
-	)
+	return HavingMethod(http.MethodGet)
 }
 
-// todo syntax sugar for specific http methods
+// POST returns a matcher that succeeds if the actual *http.Request has a method "POST".
+func POST() types.BeMatcher {
+	return HavingMethod(http.MethodPost)
+}
 
+// PUT returns a matcher that succeeds if the actual *http.Request has a method "PUT".
+func PUT() types.BeMatcher {
+	return HavingMethod(http.MethodPut)
+}
+
+// PATCH returns a matcher that succeeds if the actual *http.Request has a method "PATCH".
+func PATCH() types.BeMatcher {
+	return HavingMethod(http.MethodPatch)
+}
+
+// DELETE returns a matcher that succeeds if the actual *http.Request has a method "DELETE".
+func DELETE() types.BeMatcher {
+	return HavingMethod(http.MethodDelete)
+}
+
+// OPTIONS returns a matcher that succeeds if the actual *http.Request has a method "OPTIONS".
+func OPTIONS() types.BeMatcher {
+	return HavingMethod(http.MethodOptions)
+}
+
+// HavingURL succeeds if the actual value is a *http.Request and its URL matches the provided arguments.
 func HavingURL(args ...any) types.BeMatcher {
 	return psi_matchers.NewReqPropertyMatcher(
 		"HavingURL", "url",
@@ -62,6 +84,8 @@ func HavingURL(args ...any) types.BeMatcher {
 	)
 }
 
+// HavingBody succeeds if the actual value is a *http.Request and its body matches the provided arguments.
+// Note: The body is not re-streamed, so it's not available after matching.
 func HavingBody(args ...any) types.BeMatcher {
 	return psi_matchers.NewReqPropertyMatcher(
 		"HavingBody", "body",
@@ -71,10 +95,20 @@ func HavingBody(args ...any) types.BeMatcher {
 	)
 }
 
+// HavingHost succeeds if the actual value is a *http.Request and its Host matches the provided arguments.
 func HavingHost(args ...any) types.BeMatcher {
 	return psi_matchers.NewReqPropertyMatcher(
 		"HavingHost", "host",
 		func(req *http.Request) any { return req.Host },
+		args...,
+	)
+}
+
+// HavingProto succeeds if the actual value is a *http.Request and its Proto matches the provided arguments.
+func HavingProto(args ...any) types.BeMatcher {
+	return psi_matchers.NewReqPropertyMatcher(
+		"HavingProto", "proto",
+		func(req *http.Request) any { return req.Proto },
 		args...,
 	)
 }

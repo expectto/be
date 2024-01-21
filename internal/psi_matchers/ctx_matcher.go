@@ -24,7 +24,7 @@ type CtxMatcher struct {
 	failReason error
 
 	// 1.  Matching inner ctx value:
-	key   string
+	key   any
 	value any
 
 	// 2. Error matching
@@ -69,7 +69,7 @@ func (cm *CtxMatcher) match(v any) (bool, error) {
 	}
 
 	// (1) matching context value
-	if cm.key != "" {
+	if cm.key != nil {
 		foundValue := ctx.Value(cm.key)
 
 		if cm.value == nil {
@@ -133,7 +133,7 @@ func NewCtxMatcher() *CtxMatcher {
 	return &CtxMatcher{}
 }
 
-func NewCtxValueMatcher(key string, valueArg ...any) *CtxMatcher {
+func NewCtxValueMatcher(key any, valueArg ...any) *CtxMatcher {
 	matcher := &CtxMatcher{key: key}
 	switch len(valueArg) {
 	case 0:
