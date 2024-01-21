@@ -13,9 +13,10 @@ func FromGomock(m types.GomockMatcher) types.BeMatcher {
 type upgradedGomockMatcher struct {
 	types.GomockMatcher
 
-	gomegaMatchFunc                 func(any) (bool, error)
-	gomegaFailureMessageFunc        func(any) string
-	gomegaNegatedFailureMessageFunc func(any) string
+	// todo: fixme
+	//gomegaMatchFunc                 func(any) (bool, error)
+	//gomegaFailureMessageFunc        func(any) string
+	//gomegaNegatedFailureMessageFunc func(any) string
 }
 
 func (cm *upgradedGomockMatcher) Match(x any) (bool, error) {

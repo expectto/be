@@ -51,6 +51,7 @@ func URL(args ...any) types.BeMatcher {
 	return Psi(args...)
 }
 
+// HavingHost succeeds if the actual value is a *url.URL and its Host matches the provided one (via direct value or matchers)
 func HavingHost(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"HavingHost", "host",
@@ -59,6 +60,7 @@ func HavingHost(args ...any) types.BeMatcher {
 	)
 }
 
+// HavingHostname succeeds if the actual value is a *url.URL and its Hostname matches the provided one (via direct value or matchers)
 func HavingHostname(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"HavingHostname", "hostname",
@@ -67,6 +69,7 @@ func HavingHostname(args ...any) types.BeMatcher {
 	)
 }
 
+// HavingScheme succeeds if the actual value is a *url.URL and its Scheme matches the provided one (via direct value or matchers)
 func HavingScheme(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"HavingScheme", "scheme",
@@ -75,17 +78,23 @@ func HavingScheme(args ...any) types.BeMatcher {
 	)
 }
 
+// NotHavingScheme succeeds if the actual value is a *url.URL and its Scheme negatively matches given value
+// Example:  `Expect(u).To(NotHavingScheme())` matches url without a scheme
 func NotHavingScheme(args ...any) types.BeMatcher {
 	return Psi(gomega.Not(HavingScheme(args...)))
 }
 
+// WithHttps succeeds if the actual value is a *url.URL and its scheme is "https".
 func WithHttps() types.BeMatcher {
 	return HavingScheme("https")
 }
+
+// WithHttp succeeds if the actual value is a *url.URL and its scheme is "http".
 func WithHttp() types.BeMatcher {
 	return HavingScheme("http")
 }
 
+// HavingPort succeeds if the actual value is a *url.URL and its Port matches the provided one.
 func HavingPort(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"HavingPort", "port",
@@ -94,10 +103,13 @@ func HavingPort(args ...any) types.BeMatcher {
 	)
 }
 
+// NotHavingPort succeeds if the actual value is a *url.URL and its Port does not match the given one.
+// Example:  `Expect(u).To(NotHavingPort())` matches port-less url
 func NotHavingPort(args ...any) types.BeMatcher {
 	return Psi(gomega.Not(HavingPort(args...)))
 }
 
+// HavingPath succeeds if the actual value is a *url.URL and its Path matches the given one.
 func HavingPath(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"HavingPath", "path",
@@ -106,8 +118,7 @@ func HavingPath(args ...any) types.BeMatcher {
 	)
 }
 
-// todo: RawPath/EscapedPath matchers
-
+// HavingRawQuery succeeds if the actual value is a *url.URL and its RawQuery matches the given one.
 func HavingRawQuery(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"HavingRawQuery", "rawQuery",
@@ -116,9 +127,8 @@ func HavingRawQuery(args ...any) types.BeMatcher {
 	)
 }
 
-// todo:"HavingMultipleSearchParam -> the fact that param is found > 1 times
-// todo:"HavingDistinctSearchParams -> meaning no search params are repeated
-
+// HavingSearchParam succeeds if the actual value is a *url.URL and
+// its specified search parameter matches the provided arguments.
 func HavingSearchParam(searchParamName string, args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"HavingSearchParam", "searchParam",
@@ -127,6 +137,17 @@ func HavingSearchParam(searchParamName string, args ...any) types.BeMatcher {
 	)
 }
 
+// HavingMultipleSearchParam succeeds if the actual value is a *url.URL and
+// its specified search parameter (all its values via slice) matches the provided arguments.
+func HavingMultipleSearchParam(searchParamName string, args ...any) types.BeMatcher {
+	return psi_matchers.NewUrlFieldMatcher(
+		"HavingMultipleSearchParam", "multipleSearchParam",
+		func(u *url.URL) any { return u.Query()[searchParamName] },
+		args...,
+	)
+}
+
+// HavingUsername succeeds if the actual value is a *url.URL and its Username matches the provided one.
 func HavingUsername(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"HavingUsername", "username",
@@ -135,6 +156,7 @@ func HavingUsername(args ...any) types.BeMatcher {
 	)
 }
 
+// HavingUserinfo succeeds if the actual value is a *url.URL and its User.String() matches the provided one.
 func HavingUserinfo(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"HavingUserinfo", "userinfo",
@@ -143,6 +165,7 @@ func HavingUserinfo(args ...any) types.BeMatcher {
 	)
 }
 
+// HavingPassword succeeds if the actual value is a *url.URL and its Password matches the provided one.
 func HavingPassword(args ...any) types.BeMatcher {
 	return psi_matchers.NewUrlFieldMatcher(
 		"HavingPassword", "password",
@@ -150,3 +173,7 @@ func HavingPassword(args ...any) types.BeMatcher {
 		args...,
 	)
 }
+
+// todo: RawPath/EscapedPath matchers
+// todo:"HavingDistinctSearchParam -> ensuring it has only a single search param and match it( fail if not)
+//       Difference is that HavingSearchParam will not fail if given param is not single (and onl will match the first one)

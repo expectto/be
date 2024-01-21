@@ -10,45 +10,57 @@ import (
 	"time"
 )
 
-// TODO: not sure it will work, tests are required
-
+// LaterThan succeeds if actual time is later than the specified time `compareTo`.
 func LaterThan(compareTo time.Time) types.BeMatcher {
 	return Psi(gomega.BeTemporally(">", compareTo))
 }
 
+// LaterThanEqual succeeds if actual time is later than or equal to the specified time `compareTo`.
 func LaterThanEqual(compareTo time.Time) types.BeMatcher {
 	return Psi(gomega.BeTemporally(">=", compareTo))
 }
 
+// EarlierThan succeeds if actual time is earlier than the specified time `compareTo`.
 func EarlierThan(compareTo time.Time) types.BeMatcher {
 	return Psi(gomega.BeTemporally("<", compareTo))
 }
 
+// EarlierThanEqual succeeds if actual time is earlier than or equal to the specified time `compareTo`.
 func EarlierThanEqual(compareTo time.Time) types.BeMatcher {
 	return Psi(gomega.BeTemporally("<=", compareTo))
 }
 
-func Approx(arg time.Time, threshold time.Duration) types.BeMatcher {
-	return Psi(gomega.BeTemporally("~", arg, threshold))
+// Approx succeeds if actual time is approximately equal to the specified time `compareTo`
+// within the given time duration threshold.
+func Approx(compareTo time.Time, threshold time.Duration) types.BeMatcher {
+	return Psi(gomega.BeTemporally("~", compareTo, threshold))
 }
 
+// SameNano succeeds if actual time is approximately equal to the specified time `compareTo`
+// with the precision of one nanosecond.
 func SameNano(compareTo time.Time) types.BeMatcher {
 	return Psi(gomega.BeTemporally("~", compareTo, time.Nanosecond))
 }
 
+// SameSecond succeeds if actual time is approximately equal to the specified time `compareTo`
+// with the precision of one second.
 func SameSecond(compareTo time.Time) types.BeMatcher {
 	return Psi(gomega.BeTemporally("~", compareTo, time.Second))
 }
 
+// SameMinute succeeds if actual time is approximately equal to the specified time `compareTo`
+// with the precision of one minute.
 func SameMinute(compareTo time.Time) types.BeMatcher {
 	return Psi(gomega.BeTemporally("~", compareTo, time.Minute))
 }
 
+// SameHour succeeds if actual time is approximately equal to the specified time `compareTo`
+// with the precision of one hour.
 func SameHour(compareTo time.Time) types.BeMatcher {
 	return Psi(gomega.BeTemporally("~", compareTo, time.Hour))
 }
 
-// SameTimezone checks if actual time is the same timezone as given time
+// SameTimezone checks if actual time is the same timezone as specified time `compareTo`
 func SameTimezone(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
@@ -60,7 +72,7 @@ func SameTimezone(compareTo time.Time) types.BeMatcher {
 	}))
 }
 
-// SameOffset checks if actual time is the same timezone offset as given time
+// SameOffset checks if actual time is the same timezone offset as specified time `compareTo`
 // Note: times can have different timezone names, but same offset, e.g. America/New_York and Canada/Toronto
 func SameOffset(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
@@ -86,7 +98,8 @@ func IsDST(compareTo time.Time) types.BeMatcher {
 	}))
 }
 
-// SameDay checks if given and actual times are the same day (timezone is respected)
+// SameDay succeeds if the day component of the actual time is equal to the day component
+// of the specified time `compareTo`.
 func SameDay(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
@@ -98,7 +111,8 @@ func SameDay(compareTo time.Time) types.BeMatcher {
 	}))
 }
 
-// SameWeekday checks if given and actual times are the same weekday (timezone is respected)
+// SameWeekday succeeds if the weekday component of the actual time is equal to the weekday component
+// of the specified time `compareTo`.
 func SameWeekday(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
@@ -110,7 +124,8 @@ func SameWeekday(compareTo time.Time) types.BeMatcher {
 	}))
 }
 
-// SameWeek checks if given and actual times are the same week (timezone is respected)
+// SameWeek succeeds if the ISO week and year components of the actual time
+// are equal to the ISO week and year components of the specified time `compareTo`.
 func SameWeek(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
@@ -124,7 +139,8 @@ func SameWeek(compareTo time.Time) types.BeMatcher {
 	}))
 }
 
-// SameMonth checks if given and actual times are the same month (timezone is respected)
+// SameMonth succeeds if the month component of the actual time is equal to the month component
+// of the specified time `compareTo`.
 func SameMonth(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
@@ -136,7 +152,8 @@ func SameMonth(compareTo time.Time) types.BeMatcher {
 	}))
 }
 
-// SameYear checks if given and actual times are the same year (timezone is respected)
+// SameYear succeeds if the year component of the actual time is equal to the year component
+// of the specified time `compareTo`.
 func SameYear(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
@@ -147,3 +164,8 @@ func SameYear(compareTo time.Time) types.BeMatcher {
 		return compareTo.Year() == actualTime.Year(), nil
 	}))
 }
+
+// TODO: add aliases, but ensure confusion is not introduced
+// 		as we can't do Lt for LaterThan and Et for EarlierThan
+// 		Aliases should be consistent with be_math. So Lt is LessThan, meaning EarlierThan
+//              and Gt is GreaterThan, meaning LaterThan
