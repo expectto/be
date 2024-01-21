@@ -11,6 +11,8 @@ import (
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
 	"github.com/onsi/gomega/gcustom"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"net/mail"
 	"regexp"
 	"strconv"
@@ -138,7 +140,12 @@ func Float() types.BeMatcher {
 
 // Titled succeeds if actual is a string with the first letter of each word capitalized.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
-func Titled() types.BeMatcher {
+func Titled(languageArg ...language.Tag) types.BeMatcher {
+	lang := language.English
+	if len(languageArg) > 0 {
+		lang = languageArg[0]
+	}
+
 	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
@@ -146,8 +153,7 @@ func Titled() types.BeMatcher {
 
 		str := cast.AsString(actual)
 
-		// todo: switch to cases
-		return strings.Title(str) == str, nil
+		return cases.Title(lang).String(str) == str, nil
 	}))
 }
 
