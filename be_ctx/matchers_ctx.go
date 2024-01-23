@@ -1,3 +1,4 @@
+// Package be_ctx provides Be matchers on context.Context
 package be_ctx
 
 import (

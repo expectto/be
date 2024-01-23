@@ -5,8 +5,10 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/expectto/be/blob/main/LICENSE)
 [![Go Reference](https://pkg.go.dev/badge/github.com/expectto/be.svg)](https://pkg.go.dev/github.com/expectto/be)
 
-`expectto/be` is a Golang package that offers a substantial collection of `Be` matchers. Every `Be` matcher is compatible with both [Ginkgo](https://github.com/onsi/ginkgo)/[Gomega](https://github.com/onsi/gomega)
-and [Gomock](https://github.com/uber-go/mock). Where possible, arguments of matchers can be either finite values or matchers (Be/Gomega/Gomock).<br>
+`expectto/be` is a Golang package that offers a substantial collection of `Be` matchers. Every `Be` matcher is
+compatible with both [Ginkgo](https://github.com/onsi/ginkgo)/[Gomega](https://github.com/onsi/gomega)
+and [Gomock](https://github.com/uber-go/mock). Where possible, arguments of matchers can be either finite values or
+matchers (Be/Gomega/Gomock).<br>
 Employing `expectto/be` matchers enables you to create straightforward, readable, and maintainable unit or
 integration tests in Golang. Tasks such as testing HTTP requests, validating JSON responses, and more become remarkably
 comprehensive and straightforward.
@@ -47,111 +49,170 @@ Expect(err).To(Succeed())
 
 // Matching an HTTP request
 Expect(req).To(be_http.Request(
-    // Matching the URL
-    be_http.HavingURL(be_url.URL(
-        be_url.WithHttps(),
-        be_url.HavingHost("example.com"),
-        be_url.HavingPath("/path"),
-        be_url.HavingSearchParam("status", "active"),
-        be_url.HavingSearchParam("v", be_reflected.AsNumericString()),
-        be_url.HavingSearchParam("q", "Hello World"),
-    )),
+// Matching the URL
+be_http.HavingURL(be_url.URL(
+be_url.WithHttps(),
+be_url.HavingHost("example.com"),
+be_url.HavingPath("/path"),
+be_url.HavingSearchParam("status", "active"),
+be_url.HavingSearchParam("v", be_reflected.AsNumericString()),
+be_url.HavingSearchParam("q", "Hello World"),
+)),
 
-    // Matching the HTTP method
-    be_http.HavingMethod(http.MethodPost),
-    
-    // Matching request's context
-    be_http.HavingCtx(be_ctx.Ctx(
-        be_ctx.WithDeadline(be_time.LaterThan(time.Now().Add(30*time.Minute))),
-        be_ctx.WithValue("foobar", 100),
-    ))
+// Matching the HTTP method
+be_http.HavingMethod(http.MethodPost),
 
-    // Matching the request body using JSON matchers
-    be_http.HavingBody(
-        be_json.Matcher(
-            be_json.JsonAsReader,
-            be_json.HaveKeyValue("hello", "world"),
-            be_json.HaveKeyValue("n", be_reflected.AsIntish()),
-            be_json.HaveKeyValue("ids", be_reflected.AsSliceOf[string]),
-            be_json.HaveKeyValue("details", And(
-                be_reflected.AsObjects(),
-                be.HaveLength(2),
-                ContainElements(
-                    be_json.HaveKeyValue("key", "foo"),
-                    be_json.HaveKeyValue("key", "bar"),
-                ),
-            )),
-        ),
+// Matching request's context
+be_http.HavingCtx(be_ctx.Ctx(
+be_ctx.WithDeadline(be_time.LaterThan(time.Now().Add(30*time.Minute))),
+be_ctx.WithValue("foobar", 100),
+))
 
-        // Matching HTTP headers
-        be_http.HavingHeader("X-Custom", "Hey-There"),
-        be_http.HavingHeader("Authorization",
-            be_strings.Template("Bearer {{jwt}}",
-                be_strings.MatchingPart("jwt",
-                    be_jwt.Token(
-                        be_jwt.BeingValid(),
-                        be_jwt.HavingClaims("name", "John Doe"),
-                    ),
-                ),
-            ),
-        ),
-    ),
+// Matching the request body using JSON matchers
+be_http.HavingBody(
+be_json.Matcher(
+be_json.JsonAsReader,
+be_json.HaveKeyValue("hello", "world"),
+be_json.HaveKeyValue("n", be_reflected.AsIntish()),
+be_json.HaveKeyValue("ids", be_reflected.AsSliceOf[string]),
+be_json.HaveKeyValue("details", And(
+be_reflected.AsObjects(),
+be.HaveLength(2),
+ContainElements(
+be_json.HaveKeyValue("key", "foo"),
+be_json.HaveKeyValue("key", "bar"),
+),
+)),
+),
+
+// Matching HTTP headers
+be_http.HavingHeader("X-Custom", "Hey-There"),
+be_http.HavingHeader("Authorization",
+be_strings.Template("Bearer {{jwt}}",
+be_strings.MatchingPart("jwt",
+be_jwt.Token(
+be_jwt.BeingValid(),
+be_jwt.HavingClaims("name", "John Doe"),
+),
+),
+),
+),
+),
 ))
 ```
 
 ## Matchers
 
-### (core) be
-<details>
-  <summary>Be provides a set of core matchers for common testing scenarios:</summary>
+### Core Be matchers
 
-| Matcher                      | Example Usage                                                 | Description                                                                           |
-|------------------------------|---------------------------------------------------------------|---------------------------------------------------------------------------------------|
-| `be.Always()`                | `Expect(anything()).To(be.Always())`                          | Always succeeds (passes).                                                             |
-| `be.Never(err)`              | `Expect(anything()).To(be.Never(errors.New("custom error")))` | Never succeeds and always fails with a specified error                                |
-| `be.All(ms ...any)`          | `Expect(m).To(be.All(HaveKey("foo"), HaveKey("bar"), ...))`   | Logical AND for multiple matchers. _Similar to Ginkgo's`And()`_                       |
-| `be.Any(ms ...any)`          | `Expect(m).To(be.Any(HaveKey("foo"), HaveKey("bar"), ...)`    | Logical OR for multiple matchers. _Similar to Ginkgo's `Or()`_                        |
-| `be.Eq(expected)`            | `Expect(v).To(be.Eq(expectedValue))`                          | Checks for equality. _Similar to Ginkgo's `Equal` _                                   |
-| `be.Not(matcher)`            | `Expect(v).To(be.Not(anotherMatcher))`                        | Negates the result of another matcher. _Similar to Ginkgo's `Not()`_                  |
-| `be.HaveLength(args ...any)` | `Expect(collection).To(be.HaveLength(lengthMatcher))`         | Matches the length of slices, arrays, strings, or maps. Supports matchers as argument |
-</details>
+📦 `be` provides a set of core matchers for common testing scenarios.<br>[See detailed docs](core-be-matchers.md)
 
+#### Core matchers:
+
+`Always`, `Never`, `All`, `Any`, `Eq`, `Not`, `HaveLength`
 
 ### be_reflected
 
-AssignableTo(), Implementing(), AsKind(), ...
+📦 `be_reflected` provides Be matchers that use reflection, enabling expressive assertions on values' reflect kinds and
+types.<br>[See detailed docs](be_reflected/README.md)
+
+#### General Matchers based on reflect.Kind:
+
+`AsKind`, `AsFunc`, `AsChan`, `AsPointer`, `AsFinalPointer`, `AsStruct`, `AsPointerToStruct`, `AsSlice`, `AsPointerToSlice`, `AsSliceOf`, `AsMap`, `AsPointerToMap`, `AsObject`, `AsObjects`, `AsPointerToObject`
+
+#### Data Type Matchers based on reflect.Kind
+
+`AsString`, `AsBytes`, `AsNumeric`, `AsNumericString`, `AsIntish`, `AsIntishString`, `AsFloatish`, `AsFloatishString`,
+
+#### Interface Matchers based on reflect.Kind
+
+`AsReader`,`AsStringer`
+
+#### Matchers based on types compatibility:
+
+`AssignableTo`, `Implementing`
 
 ### be_math
 
-GreaterThan(), GreaterLessThan(), ...
+📦 `be_math` provides Be matchers for mathematical operations.<br>[See detailed docs](be_math/README.md)
+
+#### Matchers on math:
+
+`GreaterThan`, `GreaterThanEqual`, `LessThan`, `LessThanEqual`, `Approx`, `InRange`, `Odd`, `Even`, `Negative`, `Positive`, `Zero`, `Integral`, `DivisibleBy`
+
+#### Shortcut aliases for math matchers:
+
+`Gt`, `Gte`, `Lt`, `Lte`
 
 ### be_strings
 
-EmptyString(), NonEmptyString(), Alpha(), ...
+📦 `be_strings` provides Be matchers for string-related assertions.<br>[See detailed docs](be_strings/README.md)
+
+#### Matchers on strings
+
+`NonEmptyString`, `EmptyString`, `Alpha`, `Numeric`, `AlphaNumeric`, `AlphaNumericWithDots`, `Float`, `Titled`, `LowerCaseOnly`, `MatchWildcard`, `ValidEmail`
+
+#### Template matchers
+
+`MatchTemplate`
 
 ### be_time
 
-LaterThan(), LaterThanEqual(), EarlierThan(), ...
+📦 `be_time` provides Be matchers on time.Time.<br>[See detailed docs](be_time/README.md)
+
+#### Time Matchers
+
+`LaterThan`, `LaterThanEqual`, `EarlierThan`, `EarlierThanEqual`, `Approx`, `SameNano`, `SameSecond`, `SameMinute`, `SameHour`, `SameTimezone`, `SameOffset`, `IsDST`, `SameDay`, `SameWeekday`, `SameWeek`, `SameMonth`, `SameYear`
 
 ### be_jwt
 
-Token(), HavingClaims(), ...
+📦 `be_jwt` provides Be matchers for handling JSON Web Tokens (JWT). It includes matchers for transforming and validating
+JWT tokens. Matchers corresponds to specific
+golang [jwt implementation](https://github.com/golang-jwt/jwt/v5).<br> [See detailed docs](be_jwt/README.md)
+
+#### Transformers for JWT matching:
+
+`TransformSignedJwtFromString`, `TransformJwtFromString`
+
+#### Matchers on JWT:
+
+`Token`, `Valid`, `HavingClaims`, `HavingMethodAlg`, `SignedVia`
 
 ### be_url
 
-URL() HavingHost(), HavingHostname(), ...
+📦 `be_url` provides Be matchers on url.URL.<br> [See detailed docs](be_jwt/README.md)
+
+#### Transformers for URL Matchers:
+
+`TransformUrlFromString`, `TransformSchemelessUrlFromString`
+
+#### URL Matchers:
+
+`URL`, `HavingHost`, `HavingHostname`, `HavingScheme`, `NotHavingScheme`, `WithHttps`, `WithHttp`, `HavingPort`, `NotHavingPort`, `HavingPath`, `HavingRawQuery`, `HavingSearchParam`, `HavingMultipleSearchParam`, `HavingUsername`, `HavingUserinfo`, `HavingPassword`
 
 ### be_ctx
 
-Ctx(), CtxWithValue(), CtxWithDeadline(), ...
+📦 `be_ctx` provides Be matchers on context.Context.<br> [See detailed docs](be_ctx/README.md)
+
+#### Context Matchers:
+
+`Ctx`, `CtxWithValue`, `CtxWithDeadline`, `CtxWithError`
 
 ### be_json
 
-Matcher(), HaveKeyWithValue(), ...
+📦 `be_json` provides Be matchers for expressive assertions on JSON.<br> [See detailed docs](be_json/README.md)
+
+#### JSON Matchers:
+
+`Matcher`, `HaveKeyValue`
 
 ### be_http
 
-Request(), HavingMethod(), HavingUrl(), ...
+📦 `be_http` provides Be matchers for expressive assertions on http.Request.<br> [See detailed docs](be_http/README.md)
+
+#### Matchers on HTTP:
+
+`Request`, `HavingMethod`, `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS`, `HavingURL`, `HavingBody`, `HavingHost`, `HavingProto`, `HavingHeader`
 
 # Contributing
 

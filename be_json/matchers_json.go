@@ -1,3 +1,5 @@
+// Package be_json provides Be matchers for expressive assertions on JSON
+// TODO: more detailed explanation what is considered to be JSON here
 package be_json
 
 import (
