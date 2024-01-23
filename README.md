@@ -49,56 +49,56 @@ Expect(err).To(Succeed())
 
 // Matching an HTTP request
 Expect(req).To(be_http.Request(
-// Matching the URL
-be_http.HavingURL(be_url.URL(
-be_url.WithHttps(),
-be_url.HavingHost("example.com"),
-be_url.HavingPath("/path"),
-be_url.HavingSearchParam("status", "active"),
-be_url.HavingSearchParam("v", be_reflected.AsNumericString()),
-be_url.HavingSearchParam("q", "Hello World"),
-)),
+    // Matching the URL
+    be_http.HavingURL(be_url.URL(
+        be_url.WithHttps(),
+        be_url.HavingHost("example.com"),
+        be_url.HavingPath("/path"),
+        be_url.HavingSearchParam("status", "active"),
+        be_url.HavingSearchParam("v", be_reflected.AsNumericString()),
+        be_url.HavingSearchParam("q", "Hello World"),
+    )),
 
-// Matching the HTTP method
-be_http.HavingMethod(http.MethodPost),
+    // Matching the HTTP method
+    be_http.HavingMethod(http.MethodPost),
 
-// Matching request's context
-be_http.HavingCtx(be_ctx.Ctx(
-be_ctx.WithDeadline(be_time.LaterThan(time.Now().Add(30*time.Minute))),
-be_ctx.WithValue("foobar", 100),
-))
+    // Matching request's context
+    be_http.HavingCtx(be_ctx.Ctx(
+        be_ctx.WithDeadline(be_time.LaterThan(time.Now().Add(30*time.Minute))),
+        be_ctx.WithValue("foobar", 100),
+    )),
 
-// Matching the request body using JSON matchers
-be_http.HavingBody(
-be_json.Matcher(
-be_json.JsonAsReader,
-be_json.HaveKeyValue("hello", "world"),
-be_json.HaveKeyValue("n", be_reflected.AsIntish()),
-be_json.HaveKeyValue("ids", be_reflected.AsSliceOf[string]),
-be_json.HaveKeyValue("details", And(
-be_reflected.AsObjects(),
-be.HaveLength(2),
-ContainElements(
-be_json.HaveKeyValue("key", "foo"),
-be_json.HaveKeyValue("key", "bar"),
-),
-)),
-),
+    // Matching the request body using JSON matchers
+    be_http.HavingBody(
+        be_json.Matcher(
+            be_json.JsonAsReader,
+            be_json.HaveKeyValue("hello", "world"),
+            be_json.HaveKeyValue("n", be_reflected.AsIntish()),
+            be_json.HaveKeyValue("ids", be_reflected.AsSliceOf[string]),
+            be_json.HaveKeyValue("details", And(
+                be_reflected.AsObjects(),
+                be.HaveLength(2),
+                ContainElements(
+                    be_json.HaveKeyValue("key", "foo"),
+                    be_json.HaveKeyValue("key", "bar"),
+                ),
+            )),
+        ),
 
-// Matching HTTP headers
-be_http.HavingHeader("X-Custom", "Hey-There"),
-be_http.HavingHeader("Authorization",
-be_strings.Template("Bearer {{jwt}}",
-be_strings.MatchingPart("jwt",
-be_jwt.Token(
-be_jwt.BeingValid(),
-be_jwt.HavingClaims("name", "John Doe"),
-),
-),
-),
-),
-),
-))
+        // Matching HTTP headers
+        be_http.HavingHeader("X-Custom", "Hey-There"),
+        be_http.HavingHeader("Authorization",
+            be_strings.MatchTemplate("Bearer {{jwt}}",
+                be_strings.Var("jwt",
+                    be_jwt.Token(
+                        be_jwt.Valid(),
+                        be_jwt.HavingClaims("name", "John Doe"),
+                    ),
+                ),
+            ),
+        ),
+    ),
+))      
 ```
 
 ## Matchers
