@@ -103,7 +103,7 @@ be_jwt.HavingClaims("name", "John Doe"),
 
 ## Matchers
 
-### Core Be matchers
+### Core Be
 
 📦 `be` provides a set of core matchers for common testing scenarios.<br>[See detailed docs](core-be-matchers.md)
 
