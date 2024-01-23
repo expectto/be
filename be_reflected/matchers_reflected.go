@@ -1,5 +1,5 @@
-// Package be_reflected offers Be matchers for reflection in Go,
-// enabling expressive and versatile assertions on values' reflect kinds.
+// Package be_reflected provides Be matchers that use reflection,
+// enabling expressive assertions on values' reflect kinds and types.
 package be_reflected
 
 import (

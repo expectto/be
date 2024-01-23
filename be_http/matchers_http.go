@@ -1,3 +1,5 @@
+// Package be_http provides matchers for url.Request
+// todo: more detailed documentation here is required
 package be_http
 
 import (

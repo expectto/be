@@ -1,3 +1,4 @@
+// Package be_math provides Be matchers for mathematical operations
 package be_math
 
 import (

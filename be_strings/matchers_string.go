@@ -1,4 +1,4 @@
-// Package be_strings provides Be matchers for string-related assertions
+// Package be_strings provides Be matchers for string-related assertions.
 package be_strings
 
 import (

@@ -1,3 +1,4 @@
+// Package be_url provides Be matchers on url.URL
 package be_url
 
 import (

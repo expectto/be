@@ -1,3 +1,4 @@
+// Package be_time provides Be matchers on time.Time
 package be_time
 
 import (

@@ -1,6 +1,7 @@
 package be
 
 import (
+	"github.com/expectto/be/be_ctx"
 	"github.com/expectto/be/be_http"
 	"github.com/expectto/be/be_jwt"
 	"github.com/expectto/be/be_strings"
@@ -18,3 +19,6 @@ var JwtToken = be_jwt.Token
 
 // StringAsTemplate is an alias for be_strings.MatchTemplate matcher
 var StringAsTemplate = be_strings.MatchTemplate
+
+// Ctx is an alias for be_ctx.Ctx
+var Ctx = be_ctx.Ctx
