@@ -1,4 +1,4 @@
-package be_http_test
+package examples_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestBeHttp(t *testing.T) {
+func TestExamples(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "BeHttp Suite")
+	RunSpecs(t, "Examples Suite")
 }

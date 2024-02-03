@@ -1,4 +1,4 @@
-package be_strings_test
+package examples
 
 import (
 	"github.com/expectto/be"

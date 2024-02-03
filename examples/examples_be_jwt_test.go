@@ -1,4 +1,4 @@
-package be_jwt_test
+package examples
 
 import (
 	"github.com/expectto/be/be_jwt"
