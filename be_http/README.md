@@ -2,26 +2,25 @@
 --
     import "github.com/expectto/be/be_http"
 
-Package be_http provides matchers for url.Request todo: more detailed
+Package be_http provides matchers for url.Request TODO: more detailed
 documentation here is required
 
 ## Usage
 
-#### func  DELETE
-
 ```go
-func DELETE() types.BeMatcher
+var (
+	GET     = func() types.BeMatcher { return HavingMethod(http.MethodGet) }
+	HEAD    = func() types.BeMatcher { return HavingMethod(http.MethodHead) }
+	POST    = func() types.BeMatcher { return HavingMethod(http.MethodPost) }
+	PUT     = func() types.BeMatcher { return HavingMethod(http.MethodPut) }
+	PATCH   = func() types.BeMatcher { return HavingMethod(http.MethodPatch) }
+	DELETE  = func() types.BeMatcher { return HavingMethod(http.MethodDelete) }
+	OPTIONS = func() types.BeMatcher { return HavingMethod(http.MethodOptions) }
+	CONNECT = func() types.BeMatcher { return HavingMethod(http.MethodConnect) }
+	TRACE   = func() types.BeMatcher { return HavingMethod(http.MethodTrace) }
+)
 ```
-DELETE returns a matcher that succeeds if the actual *http.Request has a method
-"DELETE".
-
-#### func  GET
-
-```go
-func GET() types.BeMatcher
-```
-GET returns a matcher that succeeds if the actual *http.Request has a method
-"GET".
+HavingMethod: Syntactic sugar
 
 #### func  HavingBody
 
@@ -37,16 +36,39 @@ after matching.
 ```go
 func HavingHeader(key string, args ...any) types.BeMatcher
 ```
-HavingHeader matches requests that have header with a given key. (1) If no args
-are given, it simply matches a request with existed header by key. (2) If
-len(args) == 1 && args[0] is a stringish, it matches a request with header `Key:
-Args[0]` (3) if len(args) == 1 && args[0] is not stringish, it is considered to
-be matcher for header's value Examples: - HavingHeader("X-Header") matches
-request with non-empty X-Header header - HavingHeader("X-Header", "X-Value")
-matches request with X-Header: X-Value - HavingHeader("X-Header",
-HavePrefix("Bearer ")) matchers request with header(X-Header)'s value matching
-given HavePrefix matcher - todo: support multiple header values todo: fixme I'm
-ugly for now
+HavingHeader matches requests that have header with a given key. Key is a string
+key for a header, args can be nil or len(args)==1. Note: Golang's http.Header is
+`map[string][]string`, and matching is done on the FIRST value of the header in
+case if you have multiple-valued header that needs to be matched, use
+HavingHeaders() instead
+
+These are scenarios that can be handled here: (1) If no args are given, it
+simply matches a request with existed header by key. (2) If len(args) == 1 &&
+args[0] is a stringish, it matches a request with header `Key: Args[0]` (3) if
+len(args) == 1 && args[0] is not stringish, it is considered to be matcher for
+header's value Examples: - HavingHeader("X-Header") matches request with
+non-empty X-Header header - HavingHeader("X-Header", "X-Value") matches request
+with X-Header: X-Value - HavingHeader("X-Header", HavePrefix("Bearer "))
+matchers request with header(X-Header)'s value matching given HavePrefix matcher
+
+#### func  HavingHeaders
+
+```go
+func HavingHeaders(key string, args ...any) types.BeMatcher
+```
+HavingHeaders matches requests that have header with a given key. Key is a
+string key for a header, args can be nil or len(args)==1. Note: Matching is done
+on the list of header values. In case if you have single-valued header that
+needs to be matched, use HavingHeader() instead
+
+These are scenarios that can be handled here: (1) If no args are given, it
+simply matches a request with existed header by key. (2) If len(args) == 1 &&
+args[0] is a stringish, it matches a request with header `Key: Args[0]` (3) if
+len(args) == 1 && args[0] is not stringish, it is considered to be matcher for
+header's value Examples: - HavingHeader("X-Header") matches request with
+non-empty X-Header header - HavingHeader("X-Header", "X-Value") matches request
+with X-Header: X-Value - HavingHeader("X-Header", Dive(HavePrefix("Foo ")))
+matchers request with multiple X-Header values, each of them having Foo prefix
 
 #### func  HavingHost
 
@@ -79,38 +101,6 @@ func HavingURL(args ...any) types.BeMatcher
 ```
 HavingURL succeeds if the actual value is a *http.Request and its URL matches
 the provided arguments.
-
-#### func  OPTIONS
-
-```go
-func OPTIONS() types.BeMatcher
-```
-OPTIONS returns a matcher that succeeds if the actual *http.Request has a method
-"OPTIONS".
-
-#### func  PATCH
-
-```go
-func PATCH() types.BeMatcher
-```
-PATCH returns a matcher that succeeds if the actual *http.Request has a method
-"PATCH".
-
-#### func  POST
-
-```go
-func POST() types.BeMatcher
-```
-POST returns a matcher that succeeds if the actual *http.Request has a method
-"POST".
-
-#### func  PUT
-
-```go
-func PUT() types.BeMatcher
-```
-PUT returns a matcher that succeeds if the actual *http.Request has a method
-"PUT".
 
 #### func  Request
 

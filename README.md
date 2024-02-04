@@ -60,7 +60,7 @@ Expect(req).To(be_http.Request(
     )),
 
     // Matching the HTTP method
-    be_http.HavingMethod(http.MethodPost),
+    be_http.POST()
 
     // Matching request's context
     be_http.HavingCtx(be_ctx.Ctx(
@@ -92,7 +92,7 @@ Expect(req).To(be_http.Request(
                 be_strings.Var("jwt",
                     be_jwt.Token(
                         be_jwt.Valid(),
-                        be_jwt.HavingClaims("name", "John Doe"),
+                        be_jwt.HavingClaim("name", "John Doe"),
                     ),
                 ),
             ),
@@ -109,7 +109,7 @@ Expect(req).To(be_http.Request(
 
 #### Core matchers:
 
-`Always`, `Never`, `All`, `Any`, `Eq`, `Not`, `HaveLength`
+`Always`, `Never`, `All`, `Any`, `Eq`, `Not`, `HaveLength`, `Dive`, `DiveAny`, `DiveFirst`
 
 ### be_reflected
 
@@ -162,7 +162,11 @@ types.<br>[See detailed docs](be_reflected/README.md)
 
 #### Time Matchers
 
-`LaterThan`, `LaterThanEqual`, `EarlierThan`, `EarlierThanEqual`, `Approx`, `Eq`, `SameExactSecond`, `SameExactMinute`, `SameExactHour`, `SameTimezone`, `SameOffset`, `IsDST`, `SameExactDay`, `SameExactWeekday`, `SameWeek`, `SameMonth`, `SameYear`
+`LaterThan`, `LaterThanEqual`, `EarlierThan`, `EarlierThanEqual`, `Eq`, `Approx`, <br>
+`SameExactMilli`, `SameExactSecond`, `SameExactMinute`, `SameExactHour`,  <br>
+`SameExactDay`, `SameExactWeekday`, `SameExactWeek`, `SameExactMonth`, <br>
+`SameSecond`, `SameMinute`, `SameHour`, `SameDay`, `SameYearDay`, <br>
+`SameWeek`, `SameMonth`, `SameYear`, `SameTimzone`, `SameOffset`, `IsDST`
 
 ### be_jwt
 
@@ -176,7 +180,7 @@ golang [jwt implementation](https://github.com/golang-jwt/jwt/v5).<br> [See deta
 
 #### Matchers on JWT:
 
-`Token`, `Valid`, `HavingClaims`, `HavingMethodAlg`, `SignedVia`
+`Token`, `Valid`, `HavingClaims`, `HavingClaim`, `HavingMethodAlg`, `SignedVia`
 
 ### be_url
 
@@ -212,7 +216,9 @@ golang [jwt implementation](https://github.com/golang-jwt/jwt/v5).<br> [See deta
 
 #### Matchers on HTTP:
 
-`Request`, `HavingMethod`, `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS`, `HavingURL`, `HavingBody`, `HavingHost`, `HavingProto`, `HavingHeader`
+`Request`, `HavingMethod`, <br>
+`GET`, `HEAD`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS`, `CONNECT`, `TRACE`, <br>
+`HavingURL`, `HavingBody`, `HavingHost`, `HavingProto`, `HavingHeader`, `HavingHeaders`
 
 # Contributing
 
