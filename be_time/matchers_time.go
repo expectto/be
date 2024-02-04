@@ -99,6 +99,19 @@ func SameExactDay(compareTo time.Time) types.BeMatcher {
 	}))
 }
 
+// SameExactWeekday succeeds if the weekday component of the actual time is equal to the weekday component
+// of the specified time `compareTo`.
+func SameExactWeekday(compareTo time.Time) types.BeMatcher {
+	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
+		if !cast.IsTime(actual) {
+			return false, fmt.Errorf("invalid time type")
+		}
+		actualTime := cast.AsTime(actual)
+
+		return compareTo.Weekday() == actualTime.Weekday(), nil
+	}))
+}
+
 // SameExactWeek succeeds if the actual time falls within the same ISO week as the specified time `compareTo`.
 func SameExactWeek(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
@@ -122,19 +135,6 @@ func SameExactMonth(compareTo time.Time) types.BeMatcher {
 		actualTime := cast.AsTime(actual)
 
 		return compareTo.Year() == actualTime.Year() && compareTo.Month() == actualTime.Month(), nil
-	}))
-}
-
-// SameExactWeekday succeeds if the weekday component of the actual time is equal to the weekday component
-// of the specified time `compareTo`.
-func SameExactWeekday(compareTo time.Time) types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
-		if !cast.IsTime(actual) {
-			return false, fmt.Errorf("invalid time type")
-		}
-		actualTime := cast.AsTime(actual)
-
-		return compareTo.Weekday() == actualTime.Weekday(), nil
 	}))
 }
 
