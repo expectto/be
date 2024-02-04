@@ -92,6 +92,15 @@ func HavingClaims(args ...any) types.BeMatcher {
 	)
 }
 
+// HavingClaim succeeds if the actual value is a JWT token and its claim matches the provided value or matchers.
+func HavingClaim(key string, args ...any) types.BeMatcher {
+	return psi_matchers.NewJwtTokenMatcher(
+		fmt.Sprintf("Claim[%s]", key),
+		func(u *jwt.Token) any { return u.Claims.(jwt.MapClaims)[key] },
+		Psi(args...),
+	)
+}
+
 // HavingMethodAlg succeeds if the actual value is a JWT token and its method algorithm match the provided value or matchers.
 func HavingMethodAlg(args ...any) types.BeMatcher {
 	return psi_matchers.NewJwtTokenMatcher(
