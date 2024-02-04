@@ -139,7 +139,7 @@ func HavingHeader(key string, args ...any) types.BeMatcher {
 	return psi_matchers.NewReqPropertyMatcher(
 		"HavingHeader", "header",
 		func(req *http.Request) any { return req.Header },
-		be_json.HaveKeyValue(key, DiveFirst(args[0])),
+		be_json.HaveKeyValue(key, NewDiveMatcher(args[0], DiveModeFirst)),
 	)
 }
 
