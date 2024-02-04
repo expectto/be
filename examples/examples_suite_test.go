@@ -1,4 +1,4 @@
-package be_url_test
+package examples_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestBeUrl(t *testing.T) {
+func TestExamples(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "BeUrl Suite")
+	RunSpecs(t, "Examples Suite")
 }

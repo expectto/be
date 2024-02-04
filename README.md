@@ -162,7 +162,7 @@ types.<br>[See detailed docs](be_reflected/README.md)
 
 #### Time Matchers
 
-`LaterThan`, `LaterThanEqual`, `EarlierThan`, `EarlierThanEqual`, `Approx`, `SameNano`, `SameSecond`, `SameMinute`, `SameHour`, `SameTimezone`, `SameOffset`, `IsDST`, `SameDay`, `SameWeekday`, `SameWeek`, `SameMonth`, `SameYear`
+`LaterThan`, `LaterThanEqual`, `EarlierThan`, `EarlierThanEqual`, `Approx`, `Eq`, `SameExactSecond`, `SameExactMinute`, `SameExactHour`, `SameTimezone`, `SameOffset`, `IsDST`, `SameExactDay`, `SameExactWeekday`, `SameWeek`, `SameMonth`, `SameYear`
 
 ### be_jwt
 

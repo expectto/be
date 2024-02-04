@@ -1,4 +1,4 @@
-package be_ctx_test
+package examples
 
 import (
 	"context"

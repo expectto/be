@@ -1,4 +1,4 @@
-package be_url_test
+package examples_test
 
 import (
 	"github.com/expectto/be/be_json"

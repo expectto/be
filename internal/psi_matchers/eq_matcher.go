@@ -23,8 +23,8 @@ func (matcher *EqMatcher) Match(actual any) (success bool, err error) {
 	if actual == nil && matcher.Expected == nil {
 		return false, fmt.Errorf("Refusing to compare <nil> to <nil>.\nBe explicit and use BeNil() instead.  This is to avoid mistakes where both sides of an assertion are erroneously uninitialized.")
 	}
-	// Shortcut for byte slices.
-	// Comparing long byte slices with reflect.DeepEqual is very slow,
+	// Shortcut for byte slices
+	// Comparing long byte slices with reflect.DeepEqual is slow,
 	// so use bytes.Equal if actual and expected are both byte slices.
 	if actualByteSlice, ok := actual.([]byte); ok {
 		if expectedByteSlice, ok := matcher.Expected.([]byte); ok {
@@ -51,11 +51,11 @@ func (matcher *EqMatcher) NegatedFailureMessage(actual any) (message string) {
 
 func (matcher *EqMatcher) Matches(actual any) bool {
 	res, _ := matcher.Match(actual)
+	matcher.lastActualValue = actual
 	return res
 }
 
-// Todo: inaccurate behavior should be fixed
+// String is considered to be called after Matches() was called
 func (matcher *EqMatcher) String() string {
-	mes := matcher.FailureMessage(matcher.lastActualValue)
-	return mes
+	return matcher.FailureMessage(matcher.lastActualValue)
 }
