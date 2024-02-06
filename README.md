@@ -1,7 +1,8 @@
 ## Expect(👨🏼‍💻).To(Be(🚀))
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/expectto/be/blob/main/LICENSE)
-[![Go Reference](https://pkg.go.dev/badge/github.com/expectto/be.svg)](https://pkg.go.dev/github.com/expectto/be)
+[![Go Reference](https://pkg.go.dev/badge/github.com/expectto/be.svg)](https://expectto.github.io/be/)
+
 
 `expectto/be` is a Golang package that offers a substantial collection of `Be` matchers. Every `Be` matcher is
 compatible with both [Ginkgo](https://github.com/onsi/ginkgo)/[Gomega](https://github.com/onsi/gomega)
