@@ -1,5 +1,3 @@
-# ExpectTo/Be: Versatile Golang Matcher Library Designed for Testing with [Ginkgo](https://github.com/onsi/ginkgo) and [Gomock](https://github.com/uber-go/mock).
-
 ## Expect(👨🏼‍💻).To(Be(🚀))
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/expectto/be/blob/main/LICENSE)
