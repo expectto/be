@@ -1,6 +1,6 @@
 module github.com/expectto/be
 
-go 1.21.6
+go 1.22
 
 require (
 	github.com/IGLOU-EU/go-wildcard v1.0.3 // latest
@@ -8,9 +8,8 @@ require (
 	github.com/onsi/ginkgo/v2 v2.15.0 // latest
 	github.com/onsi/gomega v1.31.1 // latest
 	go.uber.org/mock v0.4.0 // latest
+	golang.org/x/text v0.14.0
 )
-
-require golang.org/x/text v0.14.0
 
 require (
 	github.com/go-logr/logr v1.4.1 // indirect
