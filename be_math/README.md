@@ -14,6 +14,14 @@ func Approx(compareTo, threshold any) types.BeMatcher
 Approx succeeds if actual is numerically approximately equal to the passed-in
 value within the specified threshold.
 
+#### func  ApproxZero
+
+```go
+func ApproxZero() types.BeMatcher
+```
+ApproxZero succeeds if actual is numerically approximately equal to zero Any
+type of int/float will work for comparison.
+
 #### func  DivisibleBy
 
 ```go
@@ -26,7 +34,8 @@ DivisibleBy succeeds if actual is numerically divisible by the passed-in value.
 ```go
 func Even() types.BeMatcher
 ```
-Even succeeds if actual is an even numeric value.
+Even succeeds if actual is an even numeric value. todo: test if failure message
+is OK
 
 #### func  GreaterThan
 
@@ -119,7 +128,8 @@ Negative succeeds if actual is a negative numeric value.
 ```go
 func Odd() types.BeMatcher
 ```
-Odd succeeds if actual is an odd numeric value.
+Odd succeeds if actual is an odd numeric value. todo: test if failure message is
+OK
 
 #### func  Positive
 
@@ -133,5 +143,5 @@ Positive succeeds if actual is a positive numeric value.
 ```go
 func Zero() types.BeMatcher
 ```
-Zero succeeds if actual is numerically approximately equal to zero. Any type of
-int/float will work for comparison.
+Zero succeeds if actual is numerically equal to zero. Any type of int/float will
+work for comparison.
