@@ -10,7 +10,6 @@ import (
 	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
-	"github.com/onsi/gomega/gcustom"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"net/mail"
@@ -36,52 +35,188 @@ var expectAvailableStringFormat = func(actual any) error {
 // NonEmptyString succeeds if actual is not an empty string.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func NonEmptyString() types.BeMatcher {
-	return psi_matchers.NewAllMatcher(
+	return Psi(psi_matchers.NewAllMatcher(
 		be_reflected.AsString(),
 		psi_matchers.NewNotMatcher(gomega.BeEmpty()),
-	)
+	), "be non-empty string")
 }
 
 // EmptyString succeeds if actual is an empty string.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func EmptyString() types.BeMatcher {
-	return psi_matchers.NewAllMatcher(
+	return Psi(psi_matchers.NewAllMatcher(
 		be_reflected.AsString(),
-		Psi(gomega.BeEmpty()),
-	)
+		gomega.BeEmpty(),
+	), "be an empty string")
 }
 
 // Alpha succeeds if actual is a string containing only alphabetical characters.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func Alpha() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
 
+		// empty string is not considered Alpha
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
 		// Check if it contains only letters
-		for _, char := range cast.AsString(actual) {
+		for _, char := range str {
 			if !unicode.IsLetter(char) {
 				return false, nil
 			}
 		}
 
 		return true, nil
-	}))
+	}, "contain only alphabetical characters")
+}
+
+// AlphaWhitespace succeeds if actual is a string containing only alphabetical and whitespace characters.
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func AlphaWhitespace() types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered AlphaWithSpace
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// Check if it contains only letters
+		for _, char := range str {
+			if !unicode.IsLetter(char) && !unicode.IsSpace(char) {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	}, "contain only alphabetical and whitespace characters")
+}
+
+// AlphaWithPunctuation succeeds if actual is a string containing only alphabetical characters.
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func AlphaWithPunctuation() types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered AlphaWithPunctuation
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// Check if it contains only letters
+		for _, char := range str {
+			if !unicode.IsLetter(char) && !unicode.IsPunct(char) {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	}, "contain only alphabetical and punctuational characters")
+}
+
+// AlphaWhitespaceWithPunctuation succeeds if actual is a string containing only alphabetical characters with whitespace and punctuation..
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func AlphaWhitespaceWithPunctuation() types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered AlphaWithPunctuation
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// Check if it contains only letters
+		for _, char := range str {
+			if !unicode.IsLetter(char) && !unicode.IsPunct(char) && !unicode.IsSpace(char) {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	}, "contain only alphabetical characters and punctuation")
+}
+
+// Whitespace succeeds if actual is a string containing only whitespace characters.
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func Whitespace() types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered AlphaWithPunctuation
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// Check if it contains only letters
+		for _, char := range str {
+			if !unicode.IsSpace(char) {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	}, "contain only whitespace characters")
 }
 
 // Numeric succeeds if actual is a string representing a valid numeric integer.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func Numeric() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
 
+		// empty string is not considered Numeric
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
 		// Check if it's a numeric string
-		_, err := strconv.ParseInt(cast.AsString(actual), 10, 64)
+		_, err := strconv.ParseInt(str, 10, 64)
 		return err == nil, nil
-	}))
+	}, "contain only numeric characters")
+}
+
+// NumericWhitespace succeeds if actual is a string containing only number characters and whitespace.
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func NumericWhitespace() types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered Numeric
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// Check if it contains only letters
+		for _, char := range str {
+			if !unicode.IsSpace(char) && !unicode.IsNumber(char) {
+				return false, nil
+			}
+		}
+		return true, nil
+	}, "contain only numeric characters and whitespace")
 }
 
 // AlphaNumeric succeeds if actual is a string containing only alphanumeric characters.
@@ -89,45 +224,132 @@ func Numeric() types.BeMatcher {
 // As Numeric() matcher is considered to match on integers, AlphaNumeric() doesn't match on dots
 // So, consider AlphaNumericWithDots() then
 func AlphaNumeric() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
 
+		// empty string is not considered AlphaNumeric
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
 		// Check if it's an alphanumeric string
-		for _, char := range cast.AsString(actual) {
-			if !(('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z') || ('0' <= char && char <= '9')) {
+		for _, char := range str {
+			if !unicode.IsLetter(char) && !unicode.IsNumber(char) {
 				return false, nil
 			}
 		}
 
 		return true, nil
-	}))
+	}, "contain only alphabetic and numeric characters")
+}
+
+// AlphaNumericWhitespace succeeds if actual is a string containing only alphanumeric characters and whitespace.
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func AlphaNumericWhitespace() types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered AlphaNumericWhitespace
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// Check if it's an alphanumeric string
+		for _, char := range str {
+			if !unicode.IsLetter(char) && !unicode.IsNumber(char) && !unicode.IsSpace(char) {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	}, "contain only alphabetic, numeric characters and punctuation")
+}
+
+// AlphaNumericWithPunctuation succeeds if actual is a string containing only alphanumeric characters and punctuation.
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func AlphaNumericWithPunctuation() types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered AlphaNumericWithPunctuation
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// Check if it's an alphanumeric string
+		for _, char := range str {
+			if !unicode.IsLetter(char) && !unicode.IsNumber(char) && !unicode.IsPunct(char) {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	}, "contain only alphabetic, numeric characters and punctuation")
+}
+
+// AlphaNumericWhitespaceWithPunctuation succeeds if actual is a string containing alphanumeric, whitespace and punctuation.
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func AlphaNumericWhitespaceWithPunctuation() types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered AlphaNumericWithPunctuation
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// Check if it's an alphanumeric string
+		for _, char := range str {
+			if !unicode.IsLetter(char) && !unicode.IsNumber(char) && !unicode.IsPunct(char) && !unicode.IsSpace(char) {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	}, "contain only alphanumeric characters with whitespace and punctuation")
 }
 
 // AlphaNumericWithDots succeeds if actual is a string containing only alphanumeric characters and dots.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func AlphaNumericWithDots() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
 
+		// empty string is not considered AlphaNumericWithDots
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
 		// Check if it's an alphanumeric string
-		for _, char := range cast.AsString(actual) {
-			if !(('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z') || ('0' <= char && char <= '9') || char != '.') {
+		for _, char := range str {
+			if !unicode.IsLetter(char) && !unicode.IsNumber(char) && char != '.' {
 				return false, nil
 			}
 		}
 
 		return true, nil
-	}))
+	}, "contain only alphabetic, numeric characters and dot")
 }
 
 // Float succeeds if actual is a string representing a valid floating-point number.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func Float() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -135,7 +357,7 @@ func Float() types.BeMatcher {
 		// Check if it's a numeric string
 		_, err := strconv.ParseFloat(cast.AsString(actual), 64)
 		return err == nil, nil
-	}))
+	}, "be a string representation of a float value")
 }
 
 // Titled succeeds if actual is a string with the first letter of each word capitalized.
@@ -146,7 +368,7 @@ func Titled(languageArg ...language.Tag) types.BeMatcher {
 		lang = languageArg[0]
 	}
 
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -154,13 +376,13 @@ func Titled(languageArg ...language.Tag) types.BeMatcher {
 		str := cast.AsString(actual)
 
 		return cases.Title(lang).String(str) == str, nil
-	}))
+	}, "be titled")
 }
 
 // LowerCaseOnly succeeds if actual is a string containing only lowercase characters.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func LowerCaseOnly() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -168,33 +390,133 @@ func LowerCaseOnly() types.BeMatcher {
 		str := cast.AsString(actual)
 
 		return strings.ToLower(str) == str, nil
-	}))
+	}, "be lower-case")
+}
+
+// UpperCaseOnly succeeds if actual is a string containing only uppercase characters.
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func UpperCaseOnly() types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		str := cast.AsString(actual)
+
+		return strings.ToUpper(str) == str, nil
+	}, "be upper-case")
+}
+
+// ContainingSubstring succeeds if actual is a string containing only characters from a given set
+func ContainingSubstring(substr string) types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered ContainsOf
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		return strings.Contains(str, substr), nil
+
+	}, fmt.Sprintf("contain `%s` substring", substr))
+}
+
+// ContainingOnlyCharacters succeeds if actual is a string containing only characters from a given set
+func ContainingOnlyCharacters(characters string) types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered ContainsOf
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// string -> map[rune]struct{}{} as a lookup-table
+		allowedSet := make(map[rune]struct{})
+		for _, char := range characters {
+			allowedSet[char] = struct{}{}
+		}
+
+		// Check if it's an alphanumeric string
+		for _, char := range str {
+			if _, ok := allowedSet[char]; !ok {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	}, fmt.Sprintf("contain only `%s` characters", characters))
+}
+
+// ContainingCharacters succeeds if actual is a string containing all characters from a given set
+func ContainingCharacters(characters string) types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+		if len(characters) == 0 {
+			return true, nil
+		}
+
+		// empty string is not considered ContainingCharacters
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// string -> map[rune]struct{}{} as a lookup-table
+		requiredSet := make(map[rune]struct{})
+		for _, char := range characters {
+			requiredSet[char] = struct{}{}
+		}
+
+		actualSet := make(map[rune]struct{})
+		for _, char := range str {
+			actualSet[char] = struct{}{}
+		}
+
+		// Check if it's an alphanumeric string
+		for _, requiredChar := range characters {
+			if _, ok := actualSet[requiredChar]; !ok {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	}, fmt.Sprintf("contain all of `%s` characters", characters))
 }
 
 // MatchWildcard succeeds if actual matches given wildcard pattern.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func MatchWildcard(pattern string) types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
 
 		return wildcard.Match(pattern, cast.AsString(actual)), nil
-	}))
+	}, fmt.Sprintf("match wildcard %s", pattern))
 }
 
 // ValidEmail succeeds if actual is a valid email.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func ValidEmail() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
 
 		_, err := mail.ParseAddress(cast.AsString(actual))
-		// todo: do not lose the err
 		return err == nil, nil
-	}))
+
+	}, fmt.Sprintf("be a valid email"))
 }
 
 // MatchTemplate succeeds if actual matches given template pattern.
@@ -207,7 +529,7 @@ func ValidEmail() types.BeMatcher {
 //	Expect(someString).To(be_strings.MatchTemplate("Hello {{Name}}. Your number is {{Number}}", be_strings.Var("Name", "John"), be_strings.Var("Number", 3)))
 //	Expect(someString).To(be_strings.MatchTemplate("Hello {{Name}}. Good bye, {{Name}}.", be_strings.Var("Name", be_strings.Titled()))
 func MatchTemplate(template string, vars ...*V) types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -266,7 +588,9 @@ func MatchTemplate(template string, vars ...*V) types.BeMatcher {
 		}
 
 		return true, nil
-	}))
+	}, "match given template")
+	// todo: it hides the actual reason of failing from template variables
+	//       should be exposed
 }
 
 type V struct {

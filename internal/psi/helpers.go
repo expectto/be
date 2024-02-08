@@ -3,7 +3,6 @@ package psi
 import (
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
-	"github.com/onsi/gomega/gcustom"
 )
 
 // IsMatcher returns true if given input is either Omega or Gomock or a Psi matcher
@@ -30,8 +29,15 @@ func AsMatcher(m any) types.BeMatcher {
 	}
 }
 
-// WithCustomMessage is a wrapper for gcustom.MakeMatcher
-// todo: make `v any` so we can check here if it's types.BeMatcher of match-func
-func WithCustomMessage(v types.BeMatcher, message string) types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(v.Match, message))
+func IsMatchFunc(m any) bool {
+	_, ok := m.(func(any) (bool, error))
+	return ok
+}
+
+func AsMatchFunc(m any) func(any) (bool, error) {
+	v, ok := m.(func(any) (bool, error))
+	if !ok {
+		panic("match func must be func(any) (bool, error)")
+	}
+	return v
 }
