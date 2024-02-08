@@ -10,8 +10,13 @@ import (
 var _ = Describe("BeMath", func() {
 
 	DescribeTable("should positively match", func(matcher types.BeMatcher, actual any) {
+		// check gomega-compatible matching:
 		success, err := matcher.Match(actual)
 		Expect(err).Should(Succeed())
+		Expect(success).To(BeTrue())
+
+		// check gomock-compatible matching:
+		success = matcher.Matches(actual)
 		Expect(success).To(BeTrue())
 	},
 		Entry("10 GreaterThan 5", be_math.GreaterThan(5), 10),
@@ -71,8 +76,13 @@ var _ = Describe("BeMath", func() {
 	)
 
 	DescribeTable("should negatively match", func(matcher types.BeMatcher, actual any) {
+		// check gomega-compatible matching:
 		success, err := matcher.Match(actual)
 		Expect(err).Should(Succeed())
+		Expect(success).To(BeFalse())
+
+		// check gomock-compatible matching:
+		success = matcher.Matches(actual)
 		Expect(success).To(BeFalse())
 	},
 		Entry("5 is not GreaterThan 10", be_math.GreaterThan(10), 5),
