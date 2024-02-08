@@ -1,6 +1,6 @@
 module github.com/expectto/be
 
-go 1.22
+go 1.21
 
 require (
 	github.com/IGLOU-EU/go-wildcard v1.0.3 // latest

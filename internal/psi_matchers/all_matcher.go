@@ -66,3 +66,6 @@ func (m *AllMatcher) String() string {
 }
 
 // todo: AllMatcher.MatchMayChangeInTheFuture
+
+// todo: will be very nice if failure message will be slightly different
+// depending on which one matcher inside AndGroup fails
