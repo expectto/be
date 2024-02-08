@@ -63,7 +63,7 @@ func InRange(from any, fromInclusive bool, until any, untilInclusive bool) types
 		rightBracket = "]"
 	}
 
-	return WithCustomMessage(
+	return Psi(
 		psi_matchers.NewAllMatcher(cast.AsSliceOfAny(group)...),
 		fmt.Sprintf("be in range %s%v, %v%s", leftBracket, from, until, rightBracket),
 	)
@@ -71,7 +71,7 @@ func InRange(from any, fromInclusive bool, until any, untilInclusive bool) types
 
 // Odd succeeds if actual is an odd numeric value.
 func Odd() types.BeMatcher {
-	return WithCustomMessage(psi_matchers.NewAllMatcher(
+	return Psi(psi_matchers.NewAllMatcher(
 		be_reflected.AsInteger(),
 		gcustom.MakeMatcher(func(actual any) (bool, error) {
 			return cast.AsInt(actual)%2 != 0, nil
@@ -81,7 +81,7 @@ func Odd() types.BeMatcher {
 
 // Even succeeds if actual is an even numeric value.
 func Even() types.BeMatcher {
-	return WithCustomMessage(psi_matchers.NewAllMatcher(
+	return Psi(psi_matchers.NewAllMatcher(
 		be_reflected.AsInteger(),
 		gcustom.MakeMatcher(func(actual any) (bool, error) {
 			return cast.AsInt(actual)%2 == 0, nil
@@ -91,30 +91,30 @@ func Even() types.BeMatcher {
 
 // Negative succeeds if actual is a negative numeric value.
 func Negative() types.BeMatcher {
-	return WithCustomMessage(LessThan(0.0), "be negative")
+	return Psi(LessThan(0.0), "be negative")
 }
 
 // Positive succeeds if actual is a positive numeric value.
 func Positive() types.BeMatcher {
-	return WithCustomMessage(GreaterThan(0.0), "be positive")
+	return Psi(GreaterThan(0.0), "be positive")
 }
 
 // Zero succeeds if actual is numerically equal to zero.
 // Any type of int/float will work for comparison.
 func Zero() types.BeMatcher {
-	return WithCustomMessage(Approx(0, 0), "be zero")
+	return Psi(Approx(0, 0), "be zero")
 }
 
 // ApproxZero succeeds if actual is numerically approximately equal to zero
 // Any type of int/float will work for comparison.
 func ApproxZero() types.BeMatcher {
-	return WithCustomMessage(Approx(0, 1e-8), "be approximately zero")
+	return Psi(Approx(0, 1e-8), "be approximately zero")
 }
 
 // Integral succeeds if actual is an integral float, meaning it has zero decimal places.
 // This matcher checks if the numeric value has no fractional component.
 func Integral() types.BeMatcher {
-	return WithCustomMessage(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		f := cast.AsFloat(actual)
 		return f-float64(int(f)) == 0, nil
 	}, "be integral float value")
@@ -122,7 +122,7 @@ func Integral() types.BeMatcher {
 
 // DivisibleBy succeeds if actual is numerically divisible by the passed-in value.
 func DivisibleBy(divisor any) types.BeMatcher {
-	return WithCustomMessage(func(actual any) (bool, error) {
+	return Psi(func(actual any) (bool, error) {
 		return math.Mod(cast.AsFloat(actual), cast.AsFloat(divisor)) == 0, nil
 	}, fmt.Sprintf("be divisible by %v", divisor))
 }

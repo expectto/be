@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
+	"github.com/onsi/gomega/gcustom"
 )
 
 // Psi is a main converter function that converts given input into a PsiMatcher
@@ -23,8 +24,27 @@ func Psi(args ...any) types.BeMatcher {
 			// not sure, add more tests here
 			return WithFallibleTransform(args[0], nil)
 		}
+		// If a Match Func was given: simply wrap it in a matcher
+		if IsMatchFunc(args[0]) {
+			return AsMatcher(gcustom.MakeMatcher(AsMatchFunc(args[0])))
+		}
 
 		return AsMatcher(args[0])
+	}
+
+	// Special edge case:
+	// args = {MatchFunc, message}
+	// OR
+	// args = {Matcher, message}
+	if len(args) == 2 {
+		message, ok := args[1].(string)
+		if ok {
+			if IsMatchFunc(args[0]) {
+				return AsMatcher(gcustom.MakeMatcher(AsMatchFunc(args[0]), message))
+			} else if IsMatcher(args[0]) {
+				return AsMatcher(gcustom.MakeMatcher(AsMatcher(args[0]).Match, message))
+			}
+		}
 	}
 
 	matchers := make([]types.BeMatcher, 0)

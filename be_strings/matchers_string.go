@@ -35,7 +35,7 @@ var expectAvailableStringFormat = func(actual any) error {
 // NonEmptyString succeeds if actual is not an empty string.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func NonEmptyString() types.BeMatcher {
-	return WithCustomMessage(psi_matchers.NewAllMatcher(
+	return Psi(psi_matchers.NewAllMatcher(
 		be_reflected.AsString(),
 		psi_matchers.NewNotMatcher(gomega.BeEmpty()),
 	), "be non-empty string")
@@ -44,7 +44,7 @@ func NonEmptyString() types.BeMatcher {
 // EmptyString succeeds if actual is an empty string.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func EmptyString() types.BeMatcher {
-	return WithCustomMessage(psi_matchers.NewAllMatcher(
+	return Psi(psi_matchers.NewAllMatcher(
 		be_reflected.AsString(),
 		gomega.BeEmpty(),
 	), "be an empty string")
@@ -53,7 +53,7 @@ func EmptyString() types.BeMatcher {
 // Alpha succeeds if actual is a string containing only alphabetical characters.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func Alpha() types.BeMatcher {
-	return WithCustomMessage(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -72,7 +72,7 @@ func Alpha() types.BeMatcher {
 // Numeric succeeds if actual is a string representing a valid numeric integer.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func Numeric() types.BeMatcher {
-	return WithCustomMessage(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -88,7 +88,7 @@ func Numeric() types.BeMatcher {
 // As Numeric() matcher is considered to match on integers, AlphaNumeric() doesn't match on dots
 // So, consider AlphaNumericWithDots() then
 func AlphaNumeric() types.BeMatcher {
-	return WithCustomMessage(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -107,7 +107,7 @@ func AlphaNumeric() types.BeMatcher {
 // AlphaNumericWithDots succeeds if actual is a string containing only alphanumeric characters and dots.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func AlphaNumericWithDots() types.BeMatcher {
-	return WithCustomMessage(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -126,7 +126,7 @@ func AlphaNumericWithDots() types.BeMatcher {
 // Float succeeds if actual is a string representing a valid floating-point number.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func Float() types.BeMatcher {
-	return WithCustomMessage(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -145,7 +145,7 @@ func Titled(languageArg ...language.Tag) types.BeMatcher {
 		lang = languageArg[0]
 	}
 
-	return WithCustomMessage(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -159,7 +159,7 @@ func Titled(languageArg ...language.Tag) types.BeMatcher {
 // LowerCaseOnly succeeds if actual is a string containing only lowercase characters.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func LowerCaseOnly() types.BeMatcher {
-	return WithCustomMessage(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -173,7 +173,7 @@ func LowerCaseOnly() types.BeMatcher {
 // MatchWildcard succeeds if actual matches given wildcard pattern.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func MatchWildcard(pattern string) types.BeMatcher {
-	return WithCustomMessage(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -185,7 +185,7 @@ func MatchWildcard(pattern string) types.BeMatcher {
 // ValidEmail succeeds if actual is a valid email.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func ValidEmail() types.BeMatcher {
-	return WithCustomMessage(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -206,7 +206,7 @@ func ValidEmail() types.BeMatcher {
 //	Expect(someString).To(be_strings.MatchTemplate("Hello {{Name}}. Your number is {{Number}}", be_strings.Var("Name", "John"), be_strings.Var("Number", 3)))
 //	Expect(someString).To(be_strings.MatchTemplate("Hello {{Name}}. Good bye, {{Name}}.", be_strings.Var("Name", be_strings.Titled()))
 func MatchTemplate(template string, vars ...*V) types.BeMatcher {
-	return WithCustomMessage(func(actual interface{}) (bool, error) {
+	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
