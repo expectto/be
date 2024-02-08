@@ -58,8 +58,14 @@ func Alpha() types.BeMatcher {
 			return false, err
 		}
 
+		// empty string is not considered Alpha
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
 		// Check if it contains only letters
-		for _, char := range cast.AsString(actual) {
+		for _, char := range str {
 			if !unicode.IsLetter(char) {
 				return false, nil
 			}
@@ -67,6 +73,106 @@ func Alpha() types.BeMatcher {
 
 		return true, nil
 	}, "contain only alphabetical characters")
+}
+
+// AlphaWhitespace succeeds if actual is a string containing only alphabetical and whitespace characters.
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func AlphaWhitespace() types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered AlphaWithSpace
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// Check if it contains only letters
+		for _, char := range str {
+			if !unicode.IsLetter(char) && !unicode.IsSpace(char) {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	}, "contain only alphabetical and whitespace characters")
+}
+
+// AlphaWithPunctuation succeeds if actual is a string containing only alphabetical characters.
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func AlphaWithPunctuation() types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered AlphaWithPunctuation
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// Check if it contains only letters
+		for _, char := range str {
+			if !unicode.IsLetter(char) && !unicode.IsPunct(char) {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	}, "contain only alphabetical and punctuational characters")
+}
+
+// AlphaWhitespaceWithPunctuation succeeds if actual is a string containing only alphabetical characters with whitespace and punctuation..
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func AlphaWhitespaceWithPunctuation() types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered AlphaWithPunctuation
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// Check if it contains only letters
+		for _, char := range str {
+			if !unicode.IsLetter(char) && !unicode.IsPunct(char) && !unicode.IsSpace(char) {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	}, "contain only alphabetical characters and punctuation")
+}
+
+// Whitespace succeeds if actual is a string containing only whitespace characters.
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func Whitespace() types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered AlphaWithPunctuation
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// Check if it contains only letters
+		for _, char := range str {
+			if !unicode.IsSpace(char) {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	}, "contain only whitespace characters")
 }
 
 // Numeric succeeds if actual is a string representing a valid numeric integer.
@@ -77,10 +183,40 @@ func Numeric() types.BeMatcher {
 			return false, err
 		}
 
+		// empty string is not considered Numeric
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
 		// Check if it's a numeric string
-		_, err := strconv.ParseInt(cast.AsString(actual), 10, 64)
+		_, err := strconv.ParseInt(str, 10, 64)
 		return err == nil, nil
 	}, "contain only numeric characters")
+}
+
+// NumericWhitespace succeeds if actual is a string containing only number characters and whitespace.
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func NumericWhitespace() types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered Numeric
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// Check if it contains only letters
+		for _, char := range str {
+			if !unicode.IsSpace(char) && !unicode.IsNumber(char) {
+				return false, nil
+			}
+		}
+		return true, nil
+	}, "contain only numeric characters and whitespace")
 }
 
 // AlphaNumeric succeeds if actual is a string containing only alphanumeric characters.
@@ -93,15 +229,96 @@ func AlphaNumeric() types.BeMatcher {
 			return false, err
 		}
 
+		// empty string is not considered AlphaNumeric
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
 		// Check if it's an alphanumeric string
-		for _, char := range cast.AsString(actual) {
-			if !(('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z') || ('0' <= char && char <= '9')) {
+		for _, char := range str {
+			if !unicode.IsLetter(char) && !unicode.IsNumber(char) {
 				return false, nil
 			}
 		}
 
 		return true, nil
 	}, "contain only alphabetic and numeric characters")
+}
+
+// AlphaNumericWhitespace succeeds if actual is a string containing only alphanumeric characters and whitespace.
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func AlphaNumericWhitespace() types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered AlphaNumericWhitespace
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// Check if it's an alphanumeric string
+		for _, char := range str {
+			if !unicode.IsLetter(char) && !unicode.IsNumber(char) && !unicode.IsSpace(char) {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	}, "contain only alphabetic, numeric characters and punctuation")
+}
+
+// AlphaNumericWithPunctuation succeeds if actual is a string containing only alphanumeric characters and punctuation.
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func AlphaNumericWithPunctuation() types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered AlphaNumericWithPunctuation
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// Check if it's an alphanumeric string
+		for _, char := range str {
+			if !unicode.IsLetter(char) && !unicode.IsNumber(char) && !unicode.IsPunct(char) {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	}, "contain only alphabetic, numeric characters and punctuation")
+}
+
+// AlphaNumericWhitespaceWithPunctuation succeeds if actual is a string containing alphanumeric, whitespace and punctuation.
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func AlphaNumericWhitespaceWithPunctuation() types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered AlphaNumericWithPunctuation
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// Check if it's an alphanumeric string
+		for _, char := range str {
+			if !unicode.IsLetter(char) && !unicode.IsNumber(char) && !unicode.IsPunct(char) && !unicode.IsSpace(char) {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	}, "contain only alphanumeric characters with whitespace and punctuation")
 }
 
 // AlphaNumericWithDots succeeds if actual is a string containing only alphanumeric characters and dots.
@@ -112,9 +329,15 @@ func AlphaNumericWithDots() types.BeMatcher {
 			return false, err
 		}
 
+		// empty string is not considered AlphaNumericWithDots
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
 		// Check if it's an alphanumeric string
-		for _, char := range cast.AsString(actual) {
-			if !(('a' <= char && char <= 'z') || ('A' <= char && char <= 'Z') || ('0' <= char && char <= '9') || char != '.') {
+		for _, char := range str {
+			if !unicode.IsLetter(char) && !unicode.IsNumber(char) && char != '.' {
 				return false, nil
 			}
 		}
@@ -168,6 +391,106 @@ func LowerCaseOnly() types.BeMatcher {
 
 		return strings.ToLower(str) == str, nil
 	}, "be lower-case")
+}
+
+// UpperCaseOnly succeeds if actual is a string containing only uppercase characters.
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func UpperCaseOnly() types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		str := cast.AsString(actual)
+
+		return strings.ToUpper(str) == str, nil
+	}, "be upper-case")
+}
+
+// ContainingSubstring succeeds if actual is a string containing only characters from a given set
+func ContainingSubstring(substr string) types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered ContainsOf
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		return strings.Contains(str, substr), nil
+
+	}, fmt.Sprintf("contain `%s` substring", substr))
+}
+
+// ContainingOnlyCharacters succeeds if actual is a string containing only characters from a given set
+func ContainingOnlyCharacters(characters string) types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+
+		// empty string is not considered ContainsOf
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// string -> map[rune]struct{}{} as a lookup-table
+		allowedSet := make(map[rune]struct{})
+		for _, char := range characters {
+			allowedSet[char] = struct{}{}
+		}
+
+		// Check if it's an alphanumeric string
+		for _, char := range str {
+			if _, ok := allowedSet[char]; !ok {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	}, fmt.Sprintf("contain only `%s` characters", characters))
+}
+
+// ContainingCharacters succeeds if actual is a string containing all characters from a given set
+func ContainingCharacters(characters string) types.BeMatcher {
+	return Psi(func(actual interface{}) (bool, error) {
+		if err := expectAvailableStringFormat(actual); err != nil {
+			return false, err
+		}
+		if len(characters) == 0 {
+			return true, nil
+		}
+
+		// empty string is not considered ContainingCharacters
+		str := cast.AsString(actual)
+		if str == "" {
+			return false, nil
+		}
+
+		// string -> map[rune]struct{}{} as a lookup-table
+		requiredSet := make(map[rune]struct{})
+		for _, char := range characters {
+			requiredSet[char] = struct{}{}
+		}
+
+		actualSet := make(map[rune]struct{})
+		for _, char := range str {
+			actualSet[char] = struct{}{}
+		}
+
+		// Check if it's an alphanumeric string
+		for _, requiredChar := range characters {
+			if _, ok := actualSet[requiredChar]; !ok {
+				return false, nil
+			}
+		}
+
+		return true, nil
+	}, fmt.Sprintf("contain all of `%s` characters", characters))
 }
 
 // MatchWildcard succeeds if actual matches given wildcard pattern.
