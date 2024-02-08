@@ -1,8 +1,8 @@
-# be_strings
+# be_string
 --
-    import "github.com/expectto/be/be_strings"
+    import "github.com/expectto/be/be_string"
 
-Package be_strings provides Be matchers for string-related assertions.
+Package be_string provides Be matchers for string-related assertions.
 
 ## Usage
 
@@ -149,8 +149,8 @@ or a matcher
 
 E.g.
 
-    Expect(someString).To(be_strings.MatchTemplate("Hello {{Name}}. Your number is {{Number}}", be_strings.Var("Name", "John"), be_strings.Var("Number", 3)))
-    Expect(someString).To(be_strings.MatchTemplate("Hello {{Name}}. Good bye, {{Name}}.", be_strings.Var("Name", be_strings.Titled()))
+    Expect(someString).To(be_string.MatchTemplate("Hello {{Name}}. Your number is {{Number}}", be_string.Var("Name", "John"), be_string.Var("Number", 3)))
+    Expect(someString).To(be_string.MatchTemplate("Hello {{Name}}. Good bye, {{Name}}.", be_string.Var("Name", be_string.Titled()))
 
 #### func  MatchWildcard
 

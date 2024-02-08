@@ -4,7 +4,7 @@ import (
 	"github.com/expectto/be/be_ctx"
 	"github.com/expectto/be/be_http"
 	"github.com/expectto/be/be_jwt"
-	"github.com/expectto/be/be_strings"
+	"github.com/expectto/be/be_string"
 	"github.com/expectto/be/be_url"
 )
 
@@ -17,8 +17,8 @@ var URL = be_url.URL
 // JwtToken is an alias for be_jwt.Token matcher
 var JwtToken = be_jwt.Token
 
-// StringAsTemplate is an alias for be_strings.MatchTemplate matcher
-var StringAsTemplate = be_strings.MatchTemplate
+// StringAsTemplate is an alias for be_string.MatchTemplate matcher
+var StringAsTemplate = be_string.MatchTemplate
 
 // Ctx is an alias for be_ctx.Ctx
 var Ctx = be_ctx.Ctx

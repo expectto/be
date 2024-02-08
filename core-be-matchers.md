@@ -21,9 +21,9 @@ var JwtToken = be_jwt.Token
 JwtToken is an alias for be_jwt.Token matcher
 
 ```go
-var StringAsTemplate = be_strings.MatchTemplate
+var StringAsTemplate = be_string.MatchTemplate
 ```
-StringAsTemplate is an alias for be_strings.MatchTemplate matcher
+StringAsTemplate is an alias for be_string.MatchTemplate matcher
 
 ```go
 var URL = be_url.URL
@@ -50,6 +50,29 @@ Always does always match
 func Any(ms ...any) types.BeMatcher
 ```
 Any is like gomega.Or()
+
+#### func  Dive
+
+```go
+func Dive(matcher any) types.BeMatcher
+```
+Dive applies the given matcher to each (every) element of the slice. Note: Dive
+is very close to gomega.HaveEach
+
+#### func  DiveAny
+
+```go
+func DiveAny(matcher any) types.BeMatcher
+```
+DiveAny applies the given matcher to each element and succeeds in case if it
+succeeds at least at one item
+
+#### func  DiveFirst
+
+```go
+func DiveFirst(matcher any) types.BeMatcher
+```
+DiveFirst applies the given matcher to the first element of the given slice
 
 #### func  Eq
 

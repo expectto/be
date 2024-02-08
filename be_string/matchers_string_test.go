@@ -1,4 +1,4 @@
-package be_strings
+package be_string
 
 import (
 	"github.com/expectto/be/types"

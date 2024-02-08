@@ -47,6 +47,14 @@ var TransformSignedJwtFromString = func(secret string) func(string) any {
 TransformSignedJwtFromString returns a transform function (string->*jwt.Token)
 for a given secret.
 
+#### func  HavingClaim
+
+```go
+func HavingClaim(key string, args ...any) types.BeMatcher
+```
+HavingClaim succeeds if the actual value is a JWT token and its claim matches
+the provided value or matchers.
+
 #### func  HavingClaims
 
 ```go

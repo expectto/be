@@ -1,5 +1,5 @@
-// Package be_strings provides Be matchers for string-related assertions.
-package be_strings
+// Package be_string provides Be matchers for string-related assertions.
+package be_string
 
 import (
 	"fmt"
@@ -526,8 +526,8 @@ func ValidEmail() types.BeMatcher {
 //
 // E.g.
 //
-//	Expect(someString).To(be_strings.MatchTemplate("Hello {{Name}}. Your number is {{Number}}", be_strings.Var("Name", "John"), be_strings.Var("Number", 3)))
-//	Expect(someString).To(be_strings.MatchTemplate("Hello {{Name}}. Good bye, {{Name}}.", be_strings.Var("Name", be_strings.Titled()))
+//	Expect(someString).To(be_string.MatchTemplate("Hello {{Name}}. Your number is {{Number}}", be_string.Var("Name", "John"), be_string.Var("Number", 3)))
+//	Expect(someString).To(be_string.MatchTemplate("Hello {{Name}}. Good bye, {{Name}}.", be_string.Var("Name", be_string.Titled()))
 func MatchTemplate(template string, vars ...*V) types.BeMatcher {
 	return Psi(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
