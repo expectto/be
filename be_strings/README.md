@@ -25,6 +25,24 @@ SetStringFormat method). As Numeric() matcher is considered to match on
 integers, AlphaNumeric() doesn't match on dots So, consider
 AlphaNumericWithDots() then
 
+#### func  AlphaNumericWhitespace
+
+```go
+func AlphaNumericWhitespace() types.BeMatcher
+```
+AlphaNumericWhitespace succeeds if actual is a string containing only
+alphanumeric characters and whitespace. Actual must be a string-like value (can
+be adjusted via SetStringFormat method).
+
+#### func  AlphaNumericWhitespaceWithPunctuation
+
+```go
+func AlphaNumericWhitespaceWithPunctuation() types.BeMatcher
+```
+AlphaNumericWhitespaceWithPunctuation succeeds if actual is a string containing
+alphanumeric, whitespace and punctuation. Actual must be a string-like value
+(can be adjusted via SetStringFormat method).
+
 #### func  AlphaNumericWithDots
 
 ```go
@@ -33,6 +51,66 @@ func AlphaNumericWithDots() types.BeMatcher
 AlphaNumericWithDots succeeds if actual is a string containing only alphanumeric
 characters and dots. Actual must be a string-like value (can be adjusted via
 SetStringFormat method).
+
+#### func  AlphaNumericWithPunctuation
+
+```go
+func AlphaNumericWithPunctuation() types.BeMatcher
+```
+AlphaNumericWithPunctuation succeeds if actual is a string containing only
+alphanumeric characters and punctuation. Actual must be a string-like value (can
+be adjusted via SetStringFormat method).
+
+#### func  AlphaWhitespace
+
+```go
+func AlphaWhitespace() types.BeMatcher
+```
+AlphaWhitespace succeeds if actual is a string containing only alphabetical and
+whitespace characters. Actual must be a string-like value (can be adjusted via
+SetStringFormat method).
+
+#### func  AlphaWhitespaceWithPunctuation
+
+```go
+func AlphaWhitespaceWithPunctuation() types.BeMatcher
+```
+AlphaWhitespaceWithPunctuation succeeds if actual is a string containing only
+alphabetical characters with whitespace and punctuation.. Actual must be a
+string-like value (can be adjusted via SetStringFormat method).
+
+#### func  AlphaWithPunctuation
+
+```go
+func AlphaWithPunctuation() types.BeMatcher
+```
+AlphaWithPunctuation succeeds if actual is a string containing only alphabetical
+characters. Actual must be a string-like value (can be adjusted via
+SetStringFormat method).
+
+#### func  ContainingCharacters
+
+```go
+func ContainingCharacters(characters string) types.BeMatcher
+```
+ContainingCharacters succeeds if actual is a string containing all characters
+from a given set
+
+#### func  ContainingOnlyCharacters
+
+```go
+func ContainingOnlyCharacters(characters string) types.BeMatcher
+```
+ContainingOnlyCharacters succeeds if actual is a string containing only
+characters from a given set
+
+#### func  ContainingSubstring
+
+```go
+func ContainingSubstring(substr string) types.BeMatcher
+```
+ContainingSubstring succeeds if actual is a string containing only characters
+from a given set
 
 #### func  EmptyString
 
@@ -98,6 +176,15 @@ func Numeric() types.BeMatcher
 Numeric succeeds if actual is a string representing a valid numeric integer.
 Actual must be a string-like value (can be adjusted via SetStringFormat method).
 
+#### func  NumericWhitespace
+
+```go
+func NumericWhitespace() types.BeMatcher
+```
+NumericWhitespace succeeds if actual is a string containing only number
+characters and whitespace. Actual must be a string-like value (can be adjusted
+via SetStringFormat method).
+
 #### func  Titled
 
 ```go
@@ -107,6 +194,15 @@ Titled succeeds if actual is a string with the first letter of each word
 capitalized. Actual must be a string-like value (can be adjusted via
 SetStringFormat method).
 
+#### func  UpperCaseOnly
+
+```go
+func UpperCaseOnly() types.BeMatcher
+```
+UpperCaseOnly succeeds if actual is a string containing only uppercase
+characters. Actual must be a string-like value (can be adjusted via
+SetStringFormat method).
+
 #### func  ValidEmail
 
 ```go
@@ -114,6 +210,14 @@ func ValidEmail() types.BeMatcher
 ```
 ValidEmail succeeds if actual is a valid email. Actual must be a string-like
 value (can be adjusted via SetStringFormat method).
+
+#### func  Whitespace
+
+```go
+func Whitespace() types.BeMatcher
+```
+Whitespace succeeds if actual is a string containing only whitespace characters.
+Actual must be a string-like value (can be adjusted via SetStringFormat method).
 
 #### type V
 
