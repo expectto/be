@@ -5,6 +5,7 @@ import (
 	"github.com/expectto/be/types"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"strings"
 )
 
 var _ = Describe("BeMath", func() {
@@ -114,11 +115,13 @@ var _ = Describe("BeMath", func() {
 		Entry("4 is not an odd number", be_math.Odd(), 4),
 		Entry("-2 is not an odd number", be_math.Odd(), -2),
 		Entry("-4 is not an odd number", be_math.Odd(), -4),
+		Entry("floats can't be matched as odd numbers", be_math.Odd(), 1.5),
 
 		Entry("3 is not an even number", be_math.Even(), 3),
 		Entry("7 is not an even number", be_math.Even(), 7),
 		Entry("-3 is not an even number", be_math.Even(), -3),
 		Entry("-7 is not an even number", be_math.Even(), -7),
+		Entry("floats can't be matched as even numbers", be_math.Even(), 1.5),
 
 		Entry("5 is not a negative number", be_math.Negative(), 5),
 		Entry("8.5 is not a negative number", be_math.Negative(), 8.5),
@@ -137,11 +140,27 @@ var _ = Describe("BeMath", func() {
 	)
 
 	DescribeTable("should return a valid failure message", func(matcher types.BeMatcher, actual any, message string) {
-		Expect(matcher.FailureMessage(actual)).To(Equal(message))
-	},
-		Entry("5 is not GreaterThan 10", be_math.GreaterThan(10), 5, "Expected\n    <int>: 5\nto be >\n    <int>: 10"),
-		Entry("10 is not divisible by 3", be_math.DivisibleBy(3), 10, "Expected:\n    <int>: 10\nto be divisible by 3"),
+		// FailureMessage is considered to be called after matching:
+		_, _ = matcher.Match(actual)
 
+		failureMessage := matcher.FailureMessage(actual)
+		Expect(failureMessage).To(Equal(message))
+
+		// in all our matchers negated failure messages are simply `to be` => `not to be`
+		Expect(matcher.NegatedFailureMessage(actual)).To(Equal(
+			strings.Replace(failureMessage, "\nto be ", "\nnot to be ", 1),
+		))
+	},
+		// Example of entry where FailureMessage is simply inherited from gomega's underlying matching
+		Entry("5 is not GreaterThan 10", be_math.GreaterThan(10), 5, "Expected\n    <int>: 5\nto be >\n    <int>: 10"),
+
+		// Examples of entry with custom message (gcustom.MakeMatcher matching)
+		Entry("10 is not divisible by 3", be_math.DivisibleBy(3), 10, "Expected:\n    <int>: 10\nto be divisible by 3"),
 		Entry("0.1 is not zero", be_math.Zero(), 0.1, "Expected:\n    <float64>: 0.1\nto be zero"),
+
+		// Examples of entry on complex Psi matchers (chaining + transform)
+		Entry("float is not odd", be_math.Odd(), 12.5, "Expected:\n    <float64>: 12.5\nto be an odd number"),
+		Entry("8 is not odd", be_math.Odd(), 8, "Expected:\n    <int>: 8\nto be an odd number"),
+		Entry("8 (uint) is not odd", be_math.Odd(), uint(8), "Expected:\n    <uint>: 8\nto be an odd number"),
 	)
 })

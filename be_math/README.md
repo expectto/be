@@ -34,8 +34,7 @@ DivisibleBy succeeds if actual is numerically divisible by the passed-in value.
 ```go
 func Even() types.BeMatcher
 ```
-Even succeeds if actual is an even numeric value. todo: test if failure message
-is OK
+Even succeeds if actual is an even numeric value.
 
 #### func  GreaterThan
 
@@ -128,8 +127,7 @@ Negative succeeds if actual is a negative numeric value.
 ```go
 func Odd() types.BeMatcher
 ```
-Odd succeeds if actual is an odd numeric value. todo: test if failure message is
-OK
+Odd succeeds if actual is an odd numeric value.
 
 #### func  Positive
 

@@ -10,6 +10,8 @@ import (
 	"reflect"
 )
 
+// TODO: unify tests. Let's make all tests like in `be_math`
+
 var _ = Describe("MatchersReflected", func() {
 	Context("AsKind", func() {
 		DescribeTable("should match kind", func(actual interface{}, expected reflect.Kind) {

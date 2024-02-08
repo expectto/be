@@ -3,7 +3,10 @@
     import "github.com/expectto/be/be_reflected"
 
 Package be_reflected provides Be matchers that use reflection, enabling
-expressive assertions on values' reflect kinds and types.
+expressive assertions on values' reflect kinds and types. It consists of several
+"core" matchers e.g. AsKind / AssignableTo / Implementing And many other
+matchers that are made on-top on core ones. E.g. AsFunc / AsString / AsNumber /
+### etc
 
 ## Usage
 
@@ -29,20 +32,20 @@ func AsFinalPointer() types.BeMatcher
 AsFinalPointer succeeds if the actual value is a final pointer, meaning it's a
 pointer to a non-pointer type.
 
-#### func  AsFloatish
+#### func  AsFloat
 
 ```go
-func AsFloatish() types.BeMatcher
+func AsFloat() types.BeMatcher
 ```
-AsFloatish succeeds if actual is a numeric value that represents a
-floating-point value.
+AsFloat succeeds if actual is a numeric value that represents a floating-point
+value.
 
-#### func  AsFloatishString
+#### func  AsFloatString
 
 ```go
-func AsFloatishString() types.BeMatcher
+func AsFloatString() types.BeMatcher
 ```
-AsFloatishString succeeds if actual is a string that can be parsed into a valid
+AsFloatString succeeds if actual is a string that can be parsed into a valid
 floating-point value.
 
 #### func  AsFunc
@@ -52,20 +55,20 @@ func AsFunc() types.BeMatcher
 ```
 AsFunc succeeds if actual is of kind reflect.Func.
 
-#### func  AsIntish
+#### func  AsInteger
 
 ```go
-func AsIntish() types.BeMatcher
+func AsInteger() types.BeMatcher
 ```
-AsIntish succeeds if actual is a numeric value that represents an integer (from
+AsInteger succeeds if actual is a numeric value that represents an integer (from
 reflect.Int up to reflect.Uint64).
 
-#### func  AsIntishString
+#### func  AsIntegerString
 
 ```go
-func AsIntishString() types.BeMatcher
+func AsIntegerString() types.BeMatcher
 ```
-AsIntishString succeeds if actual is a string that can be parsed into a valid
+AsIntegerString succeeds if actual is a string that can be parsed into a valid
 integer value.
 
 #### func  AsKind
@@ -83,12 +86,12 @@ func AsMap() types.BeMatcher
 ```
 AsMap succeeds if actual is of kind reflect.Map.
 
-#### func  AsNumeric
+#### func  AsNumber
 
 ```go
-func AsNumeric() types.BeMatcher
+func AsNumber() types.BeMatcher
 ```
-AsNumeric succeeds if actual is a numeric value, supporting various integer
+AsNumber succeeds if actual is a numeric value, supporting various integer
 kinds: reflect.Int, ... reflect.Int64, and floating-point kinds:
 reflect.Float32, reflect.Float64
 

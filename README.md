@@ -72,7 +72,7 @@ Expect(req).To(be_http.Request(
         be_json.Matcher(
             be_json.JsonAsReader,
             be_json.HaveKeyValue("hello", "world"),
-            be_json.HaveKeyValue("n", be_reflected.AsIntish()),
+            be_json.HaveKeyValue("n", be_reflected.AsInteger()),
             be_json.HaveKeyValue("ids", be_reflected.AsSliceOf[string]),
             be_json.HaveKeyValue("details", And(
                 be_reflected.AsObjects(),
@@ -121,7 +121,7 @@ types.<br>[See detailed docs](be_reflected/README.md)
 
 #### Data Type Matchers based on reflect.Kind
 
-`AsString`, `AsBytes`, `AsNumeric`, `AsNumericString`, `AsIntish`, `AsIntishString`, `AsFloatish`, `AsFloatishString`,
+`AsString`, `AsBytes`, `AsNumeric`, `AsNumericString`, `AsInteger`, `AsIntegerString`, `AsFloat`, `AsFloatishString`,
 
 #### Interface Matchers based on reflect.Kind
 

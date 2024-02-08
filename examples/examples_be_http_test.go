@@ -80,8 +80,8 @@ var _ = Describe("matchers_http", func() {
 				be_json.Matcher(
 					be_json.JsonAsReader,
 					be_json.HaveKeyValue("hello", "world"),
-					// TODO: AsIntish should work here, but it's not (as from payload via string, it's float)
-					be_json.HaveKeyValue("n", be_reflected.AsFloatish()), // any int number
+					// TODO: AsInteger should work here, but it's not (as from payload via string, it's float)
+					be_json.HaveKeyValue("n", be_reflected.AsFloat()), // any int number
 					// TODO: fix me
 					//be_json.HaveKeyValue("ids", be_reflected.AsSliceOf[string]),
 					be_json.HaveKeyValue("details", And(

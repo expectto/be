@@ -53,51 +53,62 @@ func InRange(from any, fromInclusive bool, until any, untilInclusive bool) types
 	} else {
 		group[1] = Lt(until)
 	}
-	return psi_matchers.NewAllMatcher(cast.AsSliceOfAny(group)...)
+
+	// For compiling a nice failure message we better use `[from, until)` format
+	leftBracket, rightBracket := "(", ")"
+	if fromInclusive {
+		leftBracket = "["
+	}
+	if untilInclusive {
+		rightBracket = "]"
+	}
+
+	return WithCustomMessage(
+		psi_matchers.NewAllMatcher(cast.AsSliceOfAny(group)...),
+		fmt.Sprintf("be in range %s%v, %v%s", leftBracket, from, until, rightBracket),
+	)
 }
 
 // Odd succeeds if actual is an odd numeric value.
-// todo: test if failure message is OK
 func Odd() types.BeMatcher {
-	return Psi(
-		be_reflected.AsIntish(),
+	return WithCustomMessage(psi_matchers.NewAllMatcher(
+		be_reflected.AsInteger(),
 		WithFallibleTransform(func(actual any) any {
 			return int(cast.AsFloat(actual))%2 != 0
 		}, gomega.BeTrue()),
-	)
+	), "be an odd number")
 }
 
 // Even succeeds if actual is an even numeric value.
-// todo: test if failure message is OK
 func Even() types.BeMatcher {
-	return Psi(
-		be_reflected.AsIntish(),
+	return WithCustomMessage(psi_matchers.NewAllMatcher(
+		be_reflected.AsInteger(),
 		WithFallibleTransform(func(actual any) any {
 			return int(cast.AsFloat(actual))%2 == 0
 		}, gomega.BeTrue()),
-	)
+	), "be an even number")
 }
 
 // Negative succeeds if actual is a negative numeric value.
 func Negative() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(LessThan(0.0).Match, "be negative"))
+	return WithCustomMessage(LessThan(0.0), "be negative")
 }
 
 // Positive succeeds if actual is a positive numeric value.
 func Positive() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(GreaterThan(0.0).Match, "be positive"))
+	return WithCustomMessage(GreaterThan(0.0), "be positive")
 }
 
 // Zero succeeds if actual is numerically equal to zero.
 // Any type of int/float will work for comparison.
 func Zero() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(Approx(0, 0).Match, "be zero"))
+	return WithCustomMessage(Approx(0, 0), "be zero")
 }
 
 // ApproxZero succeeds if actual is numerically approximately equal to zero
 // Any type of int/float will work for comparison.
 func ApproxZero() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(Approx(0, 1e-8).Match, "be approximately zero"))
+	return WithCustomMessage(Approx(0, 1e-8), "be approximately zero")
 }
 
 // Integral succeeds if actual is an integral float, meaning it has zero decimal places.
