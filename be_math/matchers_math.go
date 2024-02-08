@@ -9,6 +9,7 @@ import (
 	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
+	"github.com/onsi/gomega/gcustom"
 	"math"
 )
 
@@ -72,9 +73,9 @@ func InRange(from any, fromInclusive bool, until any, untilInclusive bool) types
 func Odd() types.BeMatcher {
 	return WithCustomMessage(psi_matchers.NewAllMatcher(
 		be_reflected.AsInteger(),
-		WithFallibleTransform(func(actual any) any {
-			return int(cast.AsFloat(actual))%2 != 0
-		}, gomega.BeTrue()),
+		gcustom.MakeMatcher(func(actual any) (bool, error) {
+			return cast.AsInt(actual)%2 != 0, nil
+		}),
 	), "be an odd number")
 }
 
@@ -82,9 +83,9 @@ func Odd() types.BeMatcher {
 func Even() types.BeMatcher {
 	return WithCustomMessage(psi_matchers.NewAllMatcher(
 		be_reflected.AsInteger(),
-		WithFallibleTransform(func(actual any) any {
-			return int(cast.AsFloat(actual))%2 == 0
-		}, gomega.BeTrue()),
+		gcustom.MakeMatcher(func(actual any) (bool, error) {
+			return cast.AsInt(actual)%2 == 0, nil
+		}),
 	), "be an even number")
 }
 
