@@ -31,7 +31,14 @@ func AsMatcher(m any) types.BeMatcher {
 }
 
 // WithCustomMessage is a wrapper for gcustom.MakeMatcher
-// todo: make `v any` so we can check here if it's types.BeMatcher of match-func
-func WithCustomMessage(v types.BeMatcher, message string) types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(v.Match, message))
+func WithCustomMessage(v any, message string) types.BeMatcher {
+	var matcherFn any
+	switch t := v.(type) {
+	case types.BeMatcher:
+		matcherFn = t.Match
+	case func(any) (bool, error):
+		matcherFn = t
+	}
+
+	return Psi(gcustom.MakeMatcher(matcherFn, message))
 }

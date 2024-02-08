@@ -10,7 +10,6 @@ import (
 	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
-	"github.com/onsi/gomega/gcustom"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"net/mail"
@@ -36,25 +35,25 @@ var expectAvailableStringFormat = func(actual any) error {
 // NonEmptyString succeeds if actual is not an empty string.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func NonEmptyString() types.BeMatcher {
-	return psi_matchers.NewAllMatcher(
+	return WithCustomMessage(psi_matchers.NewAllMatcher(
 		be_reflected.AsString(),
 		psi_matchers.NewNotMatcher(gomega.BeEmpty()),
-	)
+	), "be non-empty string")
 }
 
 // EmptyString succeeds if actual is an empty string.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func EmptyString() types.BeMatcher {
-	return psi_matchers.NewAllMatcher(
+	return WithCustomMessage(psi_matchers.NewAllMatcher(
 		be_reflected.AsString(),
-		Psi(gomega.BeEmpty()),
-	)
+		gomega.BeEmpty(),
+	), "be an empty string")
 }
 
 // Alpha succeeds if actual is a string containing only alphabetical characters.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func Alpha() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return WithCustomMessage(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -67,13 +66,13 @@ func Alpha() types.BeMatcher {
 		}
 
 		return true, nil
-	}))
+	}, "contain only alphabetical characters")
 }
 
 // Numeric succeeds if actual is a string representing a valid numeric integer.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func Numeric() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return WithCustomMessage(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -81,7 +80,7 @@ func Numeric() types.BeMatcher {
 		// Check if it's a numeric string
 		_, err := strconv.ParseInt(cast.AsString(actual), 10, 64)
 		return err == nil, nil
-	}))
+	}, "contain only numeric characters")
 }
 
 // AlphaNumeric succeeds if actual is a string containing only alphanumeric characters.
@@ -89,7 +88,7 @@ func Numeric() types.BeMatcher {
 // As Numeric() matcher is considered to match on integers, AlphaNumeric() doesn't match on dots
 // So, consider AlphaNumericWithDots() then
 func AlphaNumeric() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return WithCustomMessage(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -102,13 +101,13 @@ func AlphaNumeric() types.BeMatcher {
 		}
 
 		return true, nil
-	}))
+	}, "contain only alphabetic and numeric characters")
 }
 
 // AlphaNumericWithDots succeeds if actual is a string containing only alphanumeric characters and dots.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func AlphaNumericWithDots() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return WithCustomMessage(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -121,13 +120,13 @@ func AlphaNumericWithDots() types.BeMatcher {
 		}
 
 		return true, nil
-	}))
+	}, "contain only alphabetic, numeric characters and dot")
 }
 
 // Float succeeds if actual is a string representing a valid floating-point number.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func Float() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return WithCustomMessage(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -135,7 +134,7 @@ func Float() types.BeMatcher {
 		// Check if it's a numeric string
 		_, err := strconv.ParseFloat(cast.AsString(actual), 64)
 		return err == nil, nil
-	}))
+	}, "be a string representation of a float value")
 }
 
 // Titled succeeds if actual is a string with the first letter of each word capitalized.
@@ -146,7 +145,7 @@ func Titled(languageArg ...language.Tag) types.BeMatcher {
 		lang = languageArg[0]
 	}
 
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return WithCustomMessage(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -154,13 +153,13 @@ func Titled(languageArg ...language.Tag) types.BeMatcher {
 		str := cast.AsString(actual)
 
 		return cases.Title(lang).String(str) == str, nil
-	}))
+	}, "be titled")
 }
 
 // LowerCaseOnly succeeds if actual is a string containing only lowercase characters.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func LowerCaseOnly() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return WithCustomMessage(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -168,33 +167,33 @@ func LowerCaseOnly() types.BeMatcher {
 		str := cast.AsString(actual)
 
 		return strings.ToLower(str) == str, nil
-	}))
+	}, "be lower-case")
 }
 
 // MatchWildcard succeeds if actual matches given wildcard pattern.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func MatchWildcard(pattern string) types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return WithCustomMessage(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
 
 		return wildcard.Match(pattern, cast.AsString(actual)), nil
-	}))
+	}, fmt.Sprintf("match wildcard %s", pattern))
 }
 
 // ValidEmail succeeds if actual is a valid email.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func ValidEmail() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return WithCustomMessage(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
 
 		_, err := mail.ParseAddress(cast.AsString(actual))
-		// todo: do not lose the err
 		return err == nil, nil
-	}))
+
+	}, fmt.Sprintf("be a valid email"))
 }
 
 // MatchTemplate succeeds if actual matches given template pattern.
@@ -207,7 +206,7 @@ func ValidEmail() types.BeMatcher {
 //	Expect(someString).To(be_strings.MatchTemplate("Hello {{Name}}. Your number is {{Number}}", be_strings.Var("Name", "John"), be_strings.Var("Number", 3)))
 //	Expect(someString).To(be_strings.MatchTemplate("Hello {{Name}}. Good bye, {{Name}}.", be_strings.Var("Name", be_strings.Titled()))
 func MatchTemplate(template string, vars ...*V) types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return WithCustomMessage(func(actual interface{}) (bool, error) {
 		if err := expectAvailableStringFormat(actual); err != nil {
 			return false, err
 		}
@@ -266,7 +265,9 @@ func MatchTemplate(template string, vars ...*V) types.BeMatcher {
 		}
 
 		return true, nil
-	}))
+	}, "match given template")
+	// todo: it hides the actual reason of failing from template variables
+	//       should be exposed
 }
 
 type V struct {

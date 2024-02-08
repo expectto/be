@@ -9,7 +9,6 @@ import (
 	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
-	"github.com/onsi/gomega/gcustom"
 	"math"
 )
 
@@ -114,17 +113,17 @@ func ApproxZero() types.BeMatcher {
 // Integral succeeds if actual is an integral float, meaning it has zero decimal places.
 // This matcher checks if the numeric value has no fractional component.
 func Integral() types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual interface{}) (bool, error) {
+	return WithCustomMessage(func(actual interface{}) (bool, error) {
 		f := cast.AsFloat(actual)
 		return f-float64(int(f)) == 0, nil
-	}).WithMessage("be integral float value"))
+	}, "be integral float value")
 }
 
 // DivisibleBy succeeds if actual is numerically divisible by the passed-in value.
 func DivisibleBy(divisor any) types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
+	return WithCustomMessage(func(actual any) (bool, error) {
 		return math.Mod(cast.AsFloat(actual), cast.AsFloat(divisor)) == 0, nil
-	}).WithMessage(fmt.Sprintf("be divisible by %v", divisor)))
+	}, fmt.Sprintf("be divisible by %v", divisor))
 }
 
 // Shorter Names:
