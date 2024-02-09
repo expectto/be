@@ -20,7 +20,7 @@ comprehensive and straightforward.
     - [Be (core)](#core-be)
     - [Be Reflected](#be_reflected)
     - [Be Math](#be_math)
-    - [Be Strings](#be_strings)
+    - [Be String](#be_string)
     - [Be Time](#be_time)
     - [Be JWT](#be_jwt)
     - [Be URL](#be_url)
@@ -87,8 +87,8 @@ Expect(req).To(be_http.Request(
         // Matching HTTP headers
         be_http.HavingHeader("X-Custom", "Hey-There"),
         be_http.HavingHeader("Authorization",
-            be_strings.MatchTemplate("Bearer {{jwt}}",
-                be_strings.Var("jwt",
+            be_string.MatchTemplate("Bearer {{jwt}}",
+                be_string.Var("jwt",
                     be_jwt.Token(
                         be_jwt.Valid(),
                         be_jwt.HavingClaim("name", "John Doe"),
@@ -143,9 +143,9 @@ types.<br>[See detailed docs](be_reflected/README.md)
 
 `Gt`, `Gte`, `Lt`, `Lte`
 
-### be_strings
+### be_string
 
-📦 `be_strings` provides Be matchers for string-related assertions.<br>[See detailed docs](be_strings/README.md)
+📦 `be_string` provides Be matchers for string-related assertions.<br>[See detailed docs](be_string/README.md)
 
 #### Matchers on strings
 

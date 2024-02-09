@@ -7,7 +7,7 @@ import (
 	"github.com/expectto/be/be_json"
 	"github.com/expectto/be/be_jwt"
 	"github.com/expectto/be/be_reflected"
-	"github.com/expectto/be/be_strings"
+	"github.com/expectto/be/be_string"
 	"github.com/expectto/be/be_url"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -34,7 +34,7 @@ var _ = Describe("matchers_http", func() {
 			be_http.HavingHeader(
 				"Authorization",
 				be.StringAsTemplate("Bearer {{jwt}}",
-					be_strings.Var("jwt",
+					be_string.Var("jwt",
 						be.JwtToken(
 							be_jwt.TransformSignedJwtFromString("my-secret"),
 							be_jwt.Valid(),
@@ -100,8 +100,8 @@ var _ = Describe("matchers_http", func() {
 			be_http.HavingHeader("X-Custom", "Hey-There"),
 			be_http.HavingHeader(
 				"Authorization",
-				be_strings.MatchTemplate("Bearer {{jwt}}",
-					be_strings.Var("jwt",
+				be_string.MatchTemplate("Bearer {{jwt}}",
+					be_string.Var("jwt",
 						be_jwt.Token(
 							be_jwt.TransformJwtFromString,
 							be_jwt.HavingClaim("name", "John Doe"),
