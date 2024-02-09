@@ -6,88 +6,6 @@ Package be_string provides Be matchers for string-related assertions.
 
 ## Usage
 
-#### func  Alpha
-
-```go
-func Alpha() types.BeMatcher
-```
-Alpha succeeds if actual is a string containing only alphabetical characters.
-Actual must be a string-like value (can be adjusted via SetStringFormat method).
-
-#### func  AlphaNumeric
-
-```go
-func AlphaNumeric() types.BeMatcher
-```
-AlphaNumeric succeeds if actual is a string containing only alphanumeric
-characters. Actual must be a string-like value (can be adjusted via
-SetStringFormat method). As Numeric() matcher is considered to match on
-integers, AlphaNumeric() doesn't match on dots So, consider
-AlphaNumericWithDots() then
-
-#### func  AlphaNumericWhitespace
-
-```go
-func AlphaNumericWhitespace() types.BeMatcher
-```
-AlphaNumericWhitespace succeeds if actual is a string containing only
-alphanumeric characters and whitespace. Actual must be a string-like value (can
-be adjusted via SetStringFormat method).
-
-#### func  AlphaNumericWhitespaceWithPunctuation
-
-```go
-func AlphaNumericWhitespaceWithPunctuation() types.BeMatcher
-```
-AlphaNumericWhitespaceWithPunctuation succeeds if actual is a string containing
-alphanumeric, whitespace and punctuation. Actual must be a string-like value
-(can be adjusted via SetStringFormat method).
-
-#### func  AlphaNumericWithDots
-
-```go
-func AlphaNumericWithDots() types.BeMatcher
-```
-AlphaNumericWithDots succeeds if actual is a string containing only alphanumeric
-characters and dots. Actual must be a string-like value (can be adjusted via
-SetStringFormat method).
-
-#### func  AlphaNumericWithPunctuation
-
-```go
-func AlphaNumericWithPunctuation() types.BeMatcher
-```
-AlphaNumericWithPunctuation succeeds if actual is a string containing only
-alphanumeric characters and punctuation. Actual must be a string-like value (can
-be adjusted via SetStringFormat method).
-
-#### func  AlphaWhitespace
-
-```go
-func AlphaWhitespace() types.BeMatcher
-```
-AlphaWhitespace succeeds if actual is a string containing only alphabetical and
-whitespace characters. Actual must be a string-like value (can be adjusted via
-SetStringFormat method).
-
-#### func  AlphaWhitespaceWithPunctuation
-
-```go
-func AlphaWhitespaceWithPunctuation() types.BeMatcher
-```
-AlphaWhitespaceWithPunctuation succeeds if actual is a string containing only
-alphabetical characters with whitespace and punctuation.. Actual must be a
-string-like value (can be adjusted via SetStringFormat method).
-
-#### func  AlphaWithPunctuation
-
-```go
-func AlphaWithPunctuation() types.BeMatcher
-```
-AlphaWithPunctuation succeeds if actual is a string containing only alphabetical
-characters. Actual must be a string-like value (can be adjusted via
-SetStringFormat method).
-
 #### func  ContainingCharacters
 
 ```go
@@ -168,22 +86,13 @@ func NonEmptyString() types.BeMatcher
 NonEmptyString succeeds if actual is not an empty string. Actual must be a
 string-like value (can be adjusted via SetStringFormat method).
 
-#### func  Numeric
+#### func  Only
 
 ```go
-func Numeric() types.BeMatcher
+func Only(option StringOption) types.BeMatcher
 ```
-Numeric succeeds if actual is a string representing a valid numeric integer.
-Actual must be a string-like value (can be adjusted via SetStringFormat method).
-
-#### func  NumericWhitespace
-
-```go
-func NumericWhitespace() types.BeMatcher
-```
-NumericWhitespace succeeds if actual is a string containing only number
-characters and whitespace. Actual must be a string-like value (can be adjusted
-via SetStringFormat method).
+Only succeeds if actual is a string containing only characters described by
+given options Only() defaults to empty string matching
 
 #### func  Titled
 
@@ -211,13 +120,11 @@ func ValidEmail() types.BeMatcher
 ValidEmail succeeds if actual is a valid email. Actual must be a string-like
 value (can be adjusted via SetStringFormat method).
 
-#### func  Whitespace
+#### func  ValidateStringOption
 
 ```go
-func Whitespace() types.BeMatcher
+func ValidateStringOption(opt StringOption, r rune) bool
 ```
-Whitespace succeeds if actual is a string containing only whitespace characters.
-Actual must be a string-like value (can be adjusted via SetStringFormat method).
 
 #### type V
 

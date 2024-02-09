@@ -3,6 +3,7 @@ package examples
 import (
 	"github.com/expectto/be"
 	"github.com/expectto/be/be_string"
+	. "github.com/expectto/be/options"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -19,25 +20,25 @@ var _ = Describe("Showcase for MatchersString", func() {
 	})
 
 	It("should correctly match strings with only alphabets", func() {
-		Expect("abcXYZ").To(be_string.Alpha())
-		Expect("123abc").NotTo(be_string.Alpha())
+		Expect("abcXYZ").To(be_string.Only(Alpha))
+		Expect("123abc").NotTo(be_string.Only(Alpha))
 	})
 
 	It("should correctly match strings with only integer numeric values", func() {
-		Expect("123").To(be_string.Numeric())
-		Expect("abc123").NotTo(be_string.Numeric())
-		Expect("125.0").NotTo(be_string.Numeric())
+		Expect("123").To(be_string.Only(Numeric))
+		Expect("abc123").NotTo(be_string.Only(Numeric))
+		Expect("125.0").NotTo(be_string.Only(Numeric))
 	})
 
 	It("should correctly match strings with only float numeric values", func() {
-		Expect("123.0").NotTo(be_string.Numeric())
-		Expect("123").To(be_string.Float())     // float is a numeric as well
-		Expect(".5").NotTo(be_string.Numeric()) // leading zero is ok to be ommited
+		Expect("123.0").NotTo(be_string.Only(Numeric))
+		Expect("123").To(be_string.Float())         // float is a numeric as well
+		Expect(".5").NotTo(be_string.Only(Numeric)) // leading zero is ok to be ommited
 	})
 
 	It("should correctly match strings with alphanumeric values", func() {
-		Expect("abc123").To(be_string.AlphaNumeric())
-		Expect("!@#").NotTo(be_string.AlphaNumeric())
+		Expect("abc123").To(be_string.Only(Alpha | Numeric))
+		Expect("!@#").NotTo(be_string.Only(Alpha | Numeric))
 	})
 
 	It("should correctly match strings with title case", func() {
@@ -66,7 +67,7 @@ var _ = Describe("Showcase for MatchersString", func() {
 				be_string.MatchTemplate(
 					"Hello {{Name}}! Your number is {{Number}}. Goodbye {{Name}}.",
 					be_string.Var("Name", "John"),
-					be_string.Var("Number", be_string.Numeric()),
+					be_string.Var("Number", be_string.Only(Numeric)),
 				),
 			)
 			Expect("Invalid template").NotTo(be_string.MatchTemplate("Hello {{Name}}. Goodbye {{Name}}."))
