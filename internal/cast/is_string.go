@@ -11,11 +11,11 @@ import (
 // customizing the type-checking behavior, making it a versatile utility for testing code.
 // It supports both strict and non-strict mode checks, allowing you to precisely control
 // which types are considered string-like. It also provides options for handling custom types,
-// pointer dereferencing..
+// pointer de-referencing.
 //
 // Example Usage:
 //
-//	// In a non-strict check, allows custom types, pointer dereferencing
+//	// In a non-strict check, allows custom types, pointer de-referencing.
 //	IsString("example", AllowCustomTypes(), AllowPointers())) // returns true
 //
 //	// In a strict check, only actual strings are accepted

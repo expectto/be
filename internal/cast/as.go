@@ -340,7 +340,7 @@ func AsKind(a any) reflect.Kind {
 		return *t
 	}
 
-	// No reason to fallback to reflect here
+	// No reason to fall back to reflect here
 	// as too small chance that it will be a custom reflect.Kind type
 	// or a deeper pointer
 
