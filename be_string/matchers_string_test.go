@@ -6,6 +6,7 @@ import (
 	"github.com/expectto/be/types"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"math/rand"
 )
 
 var _ = Describe("BeStrings", func() {
@@ -204,6 +205,39 @@ var _ = Describe("BeStrings", func() {
 		Entry("ValidEmail: invalid email", be_string.ValidEmail(), "test@example@com"),
 		Entry("ValidEmail: just letters", be_string.ValidEmail(), "testexample"),
 		Entry("ValidEmail: numeric string", be_string.ValidEmail(), "1000"),
+	)
+
+	// todo: at some point Entries should be auto-generated
+	DescribeTable("non-string type tests", func(matcher types.BeMatcher) {
+		notStrings := []any{
+			0, false, map[string]any{}, []string{}, func() {}, nil,
+		}
+		actual := notStrings[rand.Intn(len(notStrings))] // not a string
+
+		// Check gomega-compatible matching:
+		success, err := matcher.Match(actual)
+		Expect(err).Should(Succeed())
+		Expect(success).To(BeFalse())
+
+		// Check gomock-compatible matching:
+		success = matcher.Matches(actual)
+		Expect(success).To(BeFalse())
+
+		// and the message should be the same
+		Expect(matcher.FailureMessage(actual)).To(HaveSuffix("to be type of string"))
+		Expect(matcher.NegatedFailureMessage(actual)).To(HaveSuffix("not to be type of string"))
+	},
+		Entry("NonEmptyString", be_string.NonEmptyString()),
+		Entry("EmptyString", be_string.EmptyString()),
+		Entry("Only(Alpha)", be_string.Only(Alpha)),
+		Entry("Float", be_string.Float()),
+		Entry("Titled", be_string.Titled()),
+		Entry("LowerCaseOnly", be_string.LowerCaseOnly()),
+		Entry("ContainingSubstring", be_string.ContainingSubstring("xyz")),
+		Entry("ContainingOnlyCharacters", be_string.ContainingOnlyCharacters("abc")),
+		Entry("ContainingCharacters", be_string.ContainingCharacters("abc")),
+		Entry("MatchWildcard", be_string.MatchWildcard("abc*")),
+		Entry("ValidEmail", be_string.ValidEmail()),
 	)
 
 })

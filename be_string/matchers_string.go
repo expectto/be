@@ -4,10 +4,8 @@ package be_string
 import (
 	"fmt"
 	"github.com/IGLOU-EU/go-wildcard" // used specifically for MatchWildcard matcher
-	"github.com/expectto/be/be_reflected"
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
-	"github.com/expectto/be/internal/psi_matchers"
 	. "github.com/expectto/be/options"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
@@ -20,17 +18,17 @@ import (
 	"unicode"
 )
 
-// todo: do a transform Stringish->String that is configurable (string/fuzzy strings)
-//
-//	and use it in any following string matcher
-//
-// Deprecated
-var expectAvailableStringFormat = func(actual any) error {
-	if !cast.IsString(actual, cast.AllowCustomTypes(), cast.AllowPointers()) {
-		return fmt.Errorf("string expected, got %T", actual)
-	}
-
-	return nil
+// psiString is a convenient wrapper for creating every be_string matcher
+// It simply wraps `Psi()` call to have a pre-matching for `checking type string`
+// and returning a separate clear message if `actual` is not of string type.
+var psiString = func(args ...any) types.BeMatcher {
+	return Psi(
+		Psi(func(actual any) (bool, error) {
+			// todo: IsString options should be configurable
+			return cast.IsString(actual, cast.AllowCustomTypes()), nil
+		}, "be type of string"),
+		Psi(args...),
+	)
 }
 
 // validateStringOption checks if string options satisfies given rune
@@ -71,14 +69,10 @@ func Only(option StringOption) types.BeMatcher {
 	for i := range options {
 		optionsStr[i] = options[i].String()
 	}
-
-	return Psi(func(actual interface{}) (bool, error) {
-		if err := expectAvailableStringFormat(actual); err != nil {
-			return false, err
-		}
-
-		// empty string is not considered Alpha
+	return psiString(func(actual any) (bool, error) {
 		str := cast.AsString(actual)
+
+		// empty string is not consider as any of string options
 		if str == "" {
 			return false, nil
 		}
@@ -99,33 +93,22 @@ func Only(option StringOption) types.BeMatcher {
 	}, fmt.Sprintf("contain only %s characters", strings.Join(optionsStr, "|")))
 }
 
-// NonEmptyString succeeds if actual is not an empty string.
-// Actual must be a string-like value (can be adjusted via SetStringFormat method).
-func NonEmptyString() types.BeMatcher {
-	return Psi(psi_matchers.NewAllMatcher(
-		be_reflected.AsString(),
-		psi_matchers.NewNotMatcher(gomega.BeEmpty()),
-	), "be non-empty string")
-}
-
 // EmptyString succeeds if actual is an empty string.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func EmptyString() types.BeMatcher {
-	return Psi(psi_matchers.NewAllMatcher(
-		be_reflected.AsString(),
-		gomega.BeEmpty(),
-	), "be an empty string")
+	return psiString(gomega.BeEmpty(), "be an empty string")
+}
+
+// NonEmptyString succeeds if actual is not an empty string.
+// Actual must be a string-like value (can be adjusted via SetStringFormat method).
+func NonEmptyString() types.BeMatcher {
+	return psiString(gomega.Not(gomega.BeEmpty()), "be a non-empty string")
 }
 
 // Float succeeds if actual is a string representing a valid floating-point number.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func Float() types.BeMatcher {
-	return Psi(func(actual interface{}) (bool, error) {
-		if err := expectAvailableStringFormat(actual); err != nil {
-			return false, err
-		}
-
-		// Check if it's a numeric string
+	return psiString(func(actual any) (bool, error) {
 		_, err := strconv.ParseFloat(cast.AsString(actual), 64)
 		return err == nil, nil
 	}, "be a string representation of a float value")
@@ -139,27 +122,17 @@ func Titled(languageArg ...language.Tag) types.BeMatcher {
 		lang = languageArg[0]
 	}
 
-	return Psi(func(actual interface{}) (bool, error) {
-		if err := expectAvailableStringFormat(actual); err != nil {
-			return false, err
-		}
-
+	return psiString(func(actual any) (bool, error) {
 		str := cast.AsString(actual)
-
 		return cases.Title(lang).String(str) == str, nil
-	}, "be titled")
+	}, "be a titled string")
 }
 
 // LowerCaseOnly succeeds if actual is a string containing only lowercase characters.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func LowerCaseOnly() types.BeMatcher {
-	return Psi(func(actual interface{}) (bool, error) {
-		if err := expectAvailableStringFormat(actual); err != nil {
-			return false, err
-		}
-
+	return psiString(func(actual any) (bool, error) {
 		str := cast.AsString(actual)
-
 		return strings.ToLower(str) == str, nil
 	}, "be lower-case")
 }
@@ -167,45 +140,25 @@ func LowerCaseOnly() types.BeMatcher {
 // UpperCaseOnly succeeds if actual is a string containing only uppercase characters.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func UpperCaseOnly() types.BeMatcher {
-	return Psi(func(actual interface{}) (bool, error) {
-		if err := expectAvailableStringFormat(actual); err != nil {
-			return false, err
-		}
-
+	return psiString(func(actual any) (bool, error) {
 		str := cast.AsString(actual)
-
 		return strings.ToUpper(str) == str, nil
 	}, "be upper-case")
 }
 
 // ContainingSubstring succeeds if actual is a string containing only characters from a given set
 func ContainingSubstring(substr string) types.BeMatcher {
-	return Psi(func(actual interface{}) (bool, error) {
-		if err := expectAvailableStringFormat(actual); err != nil {
-			return false, err
-		}
-
-		// empty string is not considered ContainsOf
-		str := cast.AsString(actual)
-		if str == "" {
-			return false, nil
-		}
-
-		return strings.Contains(str, substr), nil
-
-	}, fmt.Sprintf("contain `%s` substring", substr))
+	return psiString(func(actual any) (bool, error) {
+		return strings.Contains(cast.AsString(actual), substr), nil
+	}, fmt.Sprintf(`contain "%s" substring`, substr))
 }
 
 // ContainingOnlyCharacters succeeds if actual is a string containing only characters from a given set
 func ContainingOnlyCharacters(characters string) types.BeMatcher {
-	return Psi(func(actual interface{}) (bool, error) {
-		if err := expectAvailableStringFormat(actual); err != nil {
-			return false, err
-		}
-
+	return psiString(func(actual any) (bool, error) {
 		// empty string is not considered ContainsOf
 		str := cast.AsString(actual)
-		if str == "" {
+		if str == "" || characters == "" {
 			return false, nil
 		}
 
@@ -228,10 +181,7 @@ func ContainingOnlyCharacters(characters string) types.BeMatcher {
 
 // ContainingCharacters succeeds if actual is a string containing all characters from a given set
 func ContainingCharacters(characters string) types.BeMatcher {
-	return Psi(func(actual interface{}) (bool, error) {
-		if err := expectAvailableStringFormat(actual); err != nil {
-			return false, err
-		}
+	return psiString(func(actual any) (bool, error) {
 		if len(characters) == 0 {
 			return true, nil
 		}
@@ -267,26 +217,17 @@ func ContainingCharacters(characters string) types.BeMatcher {
 // MatchWildcard succeeds if actual matches given wildcard pattern.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func MatchWildcard(pattern string) types.BeMatcher {
-	return Psi(func(actual interface{}) (bool, error) {
-		if err := expectAvailableStringFormat(actual); err != nil {
-			return false, err
-		}
-
+	return psiString(func(actual any) (bool, error) {
 		return wildcard.Match(pattern, cast.AsString(actual)), nil
-	}, fmt.Sprintf("match wildcard %s", pattern))
+	}, fmt.Sprintf(`match wildcard "%s"`, pattern))
 }
 
 // ValidEmail succeeds if actual is a valid email.
 // Actual must be a string-like value (can be adjusted via SetStringFormat method).
 func ValidEmail() types.BeMatcher {
-	return Psi(func(actual interface{}) (bool, error) {
-		if err := expectAvailableStringFormat(actual); err != nil {
-			return false, err
-		}
-
+	return psiString(func(actual any) (bool, error) {
 		_, err := mail.ParseAddress(cast.AsString(actual))
 		return err == nil, nil
-
 	}, fmt.Sprintf("be a valid email"))
 }
 
@@ -300,21 +241,17 @@ func ValidEmail() types.BeMatcher {
 //	Expect(someString).To(be_string.MatchTemplate("Hello {{Name}}. Your number is {{Number}}", be_string.Var("Name", "John"), be_string.Var("Number", 3)))
 //	Expect(someString).To(be_string.MatchTemplate("Hello {{Name}}. Good bye, {{Name}}.", be_string.Var("Name", be_string.Titled()))
 func MatchTemplate(template string, vars ...*V) types.BeMatcher {
-	return Psi(func(actual interface{}) (bool, error) {
-		if err := expectAvailableStringFormat(actual); err != nil {
-			return false, err
-		}
+	// Idea here is to switch from templating to regexp (Ugly, but ok for first attempt)
+	// {{Name}} => (?P<Name>.+)
+	variableRegex := regexp.MustCompile(`{{\s*([^}\s]+)\s*}}`)
+	regexStr := variableRegex.ReplaceAllString(template, "(?P<$1>.+)")
 
-		// Idea here is to switch from templating to regexp (Ugly, but ok for first attempt)
-		// {{Name}} => (?P<Name>.+)
-		variableRegex := regexp.MustCompile(`{{\s*([^}\s]+)\s*}}`)
-		regexStr := variableRegex.ReplaceAllString(template, "(?P<$1>.+)")
+	regex, err := regexp.Compile(regexStr)
+	if err != nil {
+		panic("invalid template: could not compile a regex from it: " + err.Error())
+	}
 
-		regex, err := regexp.Compile(regexStr)
-		if err != nil {
-			return false, fmt.Errorf("bad template: %w", err)
-		}
-
+	return psiString(func(actual any) (bool, error) {
 		match := regex.FindStringSubmatch(cast.AsString(actual))
 		if len(match) != len(regex.SubexpNames()) {
 			// todo: provide better error handling
