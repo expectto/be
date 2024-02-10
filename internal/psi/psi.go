@@ -8,9 +8,7 @@
 package psi
 
 import (
-	"fmt"
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega/format"
 	"github.com/onsi/gomega/gcustom"
 )
 
@@ -52,7 +50,7 @@ func Psi(args ...any) types.BeMatcher {
 	// Cast each arg as:
 	// 1. transform func: will be wrapped via WithFallibleTransform then
 	// 2. Matcher (Gomega/Gomock/Psi)
-	// 3. any raw value will be converted to EqualMatcher
+	// 3. any raw value will be converted to EqualMatcher // TODO: this case must be eliminated. We should be stricter
 	for i, arg := range args {
 		if IsTransformFunc(arg) { // 1
 			transformMatcher := WithFallibleTransform(arg, Psi(args[i+1:]...))
@@ -93,8 +91,7 @@ func (m *allMatcher) FailureMessage(actual any) (message string) {
 }
 
 func (m *allMatcher) NegatedFailureMessage(actual any) (message string) {
-	// not the most beautiful list of matchers, but not bad either...
-	return format.Message(actual, fmt.Sprintf("To not satisfy all of these matchers: %s", m.matchers))
+	return m.firstFailedMatcher.NegatedFailureMessage(actual)
 }
 
 func (m *allMatcher) Matches(actual any) bool {
