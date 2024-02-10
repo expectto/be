@@ -19,10 +19,13 @@ import (
 //	IsString("example", AllowCustomTypes(), AllowPointers())) // returns true
 //
 //	// In a strict check, only actual strings are accepted
-//	isStringStrict := IsString(Strict())
 //	IsString("example", Strict()) // Returns true
 //	IsString([]byte("example"), Strict()) // Returns false
 func IsString(a any, opts ...optIsString) bool {
+	if a == nil {
+		return false
+	}
+
 	// Even before computing the config,
 	// if input is simply a string, return immediately
 	_, ok := a.(string)
