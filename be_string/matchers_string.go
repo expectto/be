@@ -6,13 +6,13 @@ import (
 	"github.com/IGLOU-EU/go-wildcard" // used specifically for MatchWildcard matcher
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
+	"github.com/expectto/be/internal/psi_matchers"
 	. "github.com/expectto/be/options"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"net/mail"
-	"regexp"
 	"strconv"
 	"strings"
 	"unicode"
@@ -231,82 +231,21 @@ func ValidEmail() types.BeMatcher {
 	}, fmt.Sprintf("be a valid email"))
 }
 
+//
+// String Templates
+//
+
+var V = psi_matchers.V
+
 // MatchTemplate succeeds if actual matches given template pattern.
 // Provided template must have `{{Field}}` placeholders.
 // Each distinct placeholder from template requires a var to be passed in list of `vars`.
-// Var can be a raw value or a matcher
+// Value (V) can be a raw value or a matcher
 //
 // E.g.
 //
-//	Expect(someString).To(be_string.MatchTemplate("Hello {{Name}}. Your number is {{Number}}", be_string.Var("Name", "John"), be_string.Var("Number", 3)))
-//	Expect(someString).To(be_string.MatchTemplate("Hello {{Name}}. Good bye, {{Name}}.", be_string.Var("Name", be_string.Titled()))
-func MatchTemplate(template string, vars ...*V) types.BeMatcher {
-	// Idea here is to switch from templating to regexp (Ugly, but ok for first attempt)
-	// {{Name}} => (?P<Name>.+)
-	variableRegex := regexp.MustCompile(`{{\s*([^}\s]+)\s*}}`)
-	regexStr := variableRegex.ReplaceAllString(template, "(?P<$1>.+)")
-
-	regex, err := regexp.Compile(regexStr)
-	if err != nil {
-		panic("invalid template: could not compile a regex from it: " + err.Error())
-	}
-
-	return psiString(func(actual any) (bool, error) {
-		match := regex.FindStringSubmatch(cast.AsString(actual))
-		if len(match) != len(regex.SubexpNames()) {
-			// todo: provide better error handling
-			return false, nil
-		}
-
-		results := make(map[string]string)
-		for i, name := range regex.SubexpNames() {
-			if i == 0 || name == "" {
-				continue
-			}
-			name = strings.ToLower(name)
-
-			if savedResult, ok := results[name]; ok {
-				if savedResult != match[i] {
-					return false, fmt.Errorf("var %s has multiple values: %s != %s", name, savedResult, match[i])
-				}
-			}
-
-			results[name] = match[i]
-		}
-
-		// if no vars are given: we simply verified that whole string matches template
-		// without matching specifically templates variables
-		if len(vars) == 0 {
-			return true, nil
-		}
-
-		for _, v := range vars {
-			name := strings.ToLower(v.Name)
-			result, ok := results[name]
-			if !ok {
-				return false, fmt.Errorf("var %s given but not met in actual value", name)
-			}
-
-			if matched, err := v.Matcher.Match(result); err != nil {
-				return false, fmt.Errorf("var %s failed: %w", name, err)
-			} else if !matched {
-				// todo: transmit failure to the error message
-				return false, nil
-			}
-		}
-
-		return true, nil
-	}, "match given template")
-	// todo: it hides the actual reason of failing from template variables
-	//       should be exposed
-}
-
-type V struct {
-	Name    string
-	Matcher types.BeMatcher
-}
-
-// Var creates a var used for replacing placeholders for templates in `MatchTemplate`
-func Var(name string, matching any) *V {
-	return &V{Name: name, Matcher: Psi(matching)}
+//	Expect(someString).To(be_string.MatchTemplate("Hello {{Name}}. Your number is {{Number}}", be_string.V("Name", "John"), be_string.V("Number", 3)))
+//	Expect(someString).To(be_string.MatchTemplate("Hello {{Name}}. Good bye, {{Name}}.", be_string.V("Name", be_string.Titled()))
+func MatchTemplate(template string, values ...*psi_matchers.Value) types.BeMatcher {
+	return psi_matchers.NewStringTemplateMatcher(template, values...)
 }

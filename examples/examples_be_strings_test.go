@@ -66,8 +66,8 @@ var _ = Describe("Showcase for MatchersString", func() {
 			Expect("Hello John! Your number is 42. Goodbye John.").To(
 				be_string.MatchTemplate(
 					"Hello {{Name}}! Your number is {{Number}}. Goodbye {{Name}}.",
-					be_string.Var("Name", "John"),
-					be_string.Var("Number", be_string.Only(Numeric)),
+					be_string.V("Name", "John"),
+					be_string.V("Number", be_string.Only(Numeric)),
 				),
 			)
 			Expect("Invalid template").NotTo(be_string.MatchTemplate("Hello {{Name}}. Goodbye {{Name}}."))
@@ -79,9 +79,9 @@ var _ = Describe("Showcase for MatchersString", func() {
 					`Hello {{User}}! Your email is {{Email}}. Bye {{User}}`,
 
 					// Inside input message we should have either Jack or Jill
-					be_string.Var("User", be.Any("Jack", "Jill")),
+					be_string.V("User", be.Any("Jack", "Jill")),
 					// any valid email with @example.com suffix
-					be_string.Var("Email", be.All(be_string.ValidEmail(), HaveSuffix("@example.com"))),
+					be_string.V("Email", be.All(be_string.ValidEmail(), HaveSuffix("@example.com"))),
 				),
 			)
 		})

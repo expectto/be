@@ -10,6 +10,7 @@ package psi
 import (
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/gcustom"
+	"strings"
 )
 
 // Psi is a main converter function that converts given input into a PsiMatcher
@@ -72,15 +73,19 @@ type allMatcher struct {
 
 	// state
 	firstFailedMatcher types.BeMatcher
+	allSucceedMatchers []types.BeMatcher
 }
 
 func (m *allMatcher) Match(actual any) (bool, error) {
 	m.firstFailedMatcher = nil
+	m.allSucceedMatchers = make([]types.BeMatcher, 0)
 	for _, matcher := range m.matchers {
 		success, err := matcher.Match(actual)
 		if !success || err != nil {
 			m.firstFailedMatcher = matcher
 			return false, err
+		} else {
+			m.allSucceedMatchers = append(m.allSucceedMatchers, matcher)
 		}
 	}
 	return true, nil
@@ -91,7 +96,12 @@ func (m *allMatcher) FailureMessage(actual any) (message string) {
 }
 
 func (m *allMatcher) NegatedFailureMessage(actual any) (message string) {
-	return m.firstFailedMatcher.NegatedFailureMessage(actual)
+	// todo: make it nicer
+	messages := make([]string, len(m.allSucceedMatchers))
+	for i, m := range m.allSucceedMatchers {
+		messages[i] = m.NegatedFailureMessage(actual)
+	}
+	return strings.Join(messages, "\n and \n")
 }
 
 func (m *allMatcher) Matches(actual any) bool {

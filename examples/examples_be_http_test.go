@@ -34,7 +34,7 @@ var _ = Describe("matchers_http", func() {
 			be_http.HavingHeader(
 				"Authorization",
 				be.StringAsTemplate("Bearer {{jwt}}",
-					be_string.Var("jwt",
+					be_string.V("jwt",
 						be.JwtToken(
 							be_jwt.TransformSignedJwtFromString("my-secret"),
 							be_jwt.Valid(),
@@ -101,7 +101,7 @@ var _ = Describe("matchers_http", func() {
 			be_http.HavingHeader(
 				"Authorization",
 				be_string.MatchTemplate("Bearer {{jwt}}",
-					be_string.Var("jwt",
+					be_string.V("jwt",
 						be_jwt.Token(
 							be_jwt.TransformJwtFromString,
 							be_jwt.HavingClaim("name", "John Doe"),
