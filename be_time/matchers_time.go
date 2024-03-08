@@ -79,10 +79,18 @@ func YearDay(v int) types.BeMatcher {
 func Weekday(v time.Weekday) types.BeMatcher {
 	return atomicTimePartMatcher(func(t time.Time) time.Weekday { return t.Weekday() }, v)
 }
+func Unix(v int64) types.BeMatcher {
+	return atomicTimePartMatcher(func(t time.Time) int64 { return t.Unix() }, v, fmt.Sprintf("equal to %d Unix timestamp", v))
+}
+
+// TODO: more atomic matchers
 
 //
 // --- Same Exact * ---
 //
+
+// TODO: SameExact* matchers. Naming should note that it's 2 times comparison
+//   so probably it should be Same...With())
 
 // sameExactDuration is an internal matcher that succeeds if
 // actual time falls within the same X duration as the specified time `compareTo`
