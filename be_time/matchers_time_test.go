@@ -121,3 +121,13 @@ var _ = DescribeTable("Be Time: Matching", func(tc *TestCase) {
 
 	// TODO: other matchers
 )
+
+var _ = Context("Time atomic matchers", func() {
+	It("should pass on atomic matchers", func() {
+		Expect(compareTo).To(be_time.Year(2024))
+		Expect(compareTo).To(be_time.Month(time.February))
+		Expect(compareTo).To(be_time.YearDay(33))
+		Expect(compareTo).To(be_time.Weekday(time.Friday))
+		Expect(compareTo).To(be_time.Day(2))
+	})
+})

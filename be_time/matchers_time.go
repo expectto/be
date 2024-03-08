@@ -44,6 +44,43 @@ func Approx(compareTo time.Time, threshold time.Duration) types.BeMatcher {
 }
 
 //
+// Atomic matching of time parts
+//
+
+func atomicTimePartMatcher[T comparable](actualGetter func(t time.Time) T, compareTo T, customMessageArg ...string) types.BeMatcher {
+	message := fmt.Sprintf("%v", compareTo)
+	if len(customMessageArg) > 0 {
+		message = customMessageArg[0]
+	}
+
+	return Psi(func(actual any) (bool, error) {
+		if !cast.IsTime(actual) {
+			return false, fmt.Errorf("invalid time type")
+		}
+		return actualGetter(cast.AsTime(actual)) == compareTo, nil
+
+		// TODO: would be great if Expect part of the message contains reference value as well
+		//    e.g. Expected <time.Time>: .. (TUESDAY) to be Friday
+	}, "be "+message)
+}
+
+func Year(v int) types.BeMatcher {
+	return atomicTimePartMatcher(func(t time.Time) int { return t.Year() }, v)
+}
+func Month(monthCompareTo time.Month) types.BeMatcher {
+	return atomicTimePartMatcher(func(t time.Time) time.Month { return t.Month() }, monthCompareTo)
+}
+func Day(v int) types.BeMatcher {
+	return atomicTimePartMatcher(func(t time.Time) int { return t.Day() }, v, fmt.Sprintf("%d day of month", v))
+}
+func YearDay(v int) types.BeMatcher {
+	return atomicTimePartMatcher(func(t time.Time) int { return t.YearDay() }, v, fmt.Sprintf("%d day of the year", v))
+}
+func Weekday(v time.Weekday) types.BeMatcher {
+	return atomicTimePartMatcher(func(t time.Time) time.Weekday { return t.Weekday() }, v)
+}
+
+//
 // --- Same Exact * ---
 //
 
@@ -51,7 +88,7 @@ func Approx(compareTo time.Time, threshold time.Duration) types.BeMatcher {
 // actual time falls within the same X duration as the specified time `compareTo`
 // It's considered to avoid duplication in implementation of public matchers `SameExact*`
 func sameExactDuration(compareTo time.Time, duration time.Duration) types.BeMatcher {
-	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
+	return Psi(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
 			return false, fmt.Errorf("invalid time type")
 		}
@@ -63,7 +100,8 @@ func sameExactDuration(compareTo time.Time, duration time.Duration) types.BeMatc
 
 		// Compare truncated times
 		return truncatedCompareTo.Equal(truncatedActual), nil
-	}))
+		// TODO: better message
+	}, fmt.Sprintf("be same as %s", duration))
 }
 
 // SameExactMilli succeeds if the actual time falls within the same millisecond as the specified time `compareTo`.
