@@ -5,13 +5,14 @@ package be_json
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+
 	"github.com/expectto/be/be_reflected"
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
-	"io"
 )
 
 type JsonInputType uint32

@@ -3,6 +3,8 @@ package be_math
 
 import (
 	"fmt"
+	"math"
+
 	"github.com/expectto/be/be_reflected"
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
@@ -10,7 +12,6 @@ import (
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
 	"github.com/onsi/gomega/gcustom"
-	"math"
 )
 
 // GreaterThan succeeds if actual is numerically greater than the passed-in value.

@@ -3,6 +3,11 @@ package be_string
 
 import (
 	"fmt"
+	"net/mail"
+	"strconv"
+	"strings"
+	"unicode"
+
 	"github.com/IGLOU-EU/go-wildcard" // used specifically for MatchWildcard matcher
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
@@ -12,10 +17,6 @@ import (
 	"github.com/onsi/gomega"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-	"net/mail"
-	"strconv"
-	"strings"
-	"unicode"
 )
 
 // psiString is a convenient wrapper for creating every be_string matcher

@@ -5,13 +5,14 @@ package be_jwt
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/onsi/gomega"
-	"strings"
 )
 
 // TransformSignedJwtFromString returns a transform function (string->*jwt.Token) for a given secret.

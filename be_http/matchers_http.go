@@ -4,14 +4,15 @@ package be_http
 
 import (
 	"bytes"
+	"io"
+	"net/http"
+
 	"github.com/expectto/be/be_json"
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
-	"io"
-	"net/http"
 )
 
 // Request matches an actual value to be a valid *http.Request corresponding to given inputs.

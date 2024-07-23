@@ -1,12 +1,13 @@
 package be_string_test
 
 import (
+	"math/rand"
+
 	"github.com/expectto/be/be_string"
 	. "github.com/expectto/be/options"
 	"github.com/expectto/be/types"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"math/rand"
 )
 
 var _ = Describe("BeStrings (simple matchers)", func() {

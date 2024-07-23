@@ -2,12 +2,13 @@ package be_reflected_test
 
 import (
 	"fmt"
+	"reflect"
+
 	"github.com/expectto/be/be_reflected"
 	"github.com/expectto/be/types"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/format"
-	"reflect"
 )
 
 // TODO: unify tests. Let's make all tests like in `be_math`

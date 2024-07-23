@@ -1,11 +1,12 @@
 package be_math_test
 
 import (
+	"strings"
+
 	"github.com/expectto/be/be_math"
 	"github.com/expectto/be/types"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"strings"
 )
 
 var _ = Describe("BeMath", func() {

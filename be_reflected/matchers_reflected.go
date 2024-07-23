@@ -6,15 +6,16 @@ package be_reflected
 
 import (
 	"fmt"
+	"io"
+	"reflect"
+	"strconv"
+
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/internal/psi_matchers"
 	reflect2 "github.com/expectto/be/internal/reflect"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
-	"io"
-	"reflect"
-	"strconv"
 )
 
 // AsKind succeeds if actual is assignable to any of the specified kinds or matches the provided matchers.
