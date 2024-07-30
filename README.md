@@ -74,9 +74,14 @@ Expect(req).To(be_http.Request(
             be_json.HaveKeyValue("hello", "world"),
             be_json.HaveKeyValue("n", be_reflected.AsInteger(), be_math.GreaterThan(10)),
             be_json.HaveKeyValue("ids", be_reflected.AsSliceOf[string]),
+            Not(be_json.HaveKeyValue("deleted_field")), // not to have a deleted field
+            
+            be_json.HaveKeyValue("email", be_string.ValidEmail(), be_string.HaveSuffix("@tests.com")),
+
+            // "details":[{"key":"foo"},{"key":"bar"}]
             be_json.HaveKeyValue("details", And(
                 be_reflected.AsObjects(),
-                be.HaveLength(2),
+                be.HaveLength(be_math.GreaterThan(2)),
                 ContainElements(
                     be_json.HaveKeyValue("key", "foo"),
                     be_json.HaveKeyValue("key", "bar"),
