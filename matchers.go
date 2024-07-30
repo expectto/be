@@ -3,6 +3,7 @@ package be
 import (
 	"github.com/expectto/be/be_ctx"
 	"github.com/expectto/be/be_http"
+	"github.com/expectto/be/be_json"
 	"github.com/expectto/be/be_jwt"
 	"github.com/expectto/be/be_string"
 	"github.com/expectto/be/be_url"
@@ -10,6 +11,9 @@ import (
 
 // HttpRequest is an alias for be_http.Request matcher
 var HttpRequest = be_http.Request
+
+// JSON is an alias for be_json.JSON matcher
+var JSON = be_json.Matcher
 
 // URL is an alias for be_url.URL matcher
 var URL = be_url.URL

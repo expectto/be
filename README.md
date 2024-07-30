@@ -69,10 +69,10 @@ Expect(req).To(be_http.Request(
 
     // Matching the request body using JSON matchers
     be_http.HavingBody(
-        be_json.Matcher(
+        be.JSON(
             be_json.JsonAsReader,
             be_json.HaveKeyValue("hello", "world"),
-            be_json.HaveKeyValue("n", be_reflected.AsInteger()),
+            be_json.HaveKeyValue("n", be_reflected.AsInteger(), be_math.GreaterThan(10)),
             be_json.HaveKeyValue("ids", be_reflected.AsSliceOf[string]),
             be_json.HaveKeyValue("details", And(
                 be_reflected.AsObjects(),
