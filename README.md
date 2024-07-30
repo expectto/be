@@ -83,18 +83,18 @@ Expect(req).To(be_http.Request(
                 ),
             )),
         ),
+    ),
 
-        // Matching HTTP headers
-        be_http.HavingHeader("X-Custom", "Hey-There"),
-        be_http.HavingHeader("Authorization",
-            be_string.MatchTemplate("Bearer {{jwt}}",
-                be_string.Var("jwt",
-                    be_jwt.Token(
-                        be_jwt.Valid(),
-                        be_jwt.HavingClaim("name", "John Doe"),
-                    ),
-                ),
-            ),
+	// Matching HTTP headers
+	be_http.HavingHeader("X-Custom", "Hey-There"),
+	be_http.HavingHeader("Authorization",
+		be_string.MatchTemplate("Bearer {{jwt}}",
+			be_string.Var("jwt",
+				be_jwt.Token(
+					be_jwt.Valid(),
+					be_jwt.HavingClaim("name", "John Doe"),
+                ), 
+            ), 
         ),
     ),
 ))      
