@@ -2,6 +2,7 @@ package psi
 
 import (
 	"fmt"
+
 	"github.com/expectto/be/internal/cast"
 )
 
@@ -11,17 +12,34 @@ const (
 	DiveModeEvery DiveMode = "every"
 	DiveModeAny   DiveMode = "any"
 	DiveModeFirst DiveMode = "first"
+	DiveModeNth   DiveMode = "nth"
 )
 
 type DiveMatcher struct {
 	matcher any
 	mode    DiveMode
 
+	// when mode is DiveModeNth, then we keep nth element
+	n int
+
 	*MixinMatcherGomock
 }
 
-func NewDiveMatcher(matcher any, mode DiveMode) *DiveMatcher {
-	return &DiveMatcher{matcher: matcher, mode: mode}
+func NewDiveMatcher(matcher any, mode DiveMode, args ...any) *DiveMatcher {
+	dm := &DiveMatcher{matcher: matcher, mode: mode}
+
+	if mode == DiveModeNth {
+		if len(args) == 0 {
+			panic("DiveNth expects value of `n` as an argument")
+		}
+		if !cast.IsInt(args[0]) {
+			panic("DiveNth expects value of `n` to be an integer")
+		}
+
+		dm.n = cast.AsInt(args[0])
+	}
+
+	return dm
 }
 
 func (dm *DiveMatcher) Match(actual interface{}) (bool, error) {
@@ -69,6 +87,14 @@ func (dm *DiveMatcher) Match(actual interface{}) (bool, error) {
 			return false, fmt.Errorf("dive[first] expects non-empty slice")
 		}
 		return matcher.Match(slice[0])
+	case DiveModeNth:
+		if len(slice) == 0 {
+			return false, fmt.Errorf("dive[nth] expects non-empty slice")
+		}
+		if dm.n >= len(slice) {
+			return false, fmt.Errorf("dive[nth] expects `n` to be less than length of slice")
+		}
+		return matcher.Match(slice[dm.n])
 	}
 
 	panic("invalid DeepMatcher mode")

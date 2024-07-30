@@ -72,3 +72,18 @@ func IsTime(a any) (ok bool) {
 	_ = AsTime(a)
 	return
 }
+
+// IsInt checks if the given input is an int.
+// To prevent code duplication, it employs panic recovery to handle type conversion
+// and is designed for use in testing code, where panics are acceptable.
+func IsInt(a any) (ok bool) {
+	ok = true
+	defer func() {
+		if err := recover(); err != nil {
+			ok = false
+		}
+	}()
+
+	_ = AsInt(a)
+	return
+}

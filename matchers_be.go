@@ -55,3 +55,6 @@ func DiveAny(matcher any) types.BeMatcher { return NewDiveMatcher(matcher, DiveM
 
 // DiveFirst applies the given matcher to the first element of the given slice
 func DiveFirst(matcher any) types.BeMatcher { return NewDiveMatcher(matcher, DiveModeFirst) }
+
+// DiveNth applies the given matcher to the nth element of the given slice
+func DiveNth(n int, matcher any) types.BeMatcher { return NewDiveMatcher(matcher, DiveModeNth, n) }

@@ -81,4 +81,41 @@ var _ = Describe("Is", func() {
 			})
 		})
 	})
+
+	Context("IsInt", func() {
+		It("should return true for int", func() {
+			Expect(cast.IsInt(123)).To(BeTrue())
+		})
+		It("should return true for int8", func() {
+			Expect(cast.IsInt(int8(123))).To(BeTrue())
+		})
+		It("should return true for int16", func() {
+			Expect(cast.IsInt(int16(123))).To(BeTrue())
+		})
+		It("should return true for int32", func() {
+			Expect(cast.IsInt(int32(123))).To(BeTrue())
+		})
+		It("should return true for int64", func() {
+			Expect(cast.IsInt(int64(123))).To(BeTrue())
+		})
+
+		It("should return false for uint", func() {
+			Expect(cast.IsInt(uint(123))).To(BeFalse())
+		})
+		It("should return false for float", func() {
+			Expect(cast.IsInt(123.456)).To(BeFalse())
+		})
+		It("should return false for string", func() {
+			Expect(cast.IsInt("123")).To(BeFalse())
+		})
+		It("should return false for bool", func() {
+			Expect(cast.IsInt(true)).To(BeFalse())
+		})
+		It("should return false for nil", func() {
+			Expect(cast.IsInt(nil)).To(BeFalse())
+		})
+		It("should return false for struct", func() {
+			Expect(cast.IsInt(struct{}{})).To(BeFalse())
+		})
+	})
 })
