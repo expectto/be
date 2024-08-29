@@ -3,9 +3,10 @@ package cast
 import (
 	"encoding/json"
 	"fmt"
-	reflect2 "github.com/expectto/be/internal/reflect"
 	"reflect"
 	"time"
+
+	reflect2 "github.com/expectto/be/internal/reflect"
 )
 
 // AsString converts the given input into a string or a string-like representation.
@@ -435,7 +436,7 @@ func AsTime(a any) time.Time {
 	v := reflect.ValueOf(a)
 	v = reflect2.IndirectDeep(v)
 
-	if v.CanConvert(reflect2.TypeFor[time.Time]()) {
+	if v.CanConvert(reflect.TypeFor[time.Time]()) {
 		return v.Interface().(time.Time)
 	}
 

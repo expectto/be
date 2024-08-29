@@ -2,8 +2,9 @@ package cast
 
 import (
 	"encoding/json"
-	reflect2 "github.com/expectto/be/internal/reflect"
 	"reflect"
+
+	reflect2 "github.com/expectto/be/internal/reflect"
 )
 
 // IsString checks if the given input is a string or string-like.
@@ -75,7 +76,7 @@ func IsString(a any, opts ...optIsString) bool {
 		v = reflect.Indirect(v)
 	}
 
-	if v.Type() == reflect2.TypeFor[string]() {
+	if v.Type() == reflect.TypeFor[string]() {
 		return true
 	}
 

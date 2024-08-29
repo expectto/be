@@ -2,11 +2,11 @@ package psi
 
 import (
 	"fmt"
-	reflect2 "github.com/expectto/be/internal/reflect"
+	"reflect"
+
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
 	"github.com/onsi/gomega/format"
-	"reflect"
 )
 
 // IsTransformFunc checks if given thing is a Gomega-compatible transform
@@ -28,7 +28,7 @@ func IsTransformFunc(v any) bool {
 		return true
 	}
 	if numOut == 2 {
-		return txType.Out(1).AssignableTo(reflect2.TypeFor[error]())
+		return txType.Out(1).AssignableTo(reflect.TypeFor[error]())
 	}
 
 	return false

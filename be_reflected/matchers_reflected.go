@@ -13,7 +13,6 @@ import (
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/internal/psi_matchers"
-	reflect2 "github.com/expectto/be/internal/reflect"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
 )
@@ -80,7 +79,7 @@ func AsSliceOf[T any]() types.BeMatcher {
 	return Psi(psi_matchers.NewAllMatcher(
 		AsKind(reflect.Slice),
 		gomega.HaveEach(AssignableTo[T]()),
-	), "be a slice of "+reflect2.TypeFor[T]().String())
+	), "be a slice of "+reflect.TypeFor[T]().String())
 }
 
 // AsMap succeeds if actual is of kind reflect.Map.
