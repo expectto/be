@@ -1,6 +1,6 @@
 # be_http
 --
-    import "github.com/expectto/be/be_http"
+    import "."
 
 Package be_http provides matchers for url.Request TODO: more detailed
 documentation here is required

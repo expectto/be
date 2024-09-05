@@ -1,6 +1,6 @@
 # be_json
 --
-    import "github.com/expectto/be/be_json"
+    import "."
 
 Package be_json provides Be matchers for expressive assertions on JSON TODO:
 more detailed explanation what is considered to be JSON here

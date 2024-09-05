@@ -13,4 +13,5 @@ godocdown be_reflected > be_reflected/README.md
 godocdown be_string > be_string/README.md
 godocdown be_time > be_time/README.md
 godocdown be_url > be_url/README.md
+godocdown be_struct > be_struct/README.md
 godocdown . > core-be-matchers.md

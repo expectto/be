@@ -1,6 +1,6 @@
 # be_reflected
 --
-    import "github.com/expectto/be/be_reflected"
+    import "."
 
 Package be_reflected provides Be matchers that use reflection, enabling
 expressive assertions on values' reflect kinds and types. It consists of several

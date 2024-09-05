@@ -1,6 +1,6 @@
 # be_jwt
 --
-    import "github.com/expectto/be/be_jwt"
+    import "."
 
 Package be_jwt provides Be matchers for handling JSON Web Tokens (JWT). It
 includes matchers for transforming and validating JWT tokens. Matchers

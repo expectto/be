@@ -1,6 +1,6 @@
 # be_time
 --
-    import "github.com/expectto/be/be_time"
+    import "."
 
 Package be_time provides Be matchers on time.Time
 
@@ -13,6 +13,12 @@ func Approx(compareTo time.Time, threshold time.Duration) types.BeMatcher
 ```
 Approx succeeds if actual time is approximately equal to the specified time
 `compareTo` within the given time duration threshold.
+
+#### func  Day
+
+```go
+func Day(v int) types.BeMatcher
+```
 
 #### func  EarlierThan
 
@@ -59,6 +65,12 @@ func LaterThanEqual(compareTo time.Time) types.BeMatcher
 ```
 LaterThanEqual succeeds if actual time is later than or equal to the specified
 time `compareTo`.
+
+#### func  Month
+
+```go
+func Month(monthCompareTo time.Month) types.BeMatcher
+```
 
 #### func  SameDay
 
@@ -212,3 +224,27 @@ func SameYearDay(compareTo time.Time) types.BeMatcher
 SameYearDay checks if the .YearDay() component of the actual time matches the
 .YearDay() component of the specified time `compareTo`. It only verifies the day
 [1..365], disregarding the year.
+
+#### func  Unix
+
+```go
+func Unix(v int64) types.BeMatcher
+```
+
+#### func  Weekday
+
+```go
+func Weekday(v time.Weekday) types.BeMatcher
+```
+
+#### func  Year
+
+```go
+func Year(v int) types.BeMatcher
+```
+
+#### func  YearDay
+
+```go
+func YearDay(v int) types.BeMatcher
+```

@@ -1,6 +1,6 @@
 # be_ctx
 --
-    import "github.com/expectto/be/be_ctx"
+    import "."
 
 Package be_ctx provides Be matchers on context.Context
 

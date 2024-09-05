@@ -1,6 +1,6 @@
 # be_math
 --
-    import "github.com/expectto/be/be_math"
+    import "."
 
 Package be_math provides Be matchers for mathematical operations
 

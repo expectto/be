@@ -1,10 +1,14 @@
 # be_string
 --
-    import "github.com/expectto/be/be_string"
+    import "."
 
 Package be_string provides Be matchers for string-related assertions.
 
 ## Usage
+
+```go
+var V = psi_matchers.V
+```
 
 #### func  ContainingCharacters
 
@@ -58,17 +62,17 @@ SetStringFormat method).
 #### func  MatchTemplate
 
 ```go
-func MatchTemplate(template string, vars ...*V) types.BeMatcher
+func MatchTemplate(template string, values ...*psi_matchers.Value) types.BeMatcher
 ```
 MatchTemplate succeeds if actual matches given template pattern. Provided
 template must have `{{Field}}` placeholders. Each distinct placeholder from
-template requires a var to be passed in list of `vars`. Var can be a raw value
-or a matcher
+template requires a var to be passed in list of `vars`. Value (V) can be a raw
+value or a matcher
 
 E.g.
 
-    Expect(someString).To(be_string.MatchTemplate("Hello {{Name}}. Your number is {{Number}}", be_string.Var("Name", "John"), be_string.Var("Number", 3)))
-    Expect(someString).To(be_string.MatchTemplate("Hello {{Name}}. Good bye, {{Name}}.", be_string.Var("Name", be_string.Titled()))
+    Expect(someString).To(be_string.MatchTemplate("Hello {{Name}}. Your number is {{Number}}", be_string.V("Name", "John"), be_string.V("Number", 3)))
+    Expect(someString).To(be_string.MatchTemplate("Hello {{Name}}. Good bye, {{Name}}.", be_string.V("Name", be_string.Titled()))
 
 #### func  MatchWildcard
 
@@ -92,7 +96,10 @@ string-like value (can be adjusted via SetStringFormat method).
 func Only(option StringOption) types.BeMatcher
 ```
 Only succeeds if actual is a string containing only characters described by
-given options Only() defaults to empty string matching
+given options Only() defaults to empty string matching Only(Alpha|Numeric)
+succeeds if string contains only from alphabetic and numeric characters
+Available options are: Alpha, Numeric, Whitespace, Dots, Punctuation,
+SpecialCharacters TODO: special-characters are not supported yet
 
 #### func  Titled
 
@@ -119,27 +126,3 @@ func ValidEmail() types.BeMatcher
 ```
 ValidEmail succeeds if actual is a valid email. Actual must be a string-like
 value (can be adjusted via SetStringFormat method).
-
-#### func  ValidateStringOption
-
-```go
-func ValidateStringOption(opt StringOption, r rune) bool
-```
-
-#### type V
-
-```go
-type V struct {
-	Name    string
-	Matcher types.BeMatcher
-}
-```
-
-
-#### func  Var
-
-```go
-func Var(name string, matching any) *V
-```
-Var creates a var used for replacing placeholders for templates in
-`MatchTemplate`

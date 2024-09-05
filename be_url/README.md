@@ -1,6 +1,6 @@
 # be_url
 --
-    import "github.com/expectto/be/be_url"
+    import "."
 
 Package be_url provides Be matchers on url.URL
 

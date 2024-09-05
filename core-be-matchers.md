@@ -1,6 +1,6 @@
 # be
 --
-    import "github.com/expectto/be"
+    import "."
 
 
 ## Usage
@@ -14,6 +14,11 @@ Ctx is an alias for be_ctx.Ctx
 var HttpRequest = be_http.Request
 ```
 HttpRequest is an alias for be_http.Request matcher
+
+```go
+var JSON = be_json.Matcher
+```
+JSON is an alias for be_json.JSON matcher
 
 ```go
 var JwtToken = be_jwt.Token
@@ -73,6 +78,13 @@ succeeds at least at one item
 func DiveFirst(matcher any) types.BeMatcher
 ```
 DiveFirst applies the given matcher to the first element of the given slice
+
+#### func  DiveNth
+
+```go
+func DiveNth(n int, matcher any) types.BeMatcher
+```
+DiveNth applies the given matcher to the nth element of the given slice
 
 #### func  Eq
 
