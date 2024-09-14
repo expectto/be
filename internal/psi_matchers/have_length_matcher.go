@@ -2,12 +2,13 @@ package psi_matchers
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/internal/reflect"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
-	"strings"
 )
 
 // HaveLengthMatcher is an Omega-format matcher that matches length of the given list

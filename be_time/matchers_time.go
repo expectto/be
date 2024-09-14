@@ -3,12 +3,13 @@ package be_time
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
 	"github.com/onsi/gomega/gcustom"
-	"time"
 )
 
 // LaterThan succeeds if actual time is later than the specified time `compareTo`.

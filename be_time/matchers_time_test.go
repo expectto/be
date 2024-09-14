@@ -1,11 +1,12 @@
 package be_time_test
 
 import (
+	"time"
+
 	"github.com/expectto/be/be_time"
 	"github.com/expectto/be/types"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"time"
 )
 
 // TimeFormat used for tests is selected to be 1) allmighty 2) more readable

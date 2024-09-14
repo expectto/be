@@ -2,6 +2,8 @@ package examples
 
 import (
 	"bytes"
+	"net/http"
+
 	"github.com/expectto/be"
 	"github.com/expectto/be/be_http"
 	"github.com/expectto/be/be_json"
@@ -11,7 +13,6 @@ import (
 	"github.com/expectto/be/be_url"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"net/http"
 )
 
 var _ = Describe("matchers_http", func() {

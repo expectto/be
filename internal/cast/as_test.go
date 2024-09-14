@@ -2,6 +2,7 @@ package cast_test
 
 import (
 	"encoding/json"
+
 	"github.com/expectto/be/internal/cast"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

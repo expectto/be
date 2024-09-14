@@ -2,9 +2,10 @@ package psi
 
 import (
 	"fmt"
-	"github.com/expectto/be/types"
 	"regexp"
 	"strings"
+
+	"github.com/expectto/be/types"
 )
 
 func FromGomega(omega types.GomegaMatcher, messagePrefixArg ...string) types.BeMatcher {

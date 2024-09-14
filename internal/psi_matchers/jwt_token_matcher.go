@@ -2,11 +2,12 @@ package psi_matchers
 
 import (
 	"fmt"
+	"strings"
+
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/onsi/gomega/format"
-	"strings"
 )
 
 type JwtTokenMatcher struct {

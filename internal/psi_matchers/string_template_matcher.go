@@ -2,12 +2,13 @@ package psi_matchers
 
 import (
 	"fmt"
+	"regexp"
+	"strings"
+
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
-	"regexp"
-	"strings"
 )
 
 type Value struct {

@@ -2,11 +2,12 @@ package psi_matchers
 
 import (
 	"fmt"
+	"net/http"
+	"strings"
+
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
-	"net/http"
-	"strings"
 )
 
 // ReqPropertyMatcher is a matcher for http.Request properties

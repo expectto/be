@@ -8,9 +8,10 @@
 package psi
 
 import (
+	"strings"
+
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/gcustom"
-	"strings"
 )
 
 // Psi is a main converter function that converts given input into a PsiMatcher

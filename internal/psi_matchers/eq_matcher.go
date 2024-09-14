@@ -3,9 +3,10 @@ package psi_matchers
 import (
 	"bytes"
 	"fmt"
+	"reflect"
+
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
-	"reflect"
 )
 
 type EqMatcher struct {

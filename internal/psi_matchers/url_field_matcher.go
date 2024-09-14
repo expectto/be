@@ -2,11 +2,12 @@ package psi_matchers
 
 import (
 	"fmt"
+	"net/url"
+	"strings"
+
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
-	"net/url"
-	"strings"
 )
 
 // UrlFieldMatcher is a helper for matching url fields

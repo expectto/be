@@ -3,6 +3,7 @@ package psi_matchers
 import (
 	"context"
 	"fmt"
+
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"

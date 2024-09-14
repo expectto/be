@@ -66,7 +66,7 @@ func Only(option StringOption) types.BeMatcher {
 	options := ExtractStringOptions(option)
 
 	// We need stringified version of all options for the failure message
-	optionsStr := make([]string, len(options), len(options))
+	optionsStr := make([]string, len(options))
 	for i := range options {
 		optionsStr[i] = options[i].String()
 	}
@@ -229,7 +229,7 @@ func ValidEmail() types.BeMatcher {
 	return psiString(func(actual any) (bool, error) {
 		_, err := mail.ParseAddress(cast.AsString(actual))
 		return err == nil, nil
-	}, fmt.Sprintf("be a valid email"))
+	}, "be a valid email")
 }
 
 //
