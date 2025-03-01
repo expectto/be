@@ -7,7 +7,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.1 // latest
 	github.com/onsi/ginkgo/v2 v2.22.2 // latest
 	github.com/onsi/gomega v1.36.2 // latest
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	go.uber.org/mock v0.5.0 // latest
 	golang.org/x/text v0.22.0 // latest
 )
