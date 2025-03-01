@@ -19,14 +19,18 @@ func Psi(args ...any) types.BeMatcher {
 	if len(args) == 0 {
 		return &allMatcher{} // will always match
 	}
+
 	if len(args) == 1 {
-		if IsTransformFunc(args[0]) {
+		arg := args[0]
+
+		if IsTransformFunc(arg) {
 			// not sure, add more tests here
-			return WithFallibleTransform(args[0], nil)
+			return WithFallibleTransform(arg, nil)
 		}
+
 		// If a Match Func was given: simply wrap it in a matcher
-		if IsMatchFunc(args[0]) {
-			return AsMatcher(gcustom.MakeMatcher(AsMatchFunc(args[0])))
+		if mf := asGomegaMatchFunc(arg); mf != nil {
+			return AsMatcher(gcustom.MakeMatcher(mf))
 		}
 
 		return AsMatcher(args[0])
@@ -37,12 +41,13 @@ func Psi(args ...any) types.BeMatcher {
 	// OR
 	// args = {Matcher, message}
 	if len(args) == 2 {
+		arg := args[0]
 		message, ok := args[1].(string)
 		if ok {
-			if IsMatchFunc(args[0]) {
-				return AsMatcher(gcustom.MakeMatcher(AsMatchFunc(args[0]), message))
-			} else if IsMatcher(args[0]) {
-				return AsMatcher(gcustom.MakeMatcher(AsMatcher(args[0]).Match, message))
+			if mf := asGomegaMatchFunc(arg); mf != nil {
+				return AsMatcher(gcustom.MakeMatcher(asGomegaMatchFunc(arg), message))
+			} else if IsMatcher(arg) {
+				return AsMatcher(gcustom.MakeMatcher(AsMatcher(arg).Match, message))
 			}
 		}
 	}

@@ -29,19 +29,11 @@ func AsMatcher(m any) types.BeMatcher {
 	}
 }
 
-// IsMatchFunc returns true if given `m any` is a match func (from gomega matchers)
-// todo: support typed match funcs (see gomega)
-func IsMatchFunc(m any) bool {
-	_, ok := m.(func(any) (bool, error))
-	return ok
-}
-
-// AsMatchFunc returns given `m any` as match func (func (any) (bool, error))
-// todo: support typed match funcs (see gomega)
-func AsMatchFunc(m any) func(any) (bool, error) {
+// asGomegaMatchFunc returns given `m any` as match func (func (any) (bool, error))
+func asGomegaMatchFunc(m any) func(any) (bool, error) {
 	v, ok := m.(func(any) (bool, error))
 	if !ok {
-		panic("match func must be func(any) (bool, error)")
+		return nil
 	}
 	return v
 }

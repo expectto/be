@@ -3,6 +3,8 @@ package be_testified_test
 import (
 	"testing"
 
+	"github.com/expectto/be"
+	"github.com/expectto/be/be_json"
 	"github.com/expectto/be/be_string"
 	"github.com/expectto/be/be_testified"
 	"github.com/expectto/be/be_url"
@@ -21,5 +23,15 @@ func TestURLMatch(t *testing.T) {
 			be_url.HavingSearchParam("q", "Hello World"),
 		),
 		"URL did not match the expected structure",
+	)
+}
+
+func TestJsonEq(t *testing.T) {
+	be_testified.Assert(t,
+		`{"foo":"bar"}`,
+		be.JSON(
+			be_json.JsonAsString,
+			map[string]any{"foo": "bar"},
+		),
 	)
 }
