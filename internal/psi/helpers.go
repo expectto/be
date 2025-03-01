@@ -2,6 +2,7 @@ package psi
 
 import (
 	"github.com/expectto/be/types"
+	"github.com/onsi/gomega"
 )
 
 // IsMatcher returns true if given input is either Omega or Gomock or a Psi matcher
@@ -24,7 +25,7 @@ func AsMatcher(m any) types.BeMatcher {
 	case types.GomockMatcher:
 		return FromGomock(t)
 	default:
-		return Equal(t)
+		return FromGomega(gomega.Equal(t))
 	}
 }
 

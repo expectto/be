@@ -6,23 +6,23 @@ import (
 	"fmt"
 
 	. "github.com/expectto/be/internal/psi"
-	"github.com/expectto/be/internal/tmp/format"
-	. "github.com/expectto/be/types"
+	"github.com/expectto/be/types"
+	"github.com/onsi/gomega/format"
 )
 
 // AllMatcher is the same as Gomega's AndMatcher
 // with a difference that we can track errors if using via gomock
 type AllMatcher struct {
-	Matchers []BeMatcher
+	Matchers []types.BeMatcher
 
 	// state
-	firstFailedMatcher BeMatcher
+	firstFailedMatcher types.BeMatcher
 }
 
-var _ BeMatcher = &AllMatcher{}
+var _ types.BeMatcher = &AllMatcher{}
 
 func NewAllMatcher(ms ...any) *AllMatcher {
-	matchers := make([]BeMatcher, len(ms))
+	matchers := make([]types.BeMatcher, len(ms))
 	for i, m := range ms {
 		matchers[i] = AsMatcher(m)
 	}

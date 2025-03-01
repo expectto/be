@@ -7,9 +7,9 @@ import (
 
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
-	"github.com/expectto/be/internal/tmp/gcustom"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
+	"github.com/onsi/gomega/gcustom"
 )
 
 // LaterThan succeeds if actual time is later than the specified time `compareTo`.

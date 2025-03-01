@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	. "github.com/expectto/be/internal/psi"
-	"github.com/expectto/be/internal/tmp/format"
 	"github.com/expectto/be/types"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/onsi/gomega/format"
 )
 
 type JwtTokenMatcher struct {

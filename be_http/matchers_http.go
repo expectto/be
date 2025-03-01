@@ -12,6 +12,7 @@ import (
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
+	"github.com/onsi/gomega"
 )
 
 // Request matches an actual value to be a valid *http.Request corresponding to given inputs.
@@ -40,7 +41,7 @@ func Request(args ...any) types.BeMatcher {
 		// match given string to whole url
 		return psi_matchers.NewReqPropertyMatcher("Url", "", func(req *http.Request) any {
 			return req.URL.String()
-		}, Equal(cast.AsString(args[0])))
+		}, gomega.Equal(cast.AsString(args[0])))
 	}
 
 	return Psi(args...)

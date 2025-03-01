@@ -5,8 +5,9 @@ import (
 	"fmt"
 
 	. "github.com/expectto/be/internal/psi"
-	"github.com/expectto/be/internal/tmp/format"
 	"github.com/expectto/be/types"
+	"github.com/onsi/gomega/format"
+	"go.uber.org/mock/gomock"
 )
 
 var (
@@ -37,6 +38,7 @@ type CtxMatcher struct {
 	//doneMatcher types.BeMatcher
 }
 
+var _ gomock.Matcher = &CtxMatcher{}
 var _ types.BeMatcher = &CtxMatcher{}
 
 func (cm *CtxMatcher) Match(v any) (success bool, err error) {

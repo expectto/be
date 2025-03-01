@@ -6,7 +6,7 @@ import (
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 
-	"github.com/expectto/be/internal/tmp/format"
+	"github.com/onsi/gomega/format"
 )
 
 // AnyMatcher is the psi upgrade for gomega's OrMatcher
