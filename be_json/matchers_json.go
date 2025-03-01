@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"reflect"
 
 	"github.com/expectto/be/be_reflected"
 	"github.com/expectto/be/internal/cast"
@@ -24,6 +25,8 @@ const (
 	JsonAsReader
 	JsonAsObject
 	JsonAsObjects
+	JsonAsStruct
+	//JsonAsStructs
 )
 
 // Matcher is a JSON matcher. "JSON" here means a []byte with JSON data in it
@@ -43,6 +46,9 @@ func Matcher(args ...any) types.BeMatcher {
 		// Object-like inputs:
 		// Here we accept map[string]any or []map[string]any
 		be_reflected.AsObject(), be_reflected.AsObjects(),
+
+		// Struct-like inputs:
+		be_reflected.AsStruct(),
 	)
 
 	// Check if first argument was given as a JsonAs* constant
@@ -67,6 +73,9 @@ func Matcher(args ...any) types.BeMatcher {
 			}
 			if t&JsonAsObjects != 0 {
 				inputMatchers = append(inputMatchers, be_reflected.AsObjects())
+			}
+			if t&JsonAsStruct != 0 {
+				inputMatchers = append(inputMatchers, be_reflected.AsStruct())
 			}
 
 			// To avoid extra "Any" matching logic, let's simplify case when we have single input matcher
@@ -105,11 +114,36 @@ func Matcher(args ...any) types.BeMatcher {
 				return data
 			}
 
+			if actualStringer, ok := actual.(fmt.Stringer); ok {
+				var data any
+				if err := json.Unmarshal([]byte(actualStringer.String()), &data); err != nil {
+					return NewTransformError(fmt.Errorf("be a valid json: %w", err), actual)
+				}
+
+				return data
+			}
+
 			// convert `actual` into `any` (if `actual` is bytes/string):
 			// it will end up `[]any` or `map[string]any` underneath it
 			if cast.IsStringish(actual) {
 				var data any
 				if err := json.Unmarshal(cast.AsBytes(actual), &data); err != nil {
+					return NewTransformError(fmt.Errorf("be a valid json: %w", err), actual)
+				}
+
+				return data
+			}
+
+			// TODO refactor
+			if reflect.TypeOf(actual).Kind() == reflect.Struct {
+				// remarshal via JSON:
+				contents, err := json.Marshal(actual)
+				if err != nil {
+					return NewTransformError(fmt.Errorf("to read json: %w", err), actual)
+				}
+
+				var data any
+				if err := json.Unmarshal(contents, &data); err != nil {
 					return NewTransformError(fmt.Errorf("be a valid json: %w", err), actual)
 				}
 
