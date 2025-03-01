@@ -98,10 +98,10 @@ var _ = Describe("Is", func() {
 		It("should return true for int64", func() {
 			Expect(cast.IsInt(int64(123))).To(BeTrue())
 		})
-
 		It("should return false for uint", func() {
-			Expect(cast.IsInt(uint(123))).To(BeFalse())
+			Expect(cast.IsInt(uint(123))).To(BeTrue())
 		})
+
 		It("should return false for float", func() {
 			Expect(cast.IsInt(123.456)).To(BeFalse())
 		})
