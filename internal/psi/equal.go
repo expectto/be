@@ -1,4 +1,4 @@
-package psi_matchers
+package psi
 
 import (
 	"bytes"
@@ -9,34 +9,35 @@ import (
 	"github.com/expectto/be/types"
 )
 
-type EqMatcher struct {
-	Expected        any
-	lastActualValue any
+// Equal uses reflect.DeepEqual to compare actual with expected.  Equal is strict about
+// types when performing comparisons.
+// It is an error for both actual and expected to be nil.  Use BeNil() instead.
+func Equal(expected interface{}) types.BeMatcher {
+	return &EqualMatcher{
+		Expected: expected,
+	}
 }
 
-var _ types.BeMatcher = &EqMatcher{}
-
-func NewEqMatcher(expected any) *EqMatcher {
-	return &EqMatcher{Expected: expected}
+type EqualMatcher struct {
+	Expected interface{}
 }
 
-func (matcher *EqMatcher) Match(actual any) (success bool, err error) {
+func (matcher *EqualMatcher) Match(actual interface{}) (success bool, err error) {
 	if actual == nil && matcher.Expected == nil {
 		return false, fmt.Errorf("Refusing to compare <nil> to <nil>.\nBe explicit and use BeNil() instead.  This is to avoid mistakes where both sides of an assertion are erroneously uninitialized.")
 	}
-	// Shortcut for byte slices
-	// Comparing long byte slices with reflect.DeepEqual is slow,
+	// Shortcut for byte slices.
+	// Comparing long byte slices with reflect.DeepEqual is very slow,
 	// so use bytes.Equal if actual and expected are both byte slices.
 	if actualByteSlice, ok := actual.([]byte); ok {
 		if expectedByteSlice, ok := matcher.Expected.([]byte); ok {
 			return bytes.Equal(actualByteSlice, expectedByteSlice), nil
 		}
 	}
-	matcher.lastActualValue = actual
 	return reflect.DeepEqual(actual, matcher.Expected), nil
 }
 
-func (matcher *EqMatcher) FailureMessage(actual any) (message string) {
+func (matcher *EqualMatcher) FailureMessage(actual interface{}) (message string) {
 	actualString, actualOK := actual.(string)
 	expectedString, expectedOK := matcher.Expected.(string)
 	if actualOK && expectedOK {
@@ -46,17 +47,15 @@ func (matcher *EqMatcher) FailureMessage(actual any) (message string) {
 	return format.Message(actual, "to equal", matcher.Expected)
 }
 
-func (matcher *EqMatcher) NegatedFailureMessage(actual any) (message string) {
+func (matcher *EqualMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	return format.Message(actual, "not to equal", matcher.Expected)
 }
 
-func (matcher *EqMatcher) Matches(actual any) bool {
-	res, _ := matcher.Match(actual)
-	matcher.lastActualValue = actual
-	return res
+func (matcher *EqualMatcher) Matches(actual interface{}) (success bool) {
+	v, _ := matcher.Match(actual)
+	return v
 }
 
-// String is considered to be called after Matches() was called
-func (matcher *EqMatcher) String() string {
-	return matcher.FailureMessage(matcher.lastActualValue)
+func (matcher *EqualMatcher) String() string {
+	return "Equal: todo"
 }

@@ -7,8 +7,8 @@ import (
 
 	"github.com/expectto/be/internal/cast"
 	. "github.com/expectto/be/internal/psi"
+	"github.com/expectto/be/internal/tmp/format"
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega/format"
 )
 
 type Value struct {

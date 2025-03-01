@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	. "github.com/expectto/be/internal/psi"
+	"github.com/expectto/be/internal/tmp/format"
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega/format"
 )
 
 // ReqPropertyMatcher is a matcher for http.Request properties

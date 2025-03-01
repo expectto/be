@@ -150,7 +150,7 @@ func AsNumericString() types.BeMatcher {
 		WithFallibleTransform(func(actual any) any {
 			_, err := strconv.ParseFloat(cast.AsString(actual), 64)
 			return err == nil
-		}, gomega.BeTrue()),
+		}, Psi(gomega.BeTrue())),
 	), "be a numeric string")
 }
 
@@ -169,7 +169,7 @@ func AsIntegerString() types.BeMatcher {
 		WithFallibleTransform(func(actual any) any {
 			_, err := strconv.ParseInt(cast.AsString(actual), 10, 64)
 			return err == nil
-		}, gomega.BeTrue()),
+		}, Psi(gomega.BeTrue())),
 	), "be an integer-ish string")
 }
 
@@ -188,6 +188,6 @@ func AsFloatString() types.BeMatcher {
 		WithFallibleTransform(func(actual any) any {
 			_, err := strconv.ParseFloat(cast.AsString(actual), 64)
 			return err == nil
-		}, gomega.BeTrue()),
+		}, Psi(gomega.BeTrue())),
 	), "be a float-ish string")
 }

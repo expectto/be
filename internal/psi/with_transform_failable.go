@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/expectto/be/internal/tmp/format"
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega"
-	"github.com/onsi/gomega/format"
 )
 
 // IsTransformFunc checks if given thing is a Gomega-compatible transform
@@ -36,14 +35,14 @@ func IsTransformFunc(v any) bool {
 
 // WithFallibleTransform creates a gomega transform matcher that can nicely handle failures
 // Also it allows to have nil matcher, meaning that we're OK unless transform failed
-func WithFallibleTransform(transform any, matcher gomega.OmegaMatcher) types.BeMatcher {
+func WithFallibleTransform(transform any, matcher types.BeMatcher) types.BeMatcher {
 	if matcher != nil {
-		matcher = gomega.And(WithTransformError(), matcher)
+		matcher = And(WithTransformError(), matcher)
 	} else {
 		matcher = WithTransformError()
 	}
 
-	return Psi(gomega.WithTransform(transform, matcher))
+	return Psi(WithTransform(transform, matcher))
 }
 
 // TransformErrorMatcher is actually a matcher
@@ -69,6 +68,25 @@ func (matcher *TransformErrorMatcher) Match(actual any) (success bool, err error
 	}
 
 	return matcher.err == nil, nil
+}
+
+func (matcher *TransformErrorMatcher) Matches(actual any) (success bool) {
+	if err, ok := actual.(error); ok {
+		matcher.err = err
+	}
+
+	// Fill in actual value for future messages
+	if h, ok := actual.(interface {
+		Actual() any
+	}); ok {
+		matcher.actual = h.Actual()
+	}
+
+	return matcher.err == nil
+}
+
+func (matcher *TransformErrorMatcher) String() string {
+	return "todo"
 }
 
 func (matcher *TransformErrorMatcher) FailureMessage(actual any) string {

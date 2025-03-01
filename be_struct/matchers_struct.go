@@ -6,8 +6,8 @@ import (
 	"reflect"
 
 	. "github.com/expectto/be/internal/psi"
+	"github.com/expectto/be/internal/tmp/gcustom"
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega/gcustom"
 )
 
 // HavingField succeeds if the actual value is a struct and it has a field with the given name.

@@ -5,8 +5,8 @@ import (
 	"reflect"
 
 	. "github.com/expectto/be/internal/psi"
+	"github.com/expectto/be/internal/tmp/format"
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega/format"
 )
 
 type AssignableToMatcher struct {

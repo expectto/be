@@ -10,8 +10,8 @@ package psi
 import (
 	"strings"
 
+	"github.com/expectto/be/internal/tmp/gcustom"
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega/gcustom"
 )
 
 // Psi is a main converter function that converts given input into a PsiMatcher
@@ -63,6 +63,10 @@ func Psi(args ...any) types.BeMatcher {
 		matchers = append(matchers, Psi(arg)) // 2 or 3
 	}
 
+	return &allMatcher{matchers: matchers}
+}
+
+func And(matchers ...types.BeMatcher) types.BeMatcher {
 	return &allMatcher{matchers: matchers}
 }
 
