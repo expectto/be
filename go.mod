@@ -5,7 +5,7 @@ go 1.23.8
 require (
 	github.com/IGLOU-EU/go-wildcard v1.0.3 // latest
 	github.com/amberpixels/abu v0.0.1
-	github.com/golang-jwt/jwt/v5 v5.2.1 // latest
+	github.com/golang-jwt/jwt/v5 v5.2.2 // latest
 	github.com/onsi/ginkgo/v2 v2.23.4 // latest
 	github.com/onsi/gomega v1.37.0 // latest
 	github.com/stretchr/testify v1.10.0
