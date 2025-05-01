@@ -9,7 +9,7 @@ import (
 	"unicode"
 
 	"github.com/IGLOU-EU/go-wildcard" // used specifically for MatchWildcard matcher
-	cast "github.com/amberpixels/abu/cast"
+	"github.com/amberpixels/abu/cast"
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/internal/psi_matchers"
 	. "github.com/expectto/be/options"

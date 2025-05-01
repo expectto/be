@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math"
 
-	cast "github.com/amberpixels/abu/cast"
+	"github.com/amberpixels/abu/cast"
 	"github.com/expectto/be/be_reflected"
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/internal/psi_matchers"

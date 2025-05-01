@@ -3,7 +3,7 @@ package psi
 import (
 	"fmt"
 
-	cast "github.com/amberpixels/abu/cast"
+	"github.com/amberpixels/abu/cast"
 )
 
 type DiveMode string
