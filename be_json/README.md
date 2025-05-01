@@ -46,5 +46,6 @@ const (
 	JsonAsReader
 	JsonAsObject
 	JsonAsObjects
+	JsonAsStruct
 )
 ```
