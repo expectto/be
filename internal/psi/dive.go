@@ -3,7 +3,7 @@ package psi
 import (
 	"fmt"
 
-	"github.com/expectto/be/internal/cast"
+	cast "github.com/amberpixels/abu/cast"
 )
 
 type DiveMode string

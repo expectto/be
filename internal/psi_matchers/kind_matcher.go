@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/expectto/be/internal/cast"
+	cast "github.com/amberpixels/abu/cast"
 	. "github.com/expectto/be/internal/psi"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"

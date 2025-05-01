@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/expectto/be/internal/cast"
+	cast "github.com/amberpixels/abu/cast"
+	reflect2 "github.com/amberpixels/abu/reflect"
 	. "github.com/expectto/be/internal/psi"
-	"github.com/expectto/be/internal/reflect"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
 )
@@ -43,7 +43,7 @@ func NewHaveLengthMatcher(args ...any) *HaveLengthMatcher {
 }
 
 func (matcher *HaveLengthMatcher) Match(actual any) (success bool, err error) {
-	length, ok := reflect.LengthOf(actual)
+	length, ok := reflect2.LengthOf(actual)
 	if !ok {
 		return false, fmt.Errorf("HaveLen matcher expects a string/array/map/channel/slice.  Got:\n%s", format.Object(actual, 1))
 	}
