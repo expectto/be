@@ -4,19 +4,19 @@ import (
 	"context"
 	"fmt"
 
-	. "github.com/expectto/be/internal/psi"
+	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
 	"go.uber.org/mock/gomock"
 )
 
 var (
-	FailCtxNotAContext        = fmt.Errorf("be a ctx")
-	FailCtxValueExpected      = fmt.Errorf("have the ctx.value")
-	FailCtxValueNotMatched    = fmt.Errorf("have the ctx.value") // same text as won't be used directly (but still can be distinguished via errors.Is()
-	FailCtxErrNotMatched      = fmt.Errorf("todo...")
-	FailCtxDeadlineExpected   = fmt.Errorf("todo...")
-	FailCtxDeadlineNotMatched = fmt.Errorf("todo...")
+	ErrCtxNotAContext        = fmt.Errorf("be a ctx")
+	ErrCtxValueExpected      = fmt.Errorf("have the ctx.value")
+	ErrCtxValueNotMatched    = fmt.Errorf("have the ctx.value") // same text as won't be used directly (but still can be distinguished via errors.Is()
+	ErrCtxErrNotMatched      = fmt.Errorf("todo: better error handling here")
+	ErrCtxDeadlineExpected   = fmt.Errorf("todo: better error handling here")
+	ErrCtxDeadlineNotMatched = fmt.Errorf("todo: better error handling here")
 )
 
 // CtxMatcher is a matcher for ctx// Each instance of CtxMatcher can match across only one thing:// (1) ctx value or (2) error or (3) deadline or (4) done signal
@@ -65,7 +65,7 @@ func (cm *CtxMatcher) String() string {
 func (cm *CtxMatcher) match(v any) (bool, error) {
 	ctx, ok := v.(context.Context)
 	if !ok {
-		cm.failReason = FailCtxNotAContext
+		cm.failReason = ErrCtxNotAContext
 		return false, nil
 	}
 
@@ -76,7 +76,7 @@ func (cm *CtxMatcher) match(v any) (bool, error) {
 		if cm.value == nil {
 			// simply match existence of a value
 			if foundValue == nil {
-				cm.failReason = fmt.Errorf("%w key=`%s`", FailCtxValueExpected, cm.key)
+				cm.failReason = fmt.Errorf("%w key=`%s`", ErrCtxValueExpected, cm.key)
 				return false, nil
 			}
 
@@ -89,7 +89,7 @@ func (cm *CtxMatcher) match(v any) (bool, error) {
 			return false, err
 		}
 		if !succeed {
-			cm.failReason = fmt.Errorf("%w key=`%s` that failed on match:\n%s", FailCtxValueNotMatched, cm.key, valueMatcher.FailureMessage(foundValue))
+			cm.failReason = fmt.Errorf("%w key=`%s` that failed on match:\n%s", ErrCtxValueNotMatched, cm.key, valueMatcher.FailureMessage(foundValue))
 		}
 		return succeed, nil
 	}
@@ -101,7 +101,7 @@ func (cm *CtxMatcher) match(v any) (bool, error) {
 			return false, err
 		}
 		if !succeed {
-			cm.failReason = fmt.Errorf("%w: %s", FailCtxErrNotMatched, errMatcher.FailureMessage(ctx.Err()))
+			cm.failReason = fmt.Errorf("%w: %s", ErrCtxErrNotMatched, errMatcher.FailureMessage(ctx.Err()))
 		}
 		return succeed, nil
 	}
@@ -110,7 +110,7 @@ func (cm *CtxMatcher) match(v any) (bool, error) {
 		// first simple check if deadline exists
 		deadline, ok := ctx.Deadline()
 		if !ok {
-			cm.failReason = FailCtxDeadlineExpected
+			cm.failReason = ErrCtxDeadlineExpected
 			return false, nil
 		}
 
@@ -120,7 +120,7 @@ func (cm *CtxMatcher) match(v any) (bool, error) {
 			return false, err
 		}
 		if !succeed {
-			cm.failReason = fmt.Errorf("%w: %s", FailCtxDeadlineNotMatched, deadlineMatcher.FailureMessage(deadline))
+			cm.failReason = fmt.Errorf("%w: %s", ErrCtxDeadlineNotMatched, deadlineMatcher.FailureMessage(deadline))
 		}
 		return succeed, nil
 	}

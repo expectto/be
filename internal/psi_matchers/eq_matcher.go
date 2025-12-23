@@ -22,7 +22,7 @@ func NewEqMatcher(expected any) *EqMatcher {
 
 func (matcher *EqMatcher) Match(actual any) (success bool, err error) {
 	if actual == nil && matcher.Expected == nil {
-		return false, fmt.Errorf("Refusing to compare <nil> to <nil>.\nBe explicit and use BeNil() instead.  This is to avoid mistakes where both sides of an assertion are erroneously uninitialized.")
+		return false, fmt.Errorf("refusing to compare <nil> to <nil> - Be explicit and use BeNil() instead.  This is to avoid mistakes where both sides of an assertion are erroneously uninitialized")
 	}
 	// Shortcut for byte slices
 	// Comparing long byte slices with reflect.DeepEqual is slow,

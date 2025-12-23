@@ -8,9 +8,9 @@ import (
 	"io"
 	"reflect"
 
-	"github.com/amberpixels/abu/cast"
+	"github.com/amberpixels/k1/cast"
 	"github.com/expectto/be/be_reflected"
-	. "github.com/expectto/be/internal/psi"
+	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"

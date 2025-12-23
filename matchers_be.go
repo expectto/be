@@ -4,7 +4,7 @@ package be
 // For advances matchers check out `be_*` packages
 
 import (
-	. "github.com/expectto/be/internal/psi"
+	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
 )

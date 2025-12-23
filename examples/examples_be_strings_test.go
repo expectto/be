@@ -3,7 +3,7 @@ package examples
 import (
 	"github.com/expectto/be"
 	"github.com/expectto/be/be_string"
-	. "github.com/expectto/be/options"
+	. "github.com/expectto/be/options" //nolint:staticcheck // should be moved to lintignore
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )

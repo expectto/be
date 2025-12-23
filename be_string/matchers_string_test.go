@@ -4,7 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/expectto/be/be_string"
-	. "github.com/expectto/be/options"
+	. "github.com/expectto/be/options" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/types"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	. "github.com/expectto/be/internal/psi"
+	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/types"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/onsi/gomega/format"
