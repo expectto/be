@@ -140,6 +140,19 @@ var _ = Describe("BeMath", func() {
 		Entry("18 is not divisible by -4", be_math.DivisibleBy(-4), 18),
 	)
 
+	DescribeTable("should fail gracefully (error, no panic) on non-numeric input", func(matcher types.BeMatcher, actual any) {
+		Expect(func() {
+			success, err := matcher.Match(actual)
+			Expect(err).To(HaveOccurred())
+			Expect(success).To(BeFalse())
+		}).NotTo(Panic())
+	},
+		Entry("Integral on a non-numeric string", be_math.Integral(), "xyz"),
+		Entry("Integral on a struct", be_math.Integral(), struct{}{}),
+		Entry("DivisibleBy on a non-numeric string", be_math.DivisibleBy(2), "xyz"),
+		Entry("DivisibleBy on a slice", be_math.DivisibleBy(2), []int{1, 2}),
+	)
+
 	DescribeTable("should return a valid failure message", func(matcher types.BeMatcher, actual any, message string) {
 		// FailureMessage is considered to be called after matching:
 		_, _ = matcher.Match(actual)

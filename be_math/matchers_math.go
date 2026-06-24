@@ -115,8 +115,11 @@ func ApproxZero() types.BeMatcher {
 // Integral succeeds if actual is an integral float, meaning it has zero decimal places.
 // This matcher checks if the numeric value has no fractional component.
 func Integral() types.BeMatcher {
-	return Psi(func(actual interface{}) (bool, error) {
-		f := cast.AsFloat(actual)
+	return Psi(func(actual any) (bool, error) {
+		f, ok := asFloatSafe(actual)
+		if !ok {
+			return false, fmt.Errorf("expected a numeric value, got %T", actual)
+		}
 		return f-float64(int(f)) == 0, nil
 	}, "be integral float value")
 }
@@ -124,8 +127,28 @@ func Integral() types.BeMatcher {
 // DivisibleBy succeeds if actual is numerically divisible by the passed-in value.
 func DivisibleBy(divisor any) types.BeMatcher {
 	return Psi(func(actual any) (bool, error) {
-		return math.Mod(cast.AsFloat(actual), cast.AsFloat(divisor)) == 0, nil
+		a, ok := asFloatSafe(actual)
+		if !ok {
+			return false, fmt.Errorf("expected a numeric value, got %T", actual)
+		}
+		d, ok := asFloatSafe(divisor)
+		if !ok {
+			return false, fmt.Errorf("divisible-by divisor must be numeric, got %T", divisor)
+		}
+		return math.Mod(a, d) == 0, nil
 	}, fmt.Sprintf("be divisible by %v", divisor))
+}
+
+// asFloatSafe converts a value to float64 like cast.AsFloat, but recovers from the
+// panic cast raises on non-numeric input so matchers can fail gracefully instead
+// of crashing the test run. The second return reports whether conversion succeeded.
+func asFloatSafe(a any) (f float64, ok bool) {
+	defer func() {
+		if recover() != nil {
+			f, ok = 0, false
+		}
+	}()
+	return cast.AsFloat(a), true
 }
 
 // Shorter Names:

@@ -2,6 +2,7 @@ package psi
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/amberpixels/k1/cast"
 )
@@ -42,12 +43,24 @@ func NewDiveMatcher(matcher any, mode DiveMode, args ...any) *DiveMatcher {
 	return dm
 }
 
-func (dm *DiveMatcher) Match(actual interface{}) (bool, error) {
+func (dm *DiveMatcher) Match(actual any) (bool, error) {
 	matcher := Psi(dm.matcher)
 
-	// todo: nice error if actual is not a slice-ish
-	// as other way it panics
-	slice := cast.AsSliceOfAny(actual)
+	// Guard against a non-slice actual: cast.AsSliceOfAny would otherwise panic,
+	// crashing the whole test run instead of producing a graceful failure.
+	rv := reflect.ValueOf(actual)
+	for rv.Kind() == reflect.Pointer {
+		rv = rv.Elem()
+	}
+	if rv.Kind() != reflect.Slice && rv.Kind() != reflect.Array {
+		return false, fmt.Errorf("dive[%s] expects a slice or array, got %T", dm.mode, actual)
+	}
+	// Build []any via reflection so both slices and arrays are supported without
+	// risking the panic cast.AsSliceOfAny raises on arrays.
+	slice := make([]any, rv.Len())
+	for i := range slice {
+		slice[i] = rv.Index(i).Interface()
+	}
 
 	switch dm.mode {
 	case DiveModeEvery:
