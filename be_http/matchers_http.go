@@ -84,6 +84,12 @@ func HavingBody(args ...any) types.BeMatcher {
 	return psi_matchers.NewReqPropertyMatcher(
 		"HavingBody", "body",
 		func(req *http.Request) any {
+			// A request may legitimately have no body (e.g. GET); io.ReadAll(nil)
+			// would panic, so treat a missing body as an empty, still-readable one.
+			if req.Body == nil {
+				return http.NoBody
+			}
+
 			// TODO: do it in nicer form (Idea is to return a body but so it's still readable later)
 			body, _ := io.ReadAll(req.Body)
 			req.Body = io.NopCloser(bytes.NewBuffer(body))

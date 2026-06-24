@@ -188,6 +188,19 @@ var _ = Describe("MatchersHttp", func() {
 		Entry("HavingHost() on nil", be_http.HavingHost("x"), nil),
 	)
 
+	// Regression: HavingBody must not panic when the request carries no body
+	// (req.Body == nil, e.g. a GET built with a nil body).
+	It("HavingBody does not panic on a nil-body request", func() {
+		req := newRequest(http.MethodGet, "https://example.com", "")
+		Expect(req.Body).To(BeNil())
+		Expect(func() {
+			success, _ := be_http.HavingBody(
+				be.JSON(be_json.JsonAsReader, be_json.HaveKeyValue("x", "y")),
+			).Match(req)
+			Expect(success).To(BeFalse())
+		}).NotTo(Panic())
+	})
+
 	DescribeTable("should return a valid failure message", func(matcher types.BeMatcher, actual any, substr string) {
 		// FailureMessage is considered to be called after matching:
 		_, _ = matcher.Match(actual)

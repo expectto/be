@@ -28,7 +28,10 @@ type CtxMatcher struct {
 	value any
 
 	// 2. Error matching
-	errFn any
+	// matchErr records that error matching was requested (via NewCtxErrMatcher),
+	// so a nil errFn means "expect no error" rather than "no error matcher set".
+	matchErr bool
+	errFn    any
 
 	// 3. Deadline matching
 	deadline any
@@ -94,7 +97,16 @@ func (cm *CtxMatcher) match(v any) (bool, error) {
 		return succeed, nil
 	}
 	// (2) matching context err
-	if cm.errFn != nil {
+	if cm.matchErr {
+		// CtxWithError(nil) asserts the context carries no error.
+		if cm.errFn == nil {
+			if ctx.Err() != nil {
+				cm.failReason = fmt.Errorf("%w: expected no error, got %v", ErrCtxErrNotMatched, ctx.Err())
+				return false, nil
+			}
+			return true, nil
+		}
+
 		errMatcher := Psi(cm.errFn)
 		succeed, err := errMatcher.Match(ctx.Err())
 		if err != nil {
@@ -152,5 +164,5 @@ func NewCtxDeadlineMatcher(deadline any) *CtxMatcher {
 }
 
 func NewCtxErrMatcher(errFn any) *CtxMatcher {
-	return &CtxMatcher{errFn: errFn}
+	return &CtxMatcher{matchErr: true, errFn: errFn}
 }

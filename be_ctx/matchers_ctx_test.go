@@ -139,4 +139,16 @@ var _ = Describe("BeCtx", func() {
 			"Expected\n    <context.backgroundCtx>: {\n        emptyCtx: <suppressed context>,\n    }\nto have the ctx.value key=`absent`",
 		),
 	)
+
+	// CtxWithError(nil) asserts the context carries NO error. It must reject a
+	// context that has errored (previously it matched any context).
+	DescribeTable("CtxWithError(nil) asserts no error", func(actual context.Context, wantMatch bool) {
+		success, err := be_ctx.CtxWithError(nil).Match(actual)
+		Expect(err).Should(Succeed())
+		Expect(success).To(Equal(wantMatch))
+	},
+		Entry("live context has no error -> match", plainCtx(), true),
+		Entry("canceled context has an error -> no match", canceledCtx(), false),
+		Entry("deadline-exceeded context has an error -> no match", deadlineExceededCtx(), false),
+	)
 })
