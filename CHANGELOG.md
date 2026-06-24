@@ -1,0 +1,46 @@
+# Changelog
+
+All notable changes to this project are documented here. The format is based on
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project aims to
+follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+Work toward a stable **v1**: a framework-agnostic matcher core with opt-in drivers.
+
+### Added
+- **Native assertion runner** — `be.Expect(t, x).To(...)` (soft) and
+  `be.Require(t, x).To(...)` (hard), bound to a minimal `TestingT` interface that
+  `*testing.T` satisfies. No ginkgo/testify/gomega import required by the user.
+- **Testify driver** as a separate module `github.com/expectto/be/x/testify`
+  (`Assert`/`Require`), keeping testify out of the core dependency graph.
+- **Testify mock / mockery support** — `x/testify.Mock(matcher)` adapts a be
+  matcher into a testify `mock.MatchedBy` argument matcher.
+- **`be_http.HavingCtx`** — match a request's context via `be_ctx` matchers.
+- Test coverage for previously-untested packages: `be_url`, `be_http`, `be_ctx`,
+  `be_jwt`, `be_json` (144 specs).
+
+### Changed
+- **Semantic contract**: matchers now return `(false, error)` for input that
+  cannot be evaluated (invalid JSON, undecodable/wrong-signed JWT, unparseable
+  URL) instead of a silent non-match; a value that was evaluated but did not
+  match still returns `(false, nil)`.
+- Core module no longer depends on **testify** (moved to `x/testify`) or
+  **gomock** (removed a stray interface assertion). gomega remains as the
+  internal matching engine.
+- `go` directive bumped to 1.26; all dependencies updated.
+- `be_ctx.Ctx(args...)` now enforces the actual is a `context.Context` before
+  applying sub-matchers; placeholder error strings replaced with real messages.
+
+### Fixed
+- Match-time panics on unexpected `actual` values in `Dive` (non-slice) and
+  `be_math` (`Integral`/`DivisibleBy` on non-numeric); `Dive` also now supports
+  arrays.
+- `be_ctx.CtxWithError(nil)` now asserts the context carries no error instead of
+  matching any context.
+- `be_http.HavingBody` no longer panics on a nil-body request.
+- Broken symbols in the README showcase example.
+
+## [0.2.4] and earlier
+
+See the git history for pre-v1 releases.

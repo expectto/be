@@ -6,8 +6,8 @@ package be
 //
 //	be.Expect(t, actual).To(be.GreaterThan(3))   // "expect ... to be greater than 3"
 //
-// Status: experimental spike. The matcher core stays gomega-backed internally;
-// only the failure message is reshaped to read natively (see internal/beformat).
+// The matcher core stays gomega-backed internally; only the failure message is
+// reshaped to read natively (see internal/beformat).
 
 import (
 	"github.com/expectto/be/internal/beformat"
