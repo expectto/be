@@ -44,6 +44,29 @@ func Require(t TestingT, actual any) *Expectation {
 	return &Expectation{t: t, actual: actual, fatal: true}
 }
 
+// AssertThat is the flat, testify-style spelling of Expect(t, actual).To(matcher):
+// a soft assertion that reports via Errorf and lets the test continue. It is the
+// drop-in for testify's assert when you want a be matcher:
+//
+//	assert.Equal(t, want, got)          // testify
+//	be.AssertThat(t, got, be.Eq(want))  // be — and now `got` can face any matcher
+//
+// The subject (actual) comes first and the expected value lives inside the
+// matcher, so unlike testify's Equal there is no want/got order to get wrong.
+// An optional message provides failure context (see To). Returns true on success.
+func AssertThat(t TestingT, actual, matcher any, msgAndArgs ...any) bool {
+	t.Helper()
+	return Expect(t, actual).To(matcher, msgAndArgs...)
+}
+
+// RequireThat is the flat, testify-style spelling of Require(t, actual).To(matcher):
+// a hard assertion that stops the test on the first failure via Fatalf. See
+// AssertThat for the argument-order rationale. Returns true on success.
+func RequireThat(t TestingT, actual, matcher any, msgAndArgs ...any) bool {
+	t.Helper()
+	return Require(t, actual).To(matcher, msgAndArgs...)
+}
+
 // To asserts that actual satisfies the matcher. The matcher may be a be/gomega/
 // gomock matcher or a raw value (wrapped via Psi, like the rest of be). An
 // optional message — a format string plus args, or plain values — is prepended to

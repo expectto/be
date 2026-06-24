@@ -114,37 +114,39 @@ Expect(req).To(be_http.Request(
 `be` matchers are framework-agnostic. The core `github.com/expectto/be` module
 imports **no** test framework — pick how you run assertions:
 
-**Standard library (no extra deps):**
+**Standard library (no extra deps).** Two equivalent spellings — a fluent one and
+a flat, testify-style one — both backed by the same engine, both driven by the
+stdlib `*testing.T`:
 
 ```go
 import "github.com/expectto/be"
 
-be.Expect(t, n).To(be_math.GreaterThan(10))   // soft fail (assert-style)
-be.Require(t, n).To(be_math.GreaterThan(10))  // hard fail (require-style)
+// fluent (ginkgo/gomega-flavored)
+be.Expect(t, n).To(be_math.GreaterThan(10))    // soft fail (assert-style)
+be.Require(t, n).To(be_math.GreaterThan(10))   // hard fail (require-style)
 be.Expect(t, s).NotTo(be_string.EmptyString())
+
+// flat (testify-flavored)
+be.AssertThat(t, n, be_math.GreaterThan(10))     // soft fail (assert-style)
+be.RequireThat(t, s, be_string.NonEmptyString()) // hard fail (require-style)
 ```
+
+**Already on testify?** Keep your `assert`/`require` calls and reach for `be`
+only where a matcher earns its keep — `be.AssertThat` / `be.RequireThat` are the
+drop-in slots (no extra dependency):
+
+```go
+assert.Equal(t, want, got)          // testify, as usual
+be.AssertThat(t, got, be.Eq(want))  // be — and now `got` can face any matcher,
+                                    // e.g. be_url.URL(be_url.HavingHost("x"), ...)
+```
+
+> The **subject comes first** and the expected value lives inside the matcher
+> (`be.Eq(want)`), so — unlike testify's `Equal(t, want, got)` — there's no
+> want/got order to memorize or get wrong.
 
 **Ginkgo / Gomega:** every `be` matcher already satisfies `gomega`'s matcher
 interface, so use it directly inside `Expect(...).To(...)`.
-
-**Testify (assert / require):** opt in via the separate driver module (keeps
-testify out of your deps unless you want it). Install it with `@latest` (the
-submodule shares version numbers with the core module, which confuses
-`go get <pkg>@<version>`):
-
-```sh
-go get github.com/expectto/be/x/testify@latest
-```
-
-```go
-import betestify "github.com/expectto/be/x/testify"
-
-betestify.Assert(t, n, be_math.GreaterThan(10))
-betestify.Require(t, s, be_string.NonEmptyString())
-```
-
-> Note the argument order vs testify: `assert.Equal(t, want, got)` becomes
-> `betestify.Assert(t, got, be.Eq(want))` — the **actual** value comes first.
 
 ### Mocking
 
@@ -156,13 +158,21 @@ betestify.Require(t, s, be_string.NonEmptyString())
 mockObj.EXPECT().Do(be_math.GreaterThan(10)).Return("ok")
 ```
 
-**Testify mock / mockery:** wrap with `Mock` (works for hand-written and
-mockery-generated mocks):
+**Testify mock / mockery:** wrap with `MatchedBy` (works for hand-written and
+mockery-generated mocks) — the matcher equivalent of testify's own
+`mock.MatchedBy`. This is the one place you need the separate `x/mock` module
+(it's what keeps testify out of the core deps); install it with `@latest` (the
+submodule shares version numbers with the core module, which confuses
+`go get <pkg>@<version>`):
+
+```sh
+go get github.com/expectto/be/x/mock@latest
+```
 
 ```go
-import betestify "github.com/expectto/be/x/testify"
+import bemock "github.com/expectto/be/x/mock"
 
-svc.On("Do", betestify.Mock(be_math.GreaterThan(10))).Return("ok")
+svc.On("Do", bemock.MatchedBy(be_math.GreaterThan(10))).Return("ok")
 ```
 
 ## Matchers

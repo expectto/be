@@ -8,6 +8,22 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Work toward a stable **v1**: a framework-agnostic matcher core with opt-in drivers.
 
+### Added (rc.6)
+- **`be.AssertThat` / `be.RequireThat`** — flat, testify-style spellings of
+  `be.Expect(t, x).To(m)` / `be.Require(t, x).To(m)`, in the core module (no
+  testify dependency). Lets testify users keep their `assert`/`require` calls and
+  drop in a `be` matcher where it earns its keep:
+  `be.AssertThat(t, got, be.Eq(want))`. The subject comes first and the expected
+  value lives inside the matcher, so there's no want/got order to get wrong.
+
+### Changed (rc.6)
+- **`x/testify` module renamed to `x/mock`, scoped to mocks only.** Its
+  `Assert`/`Require` are removed (superseded by the core `be.AssertThat` /
+  `be.RequireThat`), and the mock adapter is renamed `Mock` → **`MatchedBy`** —
+  the matcher equivalent of testify's `mock.MatchedBy`:
+  `bemock.MatchedBy(be_math.GreaterThan(10))`. The module exists solely to keep
+  testify out of the core dependency graph.
+
 ### Changed (rc.5)
 - **`be_string.MatchTemplate` is now literal + anchored.** Non-placeholder text is
   treated literally (regexp.QuoteMeta), so punctuation common in real strings —
@@ -52,10 +68,11 @@ Work toward a stable **v1**: a framework-agnostic matcher core with opt-in drive
 - **Native assertion runner** — `be.Expect(t, x).To(...)` (soft) and
   `be.Require(t, x).To(...)` (hard), bound to a minimal `TestingT` interface that
   `*testing.T` satisfies. No ginkgo/testify/gomega import required by the user.
-- **Testify driver** as a separate module `github.com/expectto/be/x/testify`
-  (`Assert`/`Require`), keeping testify out of the core dependency graph.
-- **Testify mock / mockery support** — `x/testify.Mock(matcher)` adapts a be
-  matcher into a testify `mock.MatchedBy` argument matcher.
+- **Testify mock / mockery support** — `bemock.MatchedBy(matcher)` (separate
+  module `github.com/expectto/be/x/mock`) adapts a be matcher into a testify
+  `mock.MatchedBy` argument matcher, keeping testify out of the core dependency
+  graph. (Testify-style *assertions* are the core `be.AssertThat`/`be.RequireThat`
+  above — no separate driver needed.)
 - **`be_http.HavingCtx`** — match a request's context via `be_ctx` matchers.
 - Test coverage for previously-untested packages: `be_url`, `be_http`, `be_ctx`,
   `be_jwt`, `be_json` (144 specs).
@@ -65,9 +82,9 @@ Work toward a stable **v1**: a framework-agnostic matcher core with opt-in drive
   cannot be evaluated (invalid JSON, undecodable/wrong-signed JWT, unparseable
   URL) instead of a silent non-match; a value that was evaluated but did not
   match still returns `(false, nil)`.
-- Core module no longer depends on **testify** (moved to `x/testify`) or
-  **gomock** (removed a stray interface assertion). gomega remains as the
-  internal matching engine.
+- Core module no longer depends on **testify** (the mock adapter lives in the
+  separate `x/mock` module) or **gomock** (removed a stray interface assertion).
+  gomega remains as the internal matching engine.
 - `go` directive bumped to 1.26; all dependencies updated.
 - `be_ctx.Ctx(args...)` now enforces the actual is a `context.Context` before
   applying sub-matchers; placeholder error strings replaced with real messages.

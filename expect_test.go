@@ -100,3 +100,42 @@ func TestExpectMarksHelper(t *testing.T) {
 		t.Fatalf("Expect should call t.Helper so failures point at the caller line")
 	}
 }
+
+func TestAssertThatSoft(t *testing.T) {
+	// Passing match reports nothing.
+	rt := &recT{}
+	if ok := be.AssertThat(rt, 10, be_math.GreaterThan(5)); !ok {
+		t.Fatalf("expected success")
+	}
+	if len(rt.errs) != 0 || len(rt.fatals) != 0 {
+		t.Fatalf("a passing assertion must not report: errs=%v fatals=%v", rt.errs, rt.fatals)
+	}
+
+	// Failing match is soft (Errorf, not Fatalf) and carries the compact message.
+	rt = &recT{}
+	if ok := be.AssertThat(rt, 3, be_math.GreaterThan(5)); ok {
+		t.Fatalf("expected failure")
+	}
+	if len(rt.fatals) != 0 {
+		t.Fatalf("AssertThat must be soft; got fatals=%v", rt.fatals)
+	}
+	if len(rt.errs) != 1 || rt.errs[0] != "Expected 3 to be > 5" {
+		t.Fatalf("unexpected soft failure output: %v", rt.errs)
+	}
+}
+
+func TestRequireThatIsFatal(t *testing.T) {
+	rt := &recT{}
+	be.RequireThat(rt, 3, be_math.GreaterThan(5))
+	if len(rt.fatals) != 1 {
+		t.Fatalf("RequireThat must be fatal (Fatalf); got fatals=%v errs=%v", rt.fatals, rt.errs)
+	}
+}
+
+func TestAssertThatMessageContext(t *testing.T) {
+	rt := &recT{}
+	be.AssertThat(rt, 3, be_math.GreaterThan(5), "checking case 7")
+	if len(rt.errs) != 1 || !strings.HasPrefix(rt.errs[0], "checking case 7: ") {
+		t.Fatalf("message context should be prepended, got: %v", rt.errs)
+	}
+}

@@ -1,8 +1,8 @@
 # Variables
 GOLANGCI_LINT := $(shell which golangci-lint)
 
-# Modules in this repo: the core, plus opt-in driver plugins under x/.
-MODULES := . x/testify
+# Modules in this repo: the core, plus opt-in plugins under x/.
+MODULES := . x/mock
 
 # Default target
 all: tidy

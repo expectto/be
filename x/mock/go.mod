@@ -1,18 +1,18 @@
-module github.com/expectto/be/x/testify
+module github.com/expectto/be/x/mock
 
 go 1.26
 
-// This driver is a separate module so the core `github.com/expectto/be` module
-// never lists testify (or any test framework) as a dependency. Users who want
-// the testify adapter opt in by importing this module explicitly.
+// This adapter is a separate module so the core `github.com/expectto/be` module
+// never lists testify (or any mock framework) as a dependency. Users who want to
+// use be matchers as testify/mockery mock argument matchers opt in by importing
+// this module explicitly.
 
 require (
-	github.com/expectto/be v1.0.0-rc.5
+	github.com/expectto/be v1.0.0-rc.6
 	github.com/stretchr/testify v1.11.1
 )
 
 require (
-	github.com/IGLOU-EU/go-wildcard v1.0.3 // indirect
 	github.com/amberpixels/k1 v0.1.6 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
