@@ -13,9 +13,9 @@ var (
 	ErrCtxNotAContext        = fmt.Errorf("be a ctx")
 	ErrCtxValueExpected      = fmt.Errorf("have the ctx.value")
 	ErrCtxValueNotMatched    = fmt.Errorf("have the ctx.value") // same text as won't be used directly (but still can be distinguished via errors.Is()
-	ErrCtxErrNotMatched      = fmt.Errorf("todo: better error handling here")
-	ErrCtxDeadlineExpected   = fmt.Errorf("todo: better error handling here")
-	ErrCtxDeadlineNotMatched = fmt.Errorf("todo: better error handling here")
+	ErrCtxErrNotMatched      = fmt.Errorf("have the expected ctx error")
+	ErrCtxDeadlineExpected   = fmt.Errorf("have a ctx deadline")
+	ErrCtxDeadlineNotMatched = fmt.Errorf("have the expected ctx deadline")
 )
 
 // CtxMatcher is a matcher for ctx// Each instance of CtxMatcher can match across only one thing:// (1) ctx value or (2) error or (3) deadline or (4) done signal

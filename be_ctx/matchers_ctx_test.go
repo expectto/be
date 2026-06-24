@@ -151,4 +151,11 @@ var _ = Describe("BeCtx", func() {
 		Entry("canceled context has an error -> no match", canceledCtx(), false),
 		Entry("deadline-exceeded context has an error -> no match", deadlineExceededCtx(), false),
 	)
+
+	// Ctx(args...) must first enforce ctx-ness, then apply the sub-matchers.
+	It("Ctx(subMatcher) enforces the actual is a context.Context", func() {
+		Expect(valueCtx("k", "v")).To(be_ctx.Ctx(be_ctx.CtxWithValue("k", "v")))
+		// A non-context actual must not match even when paired with sub-matchers.
+		Expect("not a ctx").NotTo(be_ctx.Ctx(be_ctx.CtxWithValue("k", "v")))
+	})
 })

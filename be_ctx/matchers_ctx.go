@@ -9,14 +9,19 @@ import (
 
 // Ctx succeeds if the actual value is a context.Context.
 // If no arguments are provided, it matches any context.Context.
-// Otherwise, it uses the Psi matcher to match the provided arguments against the actual context's values.
+// Otherwise it first enforces that the actual value is a context.Context and then
+// applies the provided matchers (e.g. CtxWithValue/CtxWithDeadline) to it.
 func Ctx(args ...any) types.BeMatcher {
 	if len(args) == 0 {
 		return psi_matchers.NewCtxMatcher()
 	}
 
-	// todo: weak solution, fixme
-	return psi.Psi(args...)
+	// Guarantee the actual is a context.Context before applying the sub-matchers,
+	// so Ctx(...) is meaningful even when given generic (non-ctx) matchers.
+	all := make([]any, 0, len(args)+1)
+	all = append(all, psi_matchers.NewCtxMatcher())
+	all = append(all, args...)
+	return psi.Psi(all...)
 }
 
 // CtxWithValue succeeds if the actual value is a context.Context and contains a key-value pair
