@@ -60,3 +60,19 @@ func HaveKey(key any) types.BeMatcher { return Psi(gomega.HaveKey(key)) }
 func HaveKeyWithValue(key, value any) types.BeMatcher {
 	return Psi(gomega.HaveKeyWithValue(key, value))
 }
+
+// Ne succeeds if actual is NOT equal to expected (the negation of Eq).
+func Ne(expected any) types.BeMatcher { return Psi(gomega.Not(gomega.Equal(expected))) }
+
+// Empty succeeds if actual is empty: a zero-length string, slice, array, map or
+// channel (like gomega.BeEmpty).
+func Empty() types.BeMatcher { return Psi(gomega.BeEmpty()) }
+
+// NotEmpty succeeds if actual is not empty.
+func NotEmpty() types.BeMatcher { return Psi(gomega.Not(gomega.BeEmpty())) }
+
+// ContainSubstring succeeds if actual is a string containing the given substring.
+// (For slices/arrays/maps use ContainElement.)
+func ContainSubstring(substr string) types.BeMatcher {
+	return Psi(gomega.ContainSubstring(substr))
+}

@@ -8,6 +8,12 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Work toward a stable **v1**: a framework-agnostic matcher core with opt-in drivers.
 
+### Added (rc.4)
+- More everyday matchers surfaced by dogfooding on amberpixels/r3: `Ne` (not
+  equal), `Empty`/`NotEmpty`, `ContainSubstring` (in core `be`, alongside the
+  collection `ContainElement`), and `be_reflected.AsNumeric` (matches any
+  integer or float — handy for JSON, where numbers decode to float64).
+
 ### Changed (rc.3)
 - Failure messages: collapse gomega's output to a single line only for short,
   scalar comparisons; large slice/struct/map mismatches keep gomega's multi-line,

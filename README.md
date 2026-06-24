@@ -124,7 +124,13 @@ be.Expect(t, s).NotTo(be_string.EmptyString())
 interface, so use it directly inside `Expect(...).To(...)`.
 
 **Testify (assert / require):** opt in via the separate driver module (keeps
-testify out of your deps unless you want it):
+testify out of your deps unless you want it). Install it with `@latest` (the
+submodule shares version numbers with the core module, which confuses
+`go get <pkg>@<version>`):
+
+```sh
+go get github.com/expectto/be/x/testify@latest
+```
 
 ```go
 import betestify "github.com/expectto/be/x/testify"
@@ -132,6 +138,9 @@ import betestify "github.com/expectto/be/x/testify"
 betestify.Assert(t, n, be_math.GreaterThan(10))
 betestify.Require(t, s, be_string.NonEmptyString())
 ```
+
+> Note the argument order vs testify: `assert.Equal(t, want, got)` becomes
+> `betestify.Assert(t, got, be.Eq(want))` — the **actual** value comes first.
 
 ### Mocking
 
@@ -164,7 +173,7 @@ svc.On("Do", betestify.Mock(be_math.GreaterThan(10))).Return("ok")
 
 #### Everyday matchers:
 
-`Nil`, `NotNil`, `True`, `False`, `Succeed`, `HaveOccurred`, `MatchError`, `Panic`, `NotPanic`, `ContainElement`, `ContainElements`, `HaveKey`, `HaveKeyWithValue`
+`Nil`, `NotNil`, `True`, `False`, `Eq`, `Ne`, `Empty`, `NotEmpty`, `Succeed`, `HaveOccurred`, `MatchError`, `Panic`, `NotPanic`, `ContainElement`, `ContainElements`, `ContainSubstring`, `HaveKey`, `HaveKeyWithValue`
 
 ### be_reflected
 

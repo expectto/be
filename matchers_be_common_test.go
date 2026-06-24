@@ -50,3 +50,18 @@ func TestCollectionMatchers(t *testing.T) {
 	be.Expect(t, m).To(be.HaveKeyWithValue("b", 2))
 	be.Expect(t, m).NotTo(be.HaveKey("z"))
 }
+
+func TestEmptyAndNe(t *testing.T) {
+	be.Expect(t, "").To(be.Empty())
+	be.Expect(t, []int{}).To(be.Empty())
+	be.Expect(t, map[string]int{}).To(be.Empty())
+	be.Expect(t, []int{1}).To(be.NotEmpty())
+
+	be.Expect(t, 5).To(be.Ne(6))
+	be.Expect(t, 5).NotTo(be.Ne(5))
+}
+
+func TestContainSubstring(t *testing.T) {
+	be.Expect(t, "hello world").To(be.ContainSubstring("o w"))
+	be.Expect(t, "hello").NotTo(be.ContainSubstring("xyz"))
+}

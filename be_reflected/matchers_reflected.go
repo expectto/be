@@ -181,6 +181,12 @@ func AsFloat() types.BeMatcher {
 	), "be a float value")
 }
 
+// AsNumeric succeeds if actual is any numeric value — an integer (signed or
+// unsigned) or a float. Useful for JSON, where numbers decode to float64.
+func AsNumeric() types.BeMatcher {
+	return Psi(psi_matchers.NewAnyMatcher(AsInteger(), AsFloat()), "be a numeric value")
+}
+
 // AsFloatString succeeds if actual is a string that can be parsed into a valid floating-point value.
 func AsFloatString() types.BeMatcher {
 	return Psi(psi_matchers.NewAllMatcher(
