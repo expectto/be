@@ -133,4 +133,19 @@ var _ = Describe("BeUrl", func() {
 			be_url.HavingPath("/expected"), mustParse("https://example.com/actual"),
 			"Expected\n    <string>: /actual\nto equal\n    <string>: /expected"),
 	)
+
+	It("Values matches url.Values directly", func() {
+		v := url.Values{"page": {"2"}, "sort": {"name"}}
+		Expect(v).To(be_url.Values(
+			be_url.HavingSearchParam("page", "2"),
+			be_url.HavingSearchParam("sort", "name"),
+		))
+		Expect(v).NotTo(be_url.Values(be_url.HavingSearchParam("page", "9")))
+	})
+
+	It("NotHavingSearchParam distinguishes absent from present", func() {
+		u := mustParse("https://example.com/?status=active")
+		Expect(u).To(be_url.NotHavingSearchParam("missing"))
+		Expect(u).NotTo(be_url.NotHavingSearchParam("status"))
+	})
 })

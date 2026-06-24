@@ -1,6 +1,8 @@
 package be_struct_test
 
 import (
+	"github.com/expectto/be/be_math"
+	"github.com/expectto/be/be_string"
 	"github.com/expectto/be/be_struct"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -33,5 +35,17 @@ var _ = Describe("BeStructs", func() {
 		Expect(result).NotTo(
 			be_struct.HavingField[WrongStruct]("Field1"),
 		)
+	})
+
+	It("matches a field against a matcher value", func() {
+		type S struct {
+			Age  int
+			Name string
+		}
+		s := S{Age: 30, Name: "Alice"}
+
+		Expect(s).To(be_struct.HavingField[S]("Age", be_math.GreaterThan(18)))
+		Expect(s).To(be_struct.HavingField[S]("Name", be_string.NonEmptyString()))
+		Expect(s).NotTo(be_struct.HavingField[S]("Age", be_math.LessThan(0)))
 	})
 })

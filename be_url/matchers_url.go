@@ -139,6 +139,31 @@ func HavingSearchParam(searchParamName string, args ...any) types.BeMatcher {
 	)
 }
 
+// NotHavingSearchParam succeeds if the URL's query does NOT contain the given
+// parameter at all (distinct from present-but-empty).
+func NotHavingSearchParam(searchParamName string) types.BeMatcher {
+	return psi_matchers.NewUrlFieldMatcher(
+		"NotHavingSearchParam", "searchParam",
+		func(u *url.URL) any { return u.Query().Has(searchParamName) },
+		gomega.BeFalse(),
+	)
+}
+
+// Values matches a url.Values (e.g. produced by a query builder) by treating it as
+// a URL's query string, so the same Having* matchers apply directly without
+// building a *url.URL yourself:
+//
+//	be_url.Values(
+//	    be_url.HavingSearchParam("page", "2"),
+//	    be_url.HavingSearchParam("sort", be_string.ContainingSubstring("name")),
+//	)
+func Values(args ...any) types.BeMatcher {
+	transform := func(v url.Values) (*url.URL, error) {
+		return &url.URL{RawQuery: v.Encode()}, nil
+	}
+	return Psi(append([]any{transform}, args...)...)
+}
+
 // HavingMultipleSearchParam succeeds if the actual value is a *url.URL and
 // its specified search parameter (all its values via slice) matches the provided arguments.
 func HavingMultipleSearchParam(searchParamName string, args ...any) types.BeMatcher {

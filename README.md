@@ -173,7 +173,7 @@ svc.On("Do", betestify.Mock(be_math.GreaterThan(10))).Return("ok")
 
 #### Everyday matchers:
 
-`Nil`, `NotNil`, `True`, `False`, `Eq`, `Ne`, `Empty`, `NotEmpty`, `Succeed`, `HaveOccurred`, `MatchError`, `Panic`, `NotPanic`, `ContainElement`, `ContainElements`, `ContainSubstring`, `HaveKey`, `HaveKeyWithValue`
+`Nil`, `NotNil`, `True`, `False`, `Eq`, `Ne`, `Empty`, `NotEmpty`, `Identical`, `NotIdentical`, `Via`, `Succeed`, `HaveOccurred`, `MatchError`, `Panic`, `NotPanic`, `ContainElement`, `ContainElements`, `ContainSubstring`, `HaveKey`, `HaveKeyWithValue`
 
 ### be_reflected
 
@@ -256,7 +256,7 @@ golang [jwt implementation](https://github.com/golang-jwt/jwt/v5).<br> [See deta
 
 #### URL Matchers:
 
-`URL`, `HavingHost`, `HavingHostname`, `HavingScheme`, `NotHavingScheme`, `WithHttps`, `WithHttp`, `HavingPort`, `NotHavingPort`, `HavingPath`, `HavingRawQuery`, `HavingSearchParam`, `HavingMultipleSearchParam`, `HavingUsername`, `HavingUserinfo`, `HavingPassword`
+`URL`, `Values`, `HavingHost`, `HavingHostname`, `HavingScheme`, `NotHavingScheme`, `WithHttps`, `WithHttp`, `HavingPort`, `NotHavingPort`, `HavingPath`, `HavingRawQuery`, `HavingSearchParam`, `NotHavingSearchParam`, `HavingMultipleSearchParam`, `HavingUsername`, `HavingUserinfo`, `HavingPassword`
 
 ### be_ctx
 

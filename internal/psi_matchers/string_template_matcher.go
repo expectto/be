@@ -43,12 +43,25 @@ func NewStringTemplateMatcher(template string, values ...*Value) *StringTemplate
 		panic("invalid template: Placeholders can't be concatenated without separators")
 	}
 
-	// Idea here is to switch from templating to regexp (Ugly, but ok for first attempt)
+	// Compile the template into an anchored regex. Placeholders become named
+	// capture groups; everything else is treated as LITERAL text (regexp.QuoteMeta),
+	// so punctuation common in real strings — SQL parens, `?`, `.`, `|`, `[` — is
+	// matched verbatim rather than interpreted as regex. The whole pattern is
+	// anchored (^...$) so a template matches the entire string, not a substring.
 	// {{Name}} => (?P<Name>.+)
 	variableRegex := regexp.MustCompile(`{{\s*([^}\s]+)\s*}}`)
-	regexStr := variableRegex.ReplaceAllString(template, "(?P<$1>.+)")
+	var sb strings.Builder
+	sb.WriteString("^")
+	lastEnd := 0
+	for _, loc := range variableRegex.FindAllStringSubmatchIndex(template, -1) {
+		sb.WriteString(regexp.QuoteMeta(template[lastEnd:loc[0]])) // literal text before the placeholder
+		sb.WriteString("(?P<" + template[loc[2]:loc[3]] + ">.+)")  // the placeholder's named group
+		lastEnd = loc[1]
+	}
+	sb.WriteString(regexp.QuoteMeta(template[lastEnd:])) // trailing literal text
+	sb.WriteString("$")
 
-	regex, err := regexp.Compile(regexStr)
+	regex, err := regexp.Compile(sb.String())
 	if err != nil {
 		panic("invalid template: could not compile a regex from it: " + err.Error())
 	}

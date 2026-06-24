@@ -255,4 +255,21 @@ var _ = Describe("BeStrings (template matching)", func() {
 		input := "Hello Foo123! Given email is hello@gmail.com"
 		Expect(input).To(matcher)
 	})
+
+	It("treats punctuation as literal and anchors the whole string", func() {
+		// parens and ? are literal here, not regex metacharacters
+		matcher := be_string.MatchTemplate(
+			`("status" = ?) OR ({{col}} > ?)`,
+			be_string.V("col", be_string.NonEmptyString()),
+		)
+		Expect(`("status" = ?) OR ("age" > ?)`).To(matcher)
+		// anchored: extra prefix/suffix must NOT match
+		Expect(`XX("status" = ?) OR ("age" > ?)YY`).NotTo(matcher)
+	})
+
+	It("requires a literal ? rather than treating it as a regex quantifier", func() {
+		matcher := be_string.MatchTemplate(`{{col}} > ?`, be_string.V("col", be_string.NonEmptyString()))
+		Expect(`"age" > ?`).To(matcher)
+		Expect(`"age" > `).NotTo(matcher) // missing the literal ?
+	})
 })

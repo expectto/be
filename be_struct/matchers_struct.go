@@ -28,16 +28,17 @@ func HavingField[StructT any](fieldName string, expectedValue ...any) types.BeMa
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		val := reflect.ValueOf(actual)
 
-		// Dereference if it's a pointer to a struct
-		if val.Kind() == reflect.Ptr {
+		// Dereference pointer(s) to a struct
+		for val.Kind() == reflect.Pointer {
 			val = val.Elem()
 		}
 		if val.Kind() != reflect.Struct {
 			return false, errors.New("actual value is not a struct")
 		}
+		// Wrong struct type for the [StructT] parameter is a clean non-match (so it
+		// composes with Not); the previous code mutated the shared message here,
+		// corrupting the matcher's description — that side-effect is removed.
 		if val.Type() != structType {
-			// TODO: it doesn't work
-			message = fmt.Sprintf("be type of %s", structType.String())
 			return false, nil
 		}
 
@@ -47,15 +48,16 @@ func HavingField[StructT any](fieldName string, expectedValue ...any) types.BeMa
 			return false, nil
 		}
 
-		// If an expected value is provided, compare the field's value with it
-		if len(expectedValue) > 0 {
-			expected := reflect.ValueOf(expectedValue[0])
-			if !reflect.DeepEqual(field.Interface(), expected.Interface()) {
-				return false, nil
-			}
+		// No expected value: succeed as long as the field exists.
+		if len(expectedValue) == 0 {
+			return true, nil
 		}
 
-		// If no value to compare, return true if the field exists
-		return true, nil
+		// The expected value may itself be a matcher (be/gomega/gomock) — match the
+		// field against it; otherwise compare by deep equality.
+		if IsMatcher(expectedValue[0]) {
+			return Psi(expectedValue[0]).Match(field.Interface())
+		}
+		return reflect.DeepEqual(field.Interface(), expectedValue[0]), nil
 	}), message)
 }

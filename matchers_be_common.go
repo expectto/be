@@ -76,3 +76,25 @@ func NotEmpty() types.BeMatcher { return Psi(gomega.Not(gomega.BeEmpty())) }
 func ContainSubstring(substr string) types.BeMatcher {
 	return Psi(gomega.ContainSubstring(substr))
 }
+
+// Identical succeeds if actual is identical to expected using Go's == operator
+// (pointer identity for pointers). Like gomega.BeIdenticalTo / testify's Same.
+func Identical(expected any) types.BeMatcher { return Psi(gomega.BeIdenticalTo(expected)) }
+
+// NotIdentical succeeds if actual is NOT identical to expected (the negation of
+// Identical). Like testify's NotSame.
+func NotIdentical(expected any) types.BeMatcher {
+	return Psi(gomega.Not(gomega.BeIdenticalTo(expected)))
+}
+
+// Via applies the transform function to the actual value and matches the result
+// against the given matcher. Handy for projecting through a public accessor when
+// the underlying value can't be matched directly, e.g.:
+//
+//	be.Expect(t, ctx).To(be.Via(GetActor, be.Eq(wantActor)))
+//
+// transform must be a function of one argument returning one value (and
+// optionally an error).
+func Via(transform any, matcher any) types.BeMatcher {
+	return Psi(gomega.WithTransform(transform, Psi(matcher)))
+}

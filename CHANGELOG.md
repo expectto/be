@@ -8,6 +8,25 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Work toward a stable **v1**: a framework-agnostic matcher core with opt-in drivers.
 
+### Changed (rc.5)
+- **`be_string.MatchTemplate` is now literal + anchored.** Non-placeholder text is
+  treated literally (regexp.QuoteMeta), so punctuation common in real strings —
+  SQL parens, `?`, `.`, `|` — matches verbatim instead of as regex; and templates
+  match the whole string (`^...$`), not a substring. Fixes silent false-positives.
+- **`be_struct.HavingField` accepts a matcher as the expected value** —
+  `HavingField[T]("Age", be_math.GreaterThan(18))` now works (previously the value
+  was only deep-equal compared). Also removed a side-effect that corrupted the
+  matcher's failure message on a wrong type parameter.
+
+### Added (rc.5)
+- `be.Identical`/`NotIdentical` (pointer identity, like testify's Same/NotSame).
+- `be.Via(transform, matcher)` — project the actual through an accessor before
+  matching (e.g. assert a context value via a public getter when the key is
+  unexported: `be.Via(GetActor, be.Eq(want))`).
+- `be_url.Values(...)` — match a `url.Values` directly with the Having* matchers
+  (no need to build a `*url.URL`), and `be_url.NotHavingSearchParam` (absent vs
+  present-but-empty).
+
 ### Added (rc.4)
 - More everyday matchers surfaced by dogfooding on amberpixels/r3: `Ne` (not
   equal), `Empty`/`NotEmpty`, `ContainSubstring` (in core `be`, alongside the

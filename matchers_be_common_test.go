@@ -65,3 +65,15 @@ func TestContainSubstring(t *testing.T) {
 	be.Expect(t, "hello world").To(be.ContainSubstring("o w"))
 	be.Expect(t, "hello").NotTo(be.ContainSubstring("xyz"))
 }
+
+func TestIdenticalAndVia(t *testing.T) {
+	type box struct{ n int }
+	p := &box{n: 1}
+	be.Expect(t, p).To(be.Identical(p))
+	be.Expect(t, p).To(be.NotIdentical(&box{n: 1})) // equal value, different pointer
+
+	// Via projects through an accessor before matching.
+	get := func(b box) int { return b.n }
+	be.Expect(t, box{n: 42}).To(be.Via(get, be.Eq(42)))
+	be.Expect(t, box{n: 42}).NotTo(be.Via(get, be.Eq(0)))
+}
