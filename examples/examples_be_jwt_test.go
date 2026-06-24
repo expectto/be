@@ -99,10 +99,15 @@ var _ = Describe("Examples on Matching JWT", func() {
 				))
 			})
 
-			It("should not expect a string token to be a token via invalidly signed transform", func() {
-				Expect(tokenStr).NotTo(be_jwt.Token(
+			It("should fail (with an error) to verify a token signed with a different secret", func() {
+				// Verifying against the wrong secret can't produce a token to match,
+				// so the matcher surfaces the signature error (v1 contract:
+				// un-evaluatable input -> error, not a silent non-match).
+				success, err := be_jwt.Token(
 					be_jwt.TransformSignedJwtFromString("invalid-secret"),
-				))
+				).Match(tokenStr)
+				Expect(success).To(BeFalse())
+				Expect(err).To(HaveOccurred())
 			})
 		})
 	})

@@ -57,6 +57,10 @@ func WithTransformError() *TransformErrorMatcher {
 }
 
 func (matcher *TransformErrorMatcher) Match(actual any) (success bool, err error) {
+	// reset state so a reused matcher instance does not leak a prior error
+	matcher.err = nil
+	matcher.actual = nil
+
 	if err, ok := actual.(error); ok {
 		matcher.err = err
 	}
@@ -68,7 +72,14 @@ func (matcher *TransformErrorMatcher) Match(actual any) (success bool, err error
 		matcher.actual = h.Actual()
 	}
 
-	return matcher.err == nil, nil
+	// Surface the transform error instead of swallowing it into a silent
+	// non-match: malformed input that can't be evaluated (unparseable URL,
+	// invalid JSON, undecodable JWT, ...) returns an informative error, while a
+	// value that simply doesn't satisfy the matcher returns (false, nil).
+	if matcher.err != nil {
+		return false, matcher.err
+	}
+	return true, nil
 }
 
 func (matcher *TransformErrorMatcher) FailureMessage(actual any) string {

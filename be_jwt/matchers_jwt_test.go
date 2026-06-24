@@ -133,14 +133,23 @@ var _ = Describe("BeJwt", func() {
 		Entry("tampered token is not SignedVia(secret)",
 			be_jwt.Token(be_jwt.TransformJwtFromString, be_jwt.SignedVia(secret)), tamperedHS256),
 
-		// When the signed-transform fails (wrong/another secret, tampered), the
-		// matcher reports a clean non-match (not a Gomega error) thanks to the
-		// fallible-transform wrapper.
-		Entry("verifying with the wrong secret does not match",
+	)
+
+	// When the signed transform itself can't verify (wrong/another secret, tampered
+	// signature) there is no token to match, so the matcher surfaces the signature
+	// error (v1 contract: un-evaluatable input -> error) and must not panic.
+	DescribeTable("should error (no panic) when the signed transform can't verify", func(matcher types.BeMatcher, actual any) {
+		Expect(func() {
+			success, err := matcher.Match(actual)
+			Expect(err).To(HaveOccurred())
+			Expect(success).To(BeFalse())
+		}).NotTo(Panic())
+	},
+		Entry("verifying with the wrong secret",
 			be_jwt.Token(be_jwt.TransformSignedJwtFromString(wrongSecret), be_jwt.Valid()), validHS256),
-		Entry("token signed with another secret does not match",
+		Entry("token signed with another secret",
 			be_jwt.Token(be_jwt.TransformSignedJwtFromString(secret), be_jwt.Valid()), signedWithWrongSecret),
-		Entry("tampered token does not match",
+		Entry("tampered token",
 			be_jwt.Token(be_jwt.TransformSignedJwtFromString(secret), be_jwt.Valid()), tamperedHS256),
 	)
 

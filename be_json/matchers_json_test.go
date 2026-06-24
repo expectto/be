@@ -189,12 +189,13 @@ var _ = Describe("BeJson", func() {
 			func() io.Reader { return strings.NewReader(sampleJSON) }, false),
 	)
 
-	// On invalid JSON the transform fails into a non-match (returns false, nil) rather
-	// than surfacing an error. The important guarantee is that it does not panic.
-	DescribeTable("should fail gracefully (no panic) on invalid json input", func(matcher types.BeMatcher, actual any) {
+	// On input that can't be parsed as JSON the matcher surfaces the parse error
+	// (v1 contract: un-evaluatable input -> error, not a silent non-match) and must
+	// never panic.
+	DescribeTable("should error (no panic) on invalid json input", func(matcher types.BeMatcher, actual any) {
 		Expect(func() {
 			success, err := matcher.Match(actual)
-			Expect(err).ShouldNot(HaveOccurred())
+			Expect(err).To(HaveOccurred())
 			Expect(success).To(BeFalse())
 		}).NotTo(Panic())
 	},
