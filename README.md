@@ -162,6 +162,10 @@ svc.On("Do", betestify.Mock(be_math.GreaterThan(10))).Return("ok")
 
 `Always`, `Never`, `All`, `Any`, `Eq`, `Not`, `HaveLength`, `Dive`, `DiveAny`, `DiveFirst`
 
+#### Everyday matchers:
+
+`Nil`, `NotNil`, `True`, `False`, `Succeed`, `HaveOccurred`, `MatchError`, `Panic`, `NotPanic`, `ContainElement`, `ContainElements`, `HaveKey`, `HaveKeyWithValue`
+
 ### be_reflected
 
 📦 `be_reflected` provides Be matchers that use reflection, enabling expressive assertions on values' reflect kinds and

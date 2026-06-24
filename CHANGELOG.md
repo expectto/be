@@ -8,6 +8,13 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Work toward a stable **v1**: a framework-agnostic matcher core with opt-in drivers.
 
+### Added (rc.2)
+- **Everyday matchers** surfaced by real-project dogfooding: `Nil`/`NotNil`
+  (typed-nil aware), `True`/`False`, `Succeed`/`HaveOccurred`/`MatchError`,
+  `Panic`/`NotPanic`, `ContainElement`/`ContainElements`, `HaveKey`/
+  `HaveKeyWithValue`. These cover the nil/bool/error/panic/collection assertions
+  that idiomatic Go unit tests reach for most.
+
 ### Added
 - **Native assertion runner** — `be.Expect(t, x).To(...)` (soft) and
   `be.Require(t, x).To(...)` (hard), bound to a minimal `TestingT` interface that
