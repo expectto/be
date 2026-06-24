@@ -8,10 +8,9 @@
 package be_testified
 
 import (
-	"regexp"
-	"strings"
 	"testing"
 
+	"github.com/expectto/be/internal/beformat"
 	"github.com/expectto/be/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -44,31 +43,8 @@ func Require(t *testing.T, actual any, matcher types.BeMatcher, msgAndArgs ...an
 	}
 }
 
-var (
-	// gomegaTypeTag matches gomega's "<type>: " object annotations, e.g. "<int>: ".
-	gomegaTypeTag = regexp.MustCompile(`<[^>]*>:\s*`)
-	// gomegaVertical matches a line break plus its surrounding indentation,
-	// which gomega uses to lay failure messages out vertically.
-	gomegaVertical = regexp.MustCompile(`[ \t]*\n[ \t]*`)
-)
-
 // failureMessage converts a be matcher's gomega-flavored FailureMessage into a
-// compact, testify-friendly one-liner.
-//
-// gomega renders failures vertically with type tags, e.g.:
-//
-//	Expected
-//	    <int>: 3
-//	to be >
-//	    <int>: 5
-//
-// which reads as foreign inside testify's report. We strip the "<type>:" tags and
-// collapse the vertical layout onto a single line: "Expected 3 to be > 5".
-// (Multi-line actual values such as large structs are collapsed too, which is the
-// idiomatic testify trade-off in favour of compact messages.)
+// compact, testify-friendly one-liner (see internal/beformat.Compact).
 func failureMessage(actual any, matcher types.BeMatcher) string {
-	msg := matcher.FailureMessage(actual)
-	msg = gomegaTypeTag.ReplaceAllString(msg, "")
-	msg = gomegaVertical.ReplaceAllString(msg, " ")
-	return strings.TrimSpace(msg)
+	return beformat.Compact(matcher.FailureMessage(actual))
 }

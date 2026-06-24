@@ -1,6 +1,7 @@
 package be_testified
 
 import (
+	"regexp"
 	"strings"
 	"testing"
 
@@ -8,6 +9,10 @@ import (
 	"github.com/expectto/be/be_string"
 	"github.com/expectto/be/types"
 )
+
+// gomegaTypeTag matches gomega's "<type>: " object annotations that a compact
+// testify message must not contain.
+var gomegaTypeTag = regexp.MustCompile(`<[^>]*>:\s*`)
 
 // TestFailureMessageStripsGomegaDialect verifies that failure messages surfaced to
 // testify are compact and free of gomega's vertical, type-tagged formatting.
