@@ -10,6 +10,8 @@ package be
 // reshaped to read natively (see internal/beformat).
 
 import (
+	"fmt"
+
 	"github.com/expectto/be/internal/beformat"
 	"github.com/expectto/be/internal/psi"
 )
@@ -43,47 +45,72 @@ func Require(t TestingT, actual any) *Expectation {
 }
 
 // To asserts that actual satisfies the matcher. The matcher may be a be/gomega/
-// gomock matcher or a raw value (wrapped via Psi, like the rest of be). It
-// returns true on success.
-func (e *Expectation) To(matcher any) bool {
+// gomock matcher or a raw value (wrapped via Psi, like the rest of be). An
+// optional message — a format string plus args, or plain values — is prepended to
+// the failure output for context. Returns true on success.
+func (e *Expectation) To(matcher any, msgAndArgs ...any) bool {
 	e.t.Helper()
 	m := psi.Psi(matcher)
 	ok, err := m.Match(e.actual)
 	if err != nil {
-		return e.fail(err.Error())
+		return e.fail(err.Error(), msgAndArgs...)
 	}
 	if !ok {
-		return e.fail(beformat.Compact(m.FailureMessage(e.actual)))
+		return e.fail(beformat.Compact(m.FailureMessage(e.actual)), msgAndArgs...)
 	}
 	return true
 }
 
-// NotTo asserts that actual does NOT satisfy the matcher.
-func (e *Expectation) NotTo(matcher any) bool {
+// NotTo asserts that actual does NOT satisfy the matcher. An optional message
+// provides failure context (see To).
+func (e *Expectation) NotTo(matcher any, msgAndArgs ...any) bool {
 	e.t.Helper()
 	m := psi.Psi(matcher)
 	ok, err := m.Match(e.actual)
 	if err != nil {
-		return e.fail(err.Error())
+		return e.fail(err.Error(), msgAndArgs...)
 	}
 	if ok {
-		return e.fail(beformat.Compact(m.NegatedFailureMessage(e.actual)))
+		return e.fail(beformat.Compact(m.NegatedFailureMessage(e.actual)), msgAndArgs...)
 	}
 	return true
 }
 
 // ToNot is an alias for NotTo.
-func (e *Expectation) ToNot(matcher any) bool {
+func (e *Expectation) ToNot(matcher any, msgAndArgs ...any) bool {
 	e.t.Helper()
-	return e.NotTo(matcher)
+	return e.NotTo(matcher, msgAndArgs...)
 }
 
-func (e *Expectation) fail(msg string) bool {
+func (e *Expectation) fail(msg string, msgAndArgs ...any) bool {
 	e.t.Helper()
+	if ctx := formatMsgAndArgs(msgAndArgs...); ctx != "" {
+		msg = ctx + ": " + msg
+	}
 	if e.fatal {
 		e.t.Fatalf("%s", msg)
 	} else {
 		e.t.Errorf("%s", msg)
 	}
 	return false
+}
+
+// formatMsgAndArgs renders an optional assertion message: a leading format string
+// is applied to the remaining args (testify-style), otherwise the values are
+// concatenated.
+func formatMsgAndArgs(msgAndArgs ...any) string {
+	switch len(msgAndArgs) {
+	case 0:
+		return ""
+	case 1:
+		if s, ok := msgAndArgs[0].(string); ok {
+			return s
+		}
+		return fmt.Sprint(msgAndArgs[0])
+	default:
+		if format, ok := msgAndArgs[0].(string); ok {
+			return fmt.Sprintf(format, msgAndArgs[1:]...)
+		}
+		return fmt.Sprint(msgAndArgs...)
+	}
 }

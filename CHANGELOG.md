@@ -8,6 +8,14 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Work toward a stable **v1**: a framework-agnostic matcher core with opt-in drivers.
 
+### Changed (rc.3)
+- Failure messages: collapse gomega's output to a single line only for short,
+  scalar comparisons; large slice/struct/map mismatches keep gomega's multi-line,
+  diff-friendly layout (fixes an `rc.1`/`rc.2` readability regression).
+- `Dive` now also dives over **map values** (not just slices/arrays).
+- The native runner accepts an optional per-assertion message:
+  `be.Expect(t, x).To(matcher, "context")` (also on `NotTo`/`ToNot`).
+
 ### Added (rc.2)
 - **Everyday matchers** surfaced by real-project dogfooding: `Nil`/`NotNil`
   (typed-nil aware), `True`/`False`, `Succeed`/`HaveOccurred`/`MatchError`,

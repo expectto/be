@@ -2,6 +2,7 @@ package be_test
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/expectto/be"
@@ -71,6 +72,24 @@ func TestNotTo(t *testing.T) {
 	}
 	if ok := be.Expect(rt, 10).ToNot(be_math.GreaterThan(5)); ok {
 		t.Fatalf("10 IS > 5, so ToNot should fail")
+	}
+}
+
+func TestExpectMessageContext(t *testing.T) {
+	rt := &recT{}
+	be.Expect(rt, 3).To(be_math.GreaterThan(5), "checking case 7")
+	if len(rt.errs) != 1 {
+		t.Fatalf("expected one failure, got %v", rt.errs)
+	}
+	if !strings.HasPrefix(rt.errs[0], "checking case 7: ") {
+		t.Fatalf("message context should be prepended, got: %q", rt.errs[0])
+	}
+
+	// format-string form (built with fmt to avoid go vet's printf heuristic on To)
+	rt2 := &recT{}
+	be.Expect(rt2, 3).To(be_math.GreaterThan(5), fmt.Sprintf("case %d", 7))
+	if !strings.HasPrefix(rt2.errs[0], "case 7: ") {
+		t.Fatalf("formatted context should be prepended, got: %q", rt2.errs[0])
 	}
 }
 

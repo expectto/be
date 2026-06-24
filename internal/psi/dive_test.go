@@ -29,6 +29,23 @@ func TestDiveModes(t *testing.T) {
 	g.Expect(nth.Match([]int{-1, 5})).To(gomega.BeTrue())
 }
 
+// TestDiveOverMapValues guards diving over a map's values, and that positional
+// modes are rejected on (unordered) maps.
+func TestDiveOverMapValues(t *testing.T) {
+	g := gomega.NewWithT(t)
+
+	every := psi.NewDiveMatcher(gt0(), psi.DiveModeEvery)
+	g.Expect(every.Match(map[string]int{"a": 1, "b": 2})).To(gomega.BeTrue())
+	g.Expect(every.Match(map[string]int{"a": 1, "b": -2})).To(gomega.BeFalse())
+
+	any := psi.NewDiveMatcher(gt0(), psi.DiveModeAny)
+	g.Expect(any.Match(map[string]int{"a": -1, "b": 3})).To(gomega.BeTrue())
+
+	first := psi.NewDiveMatcher(gt0(), psi.DiveModeFirst)
+	_, err := first.Match(map[string]int{"a": 1})
+	g.Expect(err).To(gomega.HaveOccurred())
+}
+
 // TestDiveSupportsArrays guards the reflect-based conversion that lets Dive accept
 // fixed-size arrays, not just slices.
 func TestDiveSupportsArrays(t *testing.T) {

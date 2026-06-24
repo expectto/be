@@ -46,7 +46,8 @@ func HaveLength(args ...any) types.BeMatcher {
 	return psi_matchers.NewHaveLengthMatcher(args...)
 }
 
-// Dive applies the given matcher to each (every) element of the slice.
+// Dive applies the given matcher to each (every) element of a slice or array,
+// or to each value of a map.
 // Note: Dive is very close to gomega.HaveEach
 func Dive(matcher any) types.BeMatcher { return NewDiveMatcher(matcher, DiveModeEvery) }
 

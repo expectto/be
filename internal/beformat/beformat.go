@@ -17,6 +17,10 @@ var (
 	vertical = regexp.MustCompile(`[ \t]*\n[ \t]*`)
 )
 
+// maxCompactLen bounds how long a collapsed one-liner may be. Beyond it the
+// original vertical layout is kept so large diffs stay readable.
+const maxCompactLen = 120
+
 // Compact strips gomega's "<type>:" tags and collapses its vertical layout onto a
 // single line. For example:
 //
@@ -26,8 +30,14 @@ var (
 //	    <int>: 5
 //
 // becomes "Expected 3 to be > 5".
+//
+// It only collapses scalar-ish messages: if the result would be long or contains
+// composite values (maps/structs render with braces), the original multi-line,
+// diff-friendly gomega formatting is preserved instead.
 func Compact(msg string) string {
-	msg = typeTag.ReplaceAllString(msg, "")
-	msg = vertical.ReplaceAllString(msg, " ")
-	return strings.TrimSpace(msg)
+	oneLine := strings.TrimSpace(vertical.ReplaceAllString(typeTag.ReplaceAllString(msg, ""), " "))
+	if len(oneLine) <= maxCompactLen && !strings.ContainsAny(oneLine, "{}") {
+		return oneLine
+	}
+	return strings.TrimRight(msg, "\n")
 }

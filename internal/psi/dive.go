@@ -46,20 +46,32 @@ func NewDiveMatcher(matcher any, mode DiveMode, args ...any) *DiveMatcher {
 func (dm *DiveMatcher) Match(actual any) (bool, error) {
 	matcher := Psi(dm.matcher)
 
-	// Guard against a non-slice actual: cast.AsSliceOfAny would otherwise panic,
-	// crashing the whole test run instead of producing a graceful failure.
+	// Collect the elements to dive over via reflection. Slices and arrays dive
+	// over their elements; maps dive over their values. Anything else fails
+	// gracefully instead of panicking (cast.AsSliceOfAny would panic).
 	rv := reflect.ValueOf(actual)
 	for rv.Kind() == reflect.Pointer {
 		rv = rv.Elem()
 	}
-	if rv.Kind() != reflect.Slice && rv.Kind() != reflect.Array {
-		return false, fmt.Errorf("dive[%s] expects a slice or array, got %T", dm.mode, actual)
-	}
-	// Build []any via reflection so both slices and arrays are supported without
-	// risking the panic cast.AsSliceOfAny raises on arrays.
-	slice := make([]any, rv.Len())
-	for i := range slice {
-		slice[i] = rv.Index(i).Interface()
+
+	var slice []any
+	switch rv.Kind() {
+	case reflect.Slice, reflect.Array:
+		slice = make([]any, rv.Len())
+		for i := range slice {
+			slice[i] = rv.Index(i).Interface()
+		}
+	case reflect.Map:
+		// Maps are unordered, so positional modes are not meaningful.
+		if dm.mode == DiveModeFirst || dm.mode == DiveModeNth {
+			return false, fmt.Errorf("dive[%s] is not supported on a map (maps are unordered)", dm.mode)
+		}
+		slice = make([]any, 0, rv.Len())
+		for _, k := range rv.MapKeys() {
+			slice = append(slice, rv.MapIndex(k).Interface())
+		}
+	default:
+		return false, fmt.Errorf("dive[%s] expects a slice, array or map, got %T", dm.mode, actual)
 	}
 
 	switch dm.mode {
