@@ -7,7 +7,7 @@ go 1.26
 // the testify adapter opt in by importing this module explicitly.
 
 require (
-	github.com/expectto/be v0.2.4
+	github.com/expectto/be v1.0.0-rc.1
 	github.com/stretchr/testify v1.11.1
 )
 
@@ -26,6 +26,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-// Local development against the in-repo core. When the core is tagged, bump the
-// require above; external consumers ignore this replace and use the tagged core.
+// Local development resolves the core from the in-repo source. External consumers
+// ignore this replace and use the version pinned in the require block above.
 replace github.com/expectto/be => ../..
