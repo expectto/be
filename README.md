@@ -123,16 +123,33 @@ be.Expect(t, s).NotTo(be_string.EmptyString())
 **Ginkgo / Gomega:** every `be` matcher already satisfies `gomega`'s matcher
 interface, so use it directly inside `Expect(...).To(...)`.
 
-**Gomock:** every `be` matcher already satisfies `gomock.Matcher`.
-
-**Testify:** opt in via the separate driver module (keeps testify out of your
-deps unless you want it):
+**Testify (assert / require):** opt in via the separate driver module (keeps
+testify out of your deps unless you want it):
 
 ```go
 import betestify "github.com/expectto/be/x/testify"
 
 betestify.Assert(t, n, be_math.GreaterThan(10))
 betestify.Require(t, s, be_string.NonEmptyString())
+```
+
+### Mocking
+
+`be` matchers also work as **mock argument matchers**:
+
+**Gomock:** every `be` matcher already satisfies `gomock.Matcher`, so pass it directly:
+
+```go
+mockObj.EXPECT().Do(be_math.GreaterThan(10)).Return("ok")
+```
+
+**Testify mock / mockery:** wrap with `Mock` (works for hand-written and
+mockery-generated mocks):
+
+```go
+import betestify "github.com/expectto/be/x/testify"
+
+svc.On("Do", betestify.Mock(be_math.GreaterThan(10))).Return("ok")
 ```
 
 ## Matchers
