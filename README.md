@@ -99,6 +99,36 @@ Expect(req).To(be_http.Request(
 ))      
 ```
 
+## Test framework integration
+
+`be` matchers are framework-agnostic. The core `github.com/expectto/be` module
+imports **no** test framework — pick how you run assertions:
+
+**Standard library (no extra deps):**
+
+```go
+import "github.com/expectto/be"
+
+be.Expect(t, n).To(be_math.GreaterThan(10))   // soft fail (assert-style)
+be.Require(t, n).To(be_math.GreaterThan(10))  // hard fail (require-style)
+be.Expect(t, s).NotTo(be_string.EmptyString())
+```
+
+**Ginkgo / Gomega:** every `be` matcher already satisfies `gomega`'s matcher
+interface, so use it directly inside `Expect(...).To(...)`.
+
+**Gomock:** every `be` matcher already satisfies `gomock.Matcher`.
+
+**Testify:** opt in via the separate driver module (keeps testify out of your
+deps unless you want it):
+
+```go
+import betestify "github.com/expectto/be/x/testify"
+
+betestify.Assert(t, n, be_math.GreaterThan(10))
+betestify.Require(t, s, be_string.NonEmptyString())
+```
+
 ## Matchers
 
 ### Core Be

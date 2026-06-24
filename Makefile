@@ -1,14 +1,18 @@
 # Variables
 GOLANGCI_LINT := $(shell which golangci-lint)
 
+# Modules in this repo: the core, plus opt-in driver plugins under x/.
+MODULES := . x/testify
+
 # Default target
 all: tidy
 
-# Tidy: format and vet the code
+# Tidy: format and vet the code (across all modules)
 tidy:
-	@go fmt $$(go list ./...)
-	@go vet $$(go list ./...)
-	@go mod tidy
+	@for m in $(MODULES); do \
+		echo "== tidy $$m =="; \
+		(cd $$m && go fmt ./... && go vet ./... && go mod tidy) || exit 1; \
+	done
 
 # Install golangci-lint only if it's not already installed
 lint-install:
@@ -22,7 +26,10 @@ lint: lint-install
 	$(shell which golangci-lint) run
 
 test:
-	go test ./...
+	@for m in $(MODULES); do \
+		echo "== test $$m =="; \
+		(cd $$m && go test ./...) || exit 1; \
+	done
 
 # Phony targets
 .PHONY: all tidy lint-install lint test

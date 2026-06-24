@@ -1,4 +1,4 @@
-package be_testified
+package testify
 
 import (
 	"regexp"

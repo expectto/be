@@ -1,4 +1,4 @@
-package be_testified_test
+package testify_test
 
 import (
 	"testing"
@@ -6,12 +6,12 @@ import (
 	"github.com/expectto/be"
 	"github.com/expectto/be/be_json"
 	"github.com/expectto/be/be_string"
-	"github.com/expectto/be/be_testified"
 	"github.com/expectto/be/be_url"
+	betestify "github.com/expectto/be/x/testify"
 )
 
 func TestURLMatch(t *testing.T) {
-	be_testified.Assert(t,
+	betestify.Assert(t,
 		"https://example.com/path?status=active&v=123&q=Hello+World",
 		be_url.URL(
 			be_url.TransformUrlFromString,
@@ -27,7 +27,7 @@ func TestURLMatch(t *testing.T) {
 }
 
 func TestJsonEq(t *testing.T) {
-	be_testified.Assert(t,
+	betestify.Assert(t,
 		`{"foo":"bar"}`,
 		be.JSON(
 			be_json.JsonAsString,

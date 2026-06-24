@@ -1,11 +1,12 @@
-// Package be_testified lets you use all expectto/be matchers with the
-// testify/assert and testify/require packages.
+// Package testify lets you use all expectto/be matchers with the testify/assert
+// and testify/require packages.
 //
-// The be matchers use gomega internally as their matching engine, but that is an
-// implementation detail: this adapter never exposes gomega's API, and it reshapes
-// gomega's vertical, type-tagged failure messages into compact, testify-native
-// one-liners (see failureMessage).
-package be_testified
+// It lives in its own module (github.com/expectto/be/x/testify) so the core
+// `be` module never depends on testify. The be matchers use gomega internally as
+// their matching engine, but that is an implementation detail: this adapter never
+// exposes gomega's API, and it reshapes gomega's vertical, type-tagged failure
+// messages into compact, testify-native one-liners (see internal/beformat).
+package testify
 
 import (
 	"testing"
