@@ -7,7 +7,6 @@ import (
 	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
-	"go.uber.org/mock/gomock"
 )
 
 var (
@@ -38,7 +37,8 @@ type CtxMatcher struct {
 	//doneMatcher types.BeMatcher
 }
 
-var _ gomock.Matcher = &CtxMatcher{}
+// types.BeMatcher embeds types.GomockMatcher, so this single assertion also
+// guarantees gomock compatibility without importing go.uber.org/mock.
 var _ types.BeMatcher = &CtxMatcher{}
 
 func (cm *CtxMatcher) Match(v any) (success bool, err error) {
