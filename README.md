@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./assets/logo.svg" alt="be — a bee minus one letter" width="440">
+</p>
+
 ## Expect(👨🏼‍💻).To(Be(🚀))
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/expectto/be/blob/main/LICENSE)
