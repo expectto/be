@@ -61,6 +61,12 @@ Expect(req).To(be_http.Request(
     // Matching the HTTP method
     be_http.POST(),
 
+    // Matching the request's context
+    be_http.HavingCtx(
+        be_ctx.CtxWithDeadline(be_time.LaterThan(time.Now().Add(30*time.Minute))),
+        be_ctx.CtxWithValue("foobar", 100),
+    ),
+
     // Matching the request body using JSON matchers
     be_http.HavingBody(
         be.JSON(
@@ -246,7 +252,7 @@ golang [jwt implementation](https://github.com/golang-jwt/jwt/v5).<br> [See deta
 
 `Request`, `HavingMethod`, <br>
 `GET`, `HEAD`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS`, `CONNECT`, `TRACE`, <br>
-`HavingURL`, `HavingBody`, `HavingHost`, `HavingProto`, `HavingHeader`, `HavingHeaders`
+`HavingURL`, `HavingBody`, `HavingHost`, `HavingProto`, `HavingCtx`, `HavingHeader`, `HavingHeaders`
 
 # Contributing
 

@@ -1,11 +1,13 @@
 package be_http_test
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 
 	"github.com/expectto/be"
+	"github.com/expectto/be/be_ctx"
 	"github.com/expectto/be/be_http"
 	"github.com/expectto/be/be_json"
 	"github.com/expectto/be/be_url"
@@ -199,6 +201,16 @@ var _ = Describe("MatchersHttp", func() {
 			).Match(req)
 			Expect(success).To(BeFalse())
 		}).NotTo(Panic())
+	})
+
+	// HavingCtx matches against the request's context (req.Context()).
+	It("HavingCtx matches the request context via be_ctx matchers", func() {
+		type ctxKey string
+		req := newRequest(http.MethodGet, "https://example.com", "")
+		req = req.WithContext(context.WithValue(req.Context(), ctxKey("requestID"), "abc-123"))
+
+		Expect(req).To(be_http.HavingCtx(be_ctx.CtxWithValue(ctxKey("requestID"), "abc-123")))
+		Expect(req).NotTo(be_http.HavingCtx(be_ctx.CtxWithValue(ctxKey("requestID"), "nope")))
 	})
 
 	DescribeTable("should return a valid failure message", func(matcher types.BeMatcher, actual any, substr string) {

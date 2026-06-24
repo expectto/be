@@ -109,6 +109,18 @@ func HavingHost(args ...any) types.BeMatcher {
 	)
 }
 
+// HavingCtx succeeds if the actual value is a *http.Request whose context (req.Context())
+// matches the provided arguments. Pass be_ctx matchers, e.g.:
+//
+//	be_http.HavingCtx(be_ctx.CtxWithValue("requestID", "abc"))
+func HavingCtx(args ...any) types.BeMatcher {
+	return psi_matchers.NewReqPropertyMatcher(
+		"HavingCtx", "ctx",
+		func(req *http.Request) any { return req.Context() },
+		args...,
+	)
+}
+
 // HavingProto succeeds if the actual value is a *http.Request and its Proto matches the provided arguments.
 func HavingProto(args ...any) types.BeMatcher {
 	return psi_matchers.NewReqPropertyMatcher(
