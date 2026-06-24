@@ -59,24 +59,19 @@ Expect(req).To(be_http.Request(
     )),
 
     // Matching the HTTP method
-    be_http.POST()
-
-    // Matching request's context
-    be_http.HavingCtx(be_ctx.Ctx(
-        be_ctx.WithDeadline(be_time.LaterThan(time.Now().Add(30*time.Minute))),
-        be_ctx.WithValue("foobar", 100),
-    )),
+    be_http.POST(),
 
     // Matching the request body using JSON matchers
     be_http.HavingBody(
         be.JSON(
             be_json.JsonAsReader,
             be_json.HaveKeyValue("hello", "world"),
-            be_json.HaveKeyValue("n", be_reflected.AsInteger(), be_math.GreaterThan(10)),
-            be_json.HaveKeyValue("ids", be_reflected.AsSliceOf[string]),
+            // NOTE: JSON numbers decode to float64, so use AsFloat (not AsInteger) here
+            be_json.HaveKeyValue("n", be_reflected.AsFloat(), be_math.GreaterThan(10)),
+            be_json.HaveKeyValue("ids", be_reflected.AsSliceOf[string]()),
             Not(be_json.HaveKeyValue("deleted_field")), // not to have a deleted field
             
-            be_json.HaveKeyValue("email", be_string.ValidEmail(), be_string.HaveSuffix("@tests.com")),
+            be_json.HaveKeyValue("email", be_string.ValidEmail(), HaveSuffix("@tests.com")),
 
             // "details":[{"key":"foo"},{"key":"bar"}]
             be_json.HaveKeyValue("details", And(
@@ -94,7 +89,7 @@ Expect(req).To(be_http.Request(
     be_http.HavingHeader("X-Custom", "Hey-There"), 
     be_http.HavingHeader("Authorization", 
         be_string.MatchTemplate("Bearer {{jwt}}", 
-        be_string.Var("jwt", 
+        be_string.V("jwt", 
             be_jwt.Token(
                 be_jwt.Valid(), 
                 be_jwt.HavingClaim("name", "John Doe"), 
