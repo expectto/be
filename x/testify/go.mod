@@ -7,7 +7,7 @@ go 1.26
 // the testify adapter opt in by importing this module explicitly.
 
 require (
-	github.com/expectto/be v1.0.0-rc.3
+	github.com/expectto/be v1.0.0-rc.4
 	github.com/stretchr/testify v1.11.1
 )
 
