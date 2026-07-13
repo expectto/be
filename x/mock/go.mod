@@ -8,7 +8,7 @@ go 1.26
 // this module explicitly.
 
 require (
-	github.com/expectto/be v1.0.0-rc.7
+	github.com/expectto/be v1.0.0-rc.8
 	github.com/stretchr/testify v1.11.1
 )
 
