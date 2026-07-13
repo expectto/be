@@ -4,12 +4,12 @@
 
 <div align="center">
 
-### Expect(tests).To(Be(readable)).
+### <samp>Expect(tests).To(Be(readable)).</samp>
 
-A large collection of composable test matchers for Go - works with stdlib `testing`, Ginkgo/Gomega, Gomock, and testify.
+A large collection of composable test matchers for Go -<br>
+works with stdlib `testing`, [Ginkgo](https://github.com/onsi/ginkgo)/[Gomega](https://github.com/onsi/gomega), [Gomock](https://github.com/uber-go/mock), and [testify](https://github.com/stretchr/testify).
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/expectto/be.svg)](https://pkg.go.dev/github.com/expectto/be)
-[![Go Report Card](https://goreportcard.com/badge/github.com/expectto/be)](https://goreportcard.com/report/github.com/expectto/be)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/expectto/be)](go.mod)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
@@ -306,6 +306,12 @@ Matchers on `context.Context`. [Detailed docs](be_ctx/README.md)
 Matchers for expressive assertions on JSON. [Detailed docs](be_json/README.md)
 
 - `Matcher`, `HaveKeyValue`
+
+### be_struct
+
+Matchers on struct fields. [Detailed docs](be_struct/README.md)
+
+- `HavingField`
 
 ### be_http
 

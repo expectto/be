@@ -1,6 +1,18 @@
-# be_ctx
---
-    import "."
+<p align="center">
+  <img src="logo.svg" alt="be_ctx" width="204">
+</p>
+
+<div align="center">
+
+Part of [`expectto/be`](../README.md) - composable test matchers for Go.
+
+</div>
+
+---
+
+```go
+import "github.com/expectto/be/be_ctx"
+```
 
 Package be_ctx provides Be matchers on context.Context
 
@@ -12,8 +24,9 @@ Package be_ctx provides Be matchers on context.Context
 func Ctx(args ...any) types.BeMatcher
 ```
 Ctx succeeds if the actual value is a context.Context. If no arguments are
-provided, it matches any context.Context. Otherwise, it uses the Psi matcher to
-match the provided arguments against the actual context's values.
+provided, it matches any context.Context. Otherwise it first enforces that the
+actual value is a context.Context and then applies the provided matchers (e.g.
+CtxWithValue/CtxWithDeadline) to it.
 
 #### func  CtxWithDeadline
 

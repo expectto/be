@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 225 154" width="225" height="154" xml:space="preserve">
+  <style>
+    text { font-family: 'Menlo','Consolas','DejaVu Sans Mono',monospace; font-size: 26px; font-weight: 700; white-space: pre; }
+  </style>
+  <rect width="225" height="154" fill="transparent"/>
+  <!-- B -->
+  <text x="8" y="26" fill="#84CC16">░█▀▄</text>
+  <text x="8" y="48" fill="#84CC16">░█▀▄</text>
+  <text x="8" y="70" fill="#84CC16">░▀▀░</text>
+  <!-- E (dropped) -->
+  <text x="74" y="46" fill="#06B6D4">░█▀▀</text>
+  <text x="74" y="68" fill="#06B6D4">░█▀▀</text>
+  <text x="74" y="90" fill="#06B6D4">░▀▀▀</text>
+  <!-- JWT (secondary tier) -->
+  <text x="44" y="114" fill="#0891B2" style="font-size:18px">░░░█ ░█░░░█ ░▀█▀</text>
+  <text x="44" y="129" fill="#0891B2" style="font-size:18px">░░░█ ░█░▄░█ ░░█░</text>
+  <text x="44" y="144" fill="#0891B2" style="font-size:18px">░▀▀░ ░▀▀░▀▀ ░░▀░</text>
+</svg>

@@ -1,6 +1,18 @@
-# be_jwt
---
-    import "."
+<p align="center">
+  <img src="logo.svg" alt="be_jwt" width="225">
+</p>
+
+<div align="center">
+
+Part of [`expectto/be`](../README.md) - composable test matchers for Go.
+
+</div>
+
+---
+
+```go
+import "github.com/expectto/be/be_jwt"
+```
 
 Package be_jwt provides Be matchers for handling JSON Web Tokens (JWT). It
 includes matchers for transforming and validating JWT tokens. Matchers

@@ -1,3 +1,4 @@
+// Package be_struct provides Be matchers on struct fields.
 package be_struct
 
 import (

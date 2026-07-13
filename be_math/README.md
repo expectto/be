@@ -1,6 +1,18 @@
-# be_math
---
-    import "."
+<p align="center">
+  <img src="logo.svg" alt="be_math" width="279">
+</p>
+
+<div align="center">
+
+Part of [`expectto/be`](../README.md) - composable test matchers for Go.
+
+</div>
+
+---
+
+```go
+import "github.com/expectto/be/be_math"
+```
 
 Package be_math provides Be matchers for mathematical operations
 

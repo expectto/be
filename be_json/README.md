@@ -1,6 +1,18 @@
-# be_json
---
-    import "."
+<p align="center">
+  <img src="logo.svg" alt="be_json" width="268">
+</p>
+
+<div align="center">
+
+Part of [`expectto/be`](../README.md) - composable test matchers for Go.
+
+</div>
+
+---
+
+```go
+import "github.com/expectto/be/be_json"
+```
 
 Package be_json provides Be matchers for expressive assertions on JSON TODO:
 more detailed explanation what is considered to be JSON here

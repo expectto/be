@@ -1,6 +1,18 @@
-# be_time
---
-    import "."
+<p align="center">
+  <img src="logo.svg" alt="be_time" width="279">
+</p>
+
+<div align="center">
+
+Part of [`expectto/be`](../README.md) - composable test matchers for Go.
+
+</div>
+
+---
+
+```go
+import "github.com/expectto/be/be_time"
+```
 
 Package be_time provides Be matchers on time.Time
 

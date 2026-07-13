@@ -1,5 +1,5 @@
-// Package be_http provides matchers for url.Request
-// TODO: more detailed documentation here is required
+// Package be_http provides Be matchers on http.Request: method, URL, body,
+// headers, and context, all composable with matchers from other be packages.
 package be_http
 
 import (

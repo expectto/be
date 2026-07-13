@@ -1,9 +1,21 @@
-# be_http
---
-    import "."
+<p align="center">
+  <img src="logo.svg" alt="be_http" width="258">
+</p>
 
-Package be_http provides matchers for url.Request TODO: more detailed
-documentation here is required
+<div align="center">
+
+Part of [`expectto/be`](../README.md) - composable test matchers for Go.
+
+</div>
+
+---
+
+```go
+import "github.com/expectto/be/be_http"
+```
+
+Package be_http provides Be matchers on http.Request: method, URL, body,
+headers, and context, all composable with matchers from other be packages.
 
 ## Usage
 
@@ -30,6 +42,16 @@ func HavingBody(args ...any) types.BeMatcher
 HavingBody succeeds if the actual value is a *http.Request and its body matches
 the provided arguments. Note: The body is not re-streamed, so it's not available
 after matching.
+
+#### func  HavingCtx
+
+```go
+func HavingCtx(args ...any) types.BeMatcher
+```
+HavingCtx succeeds if the actual value is a *http.Request whose context
+(req.Context()) matches the provided arguments. Pass be_ctx matchers, e.g.:
+
+    be_http.HavingCtx(be_ctx.CtxWithValue("requestID", "abc"))
 
 #### func  HavingHeader
 

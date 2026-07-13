@@ -1,6 +1,18 @@
-# be_string
---
-    import "."
+<p align="center">
+  <img src="logo.svg" alt="be_string" width="376">
+</p>
+
+<div align="center">
+
+Part of [`expectto/be`](../README.md) - composable test matchers for Go.
+
+</div>
+
+---
+
+```go
+import "github.com/expectto/be/be_string"
+```
 
 Package be_string provides Be matchers for string-related assertions.
 
@@ -49,6 +61,31 @@ func Float() types.BeMatcher
 ```
 Float succeeds if actual is a string representing a valid floating-point number.
 Actual must be a string-like value (can be adjusted via SetStringFormat method).
+
+#### func  HavingPrefix
+
+```go
+func HavingPrefix(prefix string) types.BeMatcher
+```
+HavingPrefix succeeds if actual is a string starting with the given prefix — the
+matcher spelling of strings.HasPrefix:
+
+    be.Expect(t, url).To(be_string.HavingPrefix("https://"))
+
+Prefer this over be.True(strings.HasPrefix(s, p)) — the failure message shows
+the actual string and the expected prefix.
+
+#### func  HavingSuffix
+
+```go
+func HavingSuffix(suffix string) types.BeMatcher
+```
+HavingSuffix succeeds if actual is a string ending with the given suffix — the
+matcher spelling of strings.HasSuffix:
+
+    be.Expect(t, filename).To(be_string.HavingSuffix(".json"))
+
+Prefer this over be.True(strings.HasSuffix(s, p)).
 
 #### func  LowerCaseOnly
 

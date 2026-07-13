@@ -1,6 +1,18 @@
-# be_reflected
---
-    import "."
+<p align="center">
+  <img src="logo.svg" alt="be_reflected" width="420">
+</p>
+
+<div align="center">
+
+Part of [`expectto/be`](../README.md) - composable test matchers for Go.
+
+</div>
+
+---
+
+```go
+import "github.com/expectto/be/be_reflected"
+```
 
 Package be_reflected provides Be matchers that use reflection, enabling
 expressive assertions on values' reflect kinds and types. It consists of several
@@ -94,6 +106,14 @@ func AsNumber() types.BeMatcher
 AsNumber succeeds if actual is a numeric value, supporting various integer
 kinds: reflect.Int, ... reflect.Int64, and floating-point kinds:
 reflect.Float32, reflect.Float64
+
+#### func  AsNumeric
+
+```go
+func AsNumeric() types.BeMatcher
+```
+AsNumeric succeeds if actual is any numeric value — an integer (signed or
+unsigned) or a float. Useful for JSON, where numbers decode to float64.
 
 #### func  AsNumericString
 

@@ -1,6 +1,18 @@
-# be_url
---
-    import "."
+<p align="center">
+  <img src="logo.svg" alt="be_url" width="204">
+</p>
+
+<div align="center">
+
+Part of [`expectto/be`](../README.md) - composable test matchers for Go.
+
+</div>
+
+---
+
+```go
+import "github.com/expectto/be/be_url"
+```
 
 Package be_url provides Be matchers on url.URL
 
@@ -133,6 +145,14 @@ NotHavingScheme succeeds if the actual value is a *url.URL and its Scheme
 negatively matches given value Example: `Expect(u).To(NotHavingScheme())`
 matches url without a scheme
 
+#### func  NotHavingSearchParam
+
+```go
+func NotHavingSearchParam(searchParamName string) types.BeMatcher
+```
+NotHavingSearchParam succeeds if the URL's query does NOT contain the given
+parameter at all (distinct from present-but-empty).
+
 #### func  URL
 
 ```go
@@ -146,6 +166,20 @@ against args[0] 3. Single arg <*url.Url>. Actual value MUST be a *url.URL, whose
 matchers, that are applied to *url.URL object
 
     - TransformUrlFromString() transform can be given as first argument, so string->*url.URL transform is applied
+
+#### func  Values
+
+```go
+func Values(args ...any) types.BeMatcher
+```
+Values matches a url.Values (e.g. produced by a query builder) by treating it as
+a URL's query string, so the same Having* matchers apply directly without
+building a *url.URL yourself:
+
+    be_url.Values(
+        be_url.HavingSearchParam("page", "2"),
+        be_url.HavingSearchParam("sort", be_string.ContainingSubstring("name")),
+    )
 
 #### func  WithHttp
 
