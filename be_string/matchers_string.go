@@ -154,6 +154,31 @@ func ContainingSubstring(substr string) types.BeMatcher {
 	}, fmt.Sprintf(`contain "%s" substring`, substr))
 }
 
+// HavingPrefix succeeds if actual is a string starting with the given prefix —
+// the matcher spelling of strings.HasPrefix:
+//
+//	be.Expect(t, url).To(be_string.HavingPrefix("https://"))
+//
+// Prefer this over be.True(strings.HasPrefix(s, p)) — the failure message
+// shows the actual string and the expected prefix.
+func HavingPrefix(prefix string) types.BeMatcher {
+	return psiString(func(actual any) (bool, error) {
+		return strings.HasPrefix(cast.AsString(actual), prefix), nil
+	}, fmt.Sprintf(`have prefix "%s"`, prefix))
+}
+
+// HavingSuffix succeeds if actual is a string ending with the given suffix —
+// the matcher spelling of strings.HasSuffix:
+//
+//	be.Expect(t, filename).To(be_string.HavingSuffix(".json"))
+//
+// Prefer this over be.True(strings.HasSuffix(s, p)).
+func HavingSuffix(suffix string) types.BeMatcher {
+	return psiString(func(actual any) (bool, error) {
+		return strings.HasSuffix(cast.AsString(actual), suffix), nil
+	}, fmt.Sprintf(`have suffix "%s"`, suffix))
+}
+
 // ContainingOnlyCharacters succeeds if actual is a string containing only characters from a given set
 func ContainingOnlyCharacters(characters string) types.BeMatcher {
 	return psiString(func(actual any) (bool, error) {

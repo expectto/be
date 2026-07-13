@@ -11,7 +11,10 @@ import (
 
 var (
 	// typeTag matches gomega's "<type>: " object annotations, e.g. "<int>: ".
-	typeTag = regexp.MustCompile(`<[^>]*>:\s*`)
+	// `<` is excluded from the tag body so a comparison operator like "<=" a few
+	// characters before a real tag can't be swallowed into the match (as in
+	// "to be <=\n    <int>: 2").
+	typeTag = regexp.MustCompile(`<[^<>]*>:\s*`)
 	// vertical matches a line break plus its surrounding indentation, which gomega
 	// uses to lay failure messages out vertically.
 	vertical = regexp.MustCompile(`[ \t]*\n[ \t]*`)

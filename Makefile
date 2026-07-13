@@ -2,7 +2,7 @@
 GOLANGCI_LINT := $(shell which golangci-lint)
 
 # Modules in this repo: the core, plus opt-in plugins under x/.
-MODULES := . x/mock
+MODULES := . x/mock x/belint
 
 # Default target
 all: tidy
@@ -55,9 +55,11 @@ release:
 		git commit -m "x/mock: bump core require to $(VERSION)" x/mock/go.mod; \
 	fi
 	git tag x/mock/$(VERSION)
+	@echo "== tag x/belint $(VERSION) (no core require to bump) =="
+	git tag x/belint/$(VERSION)
 	@echo ""
-	@echo "Tagged locally. Review, then publish both with:"
-	@echo "  git push origin main $(VERSION) x/mock/$(VERSION)"
+	@echo "Tagged locally. Review, then publish all with:"
+	@echo "  git push origin main $(VERSION) x/mock/$(VERSION) x/belint/$(VERSION)"
 
 # Phony targets
 .PHONY: all tidy lint-install lint test release

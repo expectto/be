@@ -80,7 +80,7 @@ func (matcher *HaveLengthMatcher) NegatedFailureMessage(actual any) (message str
 	//		Expect [ ] not to <>
 	// into
 	//		Expect [ ] length not to <>
-	failureMessage := matcher.matching.FailureMessage(actual)
+	failureMessage := matcher.matching.NegatedFailureMessage(actual)
 	failureMessage = strings.Replace(failureMessage, "\nnot to", "\nlength not to", 1)
 	return failureMessage
 }

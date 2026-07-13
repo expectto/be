@@ -20,7 +20,8 @@ comprehensive and straightforward.
 
 - [Installation](#installation)
 - [Example](#example)
-- [Matchers](#matchers)
+- [Say it with a matcher](#say-it-with-a-matcher)
+- [Matchers](#matchers) — flat catalog in [MATCHERS.md](MATCHERS.md)
     - [Be (core)](#core-be)
     - [Be Reflected](#be_reflected)
     - [Be Math](#be_math)
@@ -109,6 +110,33 @@ Expect(req).To(be_http.Request(
 ))      
 ```
 
+## Say it with a matcher
+
+Wrapping a raw expression in `be.True(...)` throws away the failure message —
+all you learn is "expected true, got false". There is a matcher for almost
+every idiom; this table is the cheat-sheet (and what [`belint`](x/belint)
+flags automatically):
+
+| Instead of | Use |
+|---|---|
+| `be.Not(be.Nil())` | `be.NotNil()` |
+| `be.HaveLength(0)` | `be.Empty()` |
+| `be.Not(be.HaveLength(0))` | `be.NotEmpty()` |
+| `be.Not(be.Eq(0))`, `be.Ne(0)` | `be.NonZero()` |
+| `x == y → be.True()` | `be.Eq(y)` |
+| `x >= n → be.True()` | `be.Gte(n)` |
+| `len(xs) >= n → be.True()` | `be.HaveLength(be.Gte(n))` |
+| `slices.Contains(xs, v) → be.True()` | `be.ContainElement(v)` |
+| `strings.Contains(s, q) → be.True()` | `be.ContainSubstring(q)` |
+| `strings.HasPrefix(s, p) → be.True()` | `be_string.HavingPrefix(p)` |
+| `_, ok := m[k]; ok → be.True()` | `be.HaveKey(k)` |
+| `errors.Is(err, X) → be.True()/False()` | `be.MatchError(X)` / `be.Not(be.MatchError(X))` |
+| `errors.As(err, &v) → be.True()` | `be.MatchErrorAs[V]()` |
+| `t1.Equal(t2) → be.True()` | `be_time.SameExactSecond(t2)` / `be_time.Approx(...)` |
+
+The full flat catalog of every matcher across all packages lives in
+[MATCHERS.md](MATCHERS.md).
+
 ## Test framework integration
 
 `be` matchers are framework-agnostic. The core `github.com/expectto/be` module
@@ -187,7 +215,15 @@ svc.On("Do", bemock.MatchedBy(be_math.GreaterThan(10))).Return("ok")
 
 #### Everyday matchers:
 
-`Nil`, `NotNil`, `True`, `False`, `Eq`, `Ne`, `Empty`, `NotEmpty`, `Identical`, `NotIdentical`, `Via`, `Succeed`, `HaveOccurred`, `MatchError`, `Panic`, `NotPanic`, `ContainElement`, `ContainElements`, `ContainSubstring`, `HaveKey`, `HaveKeyWithValue`
+`Nil`, `NotNil`, `True`, `False`, `Eq`, `Ne`, `Zero`, `NonZero`, `Empty`, `NotEmpty`, `Identical`, `NotIdentical`, `Via`, `Succeed`, `HaveOccurred`, `MatchError`, `MatchErrorAs`, `Panic`, `NotPanic`, `ContainElement`, `ContainElements`, `ContainSubstring`, `HaveKey`, `HaveKeyWithValue`, `HaveField`, `HaveFields`
+
+#### Numeric aliases at root (from be_math):
+
+`Gt`, `Gte`, `Lt`, `Lte`, `GreaterThan`, `GreaterThanEqual`, `LessThan`, `LessThanEqual`, `InRange`, `Positive`, `Negative`
+
+#### Assertion shortcuts & async:
+
+`NoError`, `Error`, `ErrorIs` (hard, the testify `require` trio) · `Eventually`, `Consistently` (native poll loop, no gomega output leakage)
 
 ### be_reflected
 

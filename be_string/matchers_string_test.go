@@ -98,6 +98,13 @@ var _ = Describe("BeStrings (simple matchers)", func() {
 		Entry("ContainingSubstring: contains '123'", be_string.ContainingSubstring("123"), "The password is 123456"),
 		Entry("ContainingSubstring: contains 'xyz'", be_string.ContainingSubstring("xyz"), "xyz is the last three characters"),
 
+		Entry("HavingPrefix", be_string.HavingPrefix("Hello"), "Hello World"),
+		Entry("HavingPrefix: full match", be_string.HavingPrefix("Hello"), "Hello"),
+		Entry("HavingPrefix: empty prefix", be_string.HavingPrefix(""), "anything"),
+		Entry("HavingSuffix", be_string.HavingSuffix("World"), "Hello World"),
+		Entry("HavingSuffix: full match", be_string.HavingSuffix("World"), "World"),
+		Entry("HavingSuffix: empty suffix", be_string.HavingSuffix(""), "anything"),
+
 		Entry("ContainingOnlyCharacters: contains only 'abc'", be_string.ContainingOnlyCharacters("abc"), "aaaaab"),
 		Entry("ContainingOnlyCharacters: contains only '123'", be_string.ContainingOnlyCharacters("123"), "123"),
 		Entry("ContainingOnlyCharacters: contains only 'xyz'", be_string.ContainingOnlyCharacters("xyz"), "xyzxyzxyzxyz"),
@@ -193,6 +200,11 @@ var _ = Describe("BeStrings (simple matchers)", func() {
 		Entry("ContainingSubstring: does not contain substring", be_string.ContainingSubstring("xyz"), "abc123"),
 		Entry("ContainingSubstring: empty string", be_string.ContainingSubstring("xyz"), ""),
 
+		Entry("HavingPrefix: not a prefix", be_string.HavingPrefix("World"), "Hello World"),
+		Entry("HavingPrefix: empty string", be_string.HavingPrefix("Hello"), ""),
+		Entry("HavingSuffix: not a suffix", be_string.HavingSuffix("Hello"), "Hello World"),
+		Entry("HavingSuffix: empty string", be_string.HavingSuffix("Hello"), ""),
+
 		Entry("ContainingOnlyCharacters: contains other characters", be_string.ContainingOnlyCharacters("abc"), "defabc123"),
 		Entry("ContainingOnlyCharacters: empty string", be_string.ContainingOnlyCharacters("abc"), ""),
 		Entry("ContainingOnlyCharacters: contains whitespace", be_string.ContainingOnlyCharacters("abc"), "a b c"),
@@ -237,6 +249,8 @@ var _ = Describe("BeStrings (simple matchers)", func() {
 		Entry("Titled", be_string.Titled()),
 		Entry("LowerCaseOnly", be_string.LowerCaseOnly()),
 		Entry("ContainingSubstring", be_string.ContainingSubstring("xyz")),
+		Entry("HavingPrefix", be_string.HavingPrefix("xyz")),
+		Entry("HavingSuffix", be_string.HavingSuffix("xyz")),
 		Entry("ContainingOnlyCharacters", be_string.ContainingOnlyCharacters("abc")),
 		Entry("ContainingCharacters", be_string.ContainingCharacters("abc")),
 		Entry("MatchWildcard", be_string.MatchWildcard("abc*")),

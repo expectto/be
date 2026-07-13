@@ -1,0 +1,81 @@
+package a
+
+import (
+	"errors"
+	"strings"
+
+	"github.com/expectto/be"
+)
+
+var errSentinel = errors.New("sentinel")
+
+type myErr struct{}
+
+func (*myErr) Error() string { return "my" }
+
+func rawComparisons(t be.TestingT, x, y, n int, s string) {
+	be.AssertThat(t, x, be.Eq(y))  // want `prefer be\.Eq\(y\) over wrapping the raw expression in be\.True\(\)`
+	be.AssertThat(t, x, be.Ne(y))  // want `prefer be\.Ne\(y\)`
+	be.AssertThat(t, x, be.Ne(y)) // want `prefer be\.Ne\(y\)`
+	be.AssertThat(t, x, be.Gte(n))  // want `prefer be\.Gte\(n\)`
+	be.AssertThat(t, x, be.Gt(0))   // want `prefer be\.Gt\(0\)`
+	be.AssertThat(t, x, be.Gt(0))   // want `prefer be\.Gt\(0\)`
+	be.AssertThat(t, x, be.Gte(n))  // want `prefer be\.Gte\(n\)`
+	be.AssertThat(t, x, be.Ne(y)) // want `prefer be\.Ne\(y\)`
+
+	// ordered comparison on strings has no numeric matcher — not flagged
+	be.AssertThat(t, s > "a", be.True())
+	// plain bool subject is what be.True is FOR — not flagged
+	ok := x > 0
+	be.AssertThat(t, ok, be.True())
+}
+
+func lengths(t be.TestingT, xs []int, n int) {
+	be.AssertThat(t, xs, be.Empty()) // want `prefer be\.Empty\(\)`
+	be.AssertThat(t, xs, be.NotEmpty()) // want `prefer be\.NotEmpty\(\)`
+	be.AssertThat(t, xs, be.NotEmpty())  // want `prefer be\.NotEmpty\(\)`
+	be.AssertThat(t, xs, be.HaveLength(n)) // want `prefer be\.HaveLength\(n\)`
+	be.AssertThat(t, xs, be.HaveLength(be.Gte(n))) // want `prefer be\.HaveLength\(be\.Gte\(n\)\)`
+	be.AssertThat(t, xs, be.NotEmpty()) // want `prefer be\.NotEmpty\(\)`
+}
+
+func nils(t be.TestingT, err error) {
+	be.AssertThat(t, err, be.Nil()) // want `prefer be\.Nil\(\)`
+	be.AssertThat(t, err, be.NotNil()) // want `prefer be\.NotNil\(\)`
+	be.AssertThat(t, err, be.NotNil()) // want `prefer be\.NotNil\(\)`
+}
+
+func stdlibIdioms(t be.TestingT, xs []int, x int, s string, err error) {
+	be.AssertThat(t, xs, be.ContainElement(x))      // want `prefer be\.ContainElement\(x\)`
+	be.AssertThat(t, xs, be.Not(be.ContainElement(x)))     // want `prefer be\.Not\(be\.ContainElement\(x\)\)`
+	be.AssertThat(t, s, be.ContainSubstring("ell"))  // want `prefer be\.ContainSubstring\("ell"\)`
+	be.AssertThat(t, err, be.MatchError(errSentinel)) // want `prefer be\.MatchError\(errSentinel\)`
+	be.AssertThat(t, err, be.Not(be.MatchError(errSentinel))) // want `prefer be\.Not\(be\.MatchError\(errSentinel\)\)`
+
+	// report-only (fix would need a new import / a type name):
+	be.AssertThat(t, strings.HasPrefix(s, "he"), be.True()) // want `prefer be_string\.HavingPrefix\("he"\)`
+	be.AssertThat(t, strings.HasSuffix(s, "lo"), be.True()) // want `prefer be_string\.HavingSuffix\("lo"\)`
+	var target *myErr
+	be.AssertThat(t, errors.As(err, &target), be.True()) // want `prefer be\.MatchErrorAs\[\*myErr\]\(\)`
+	_ = target
+}
+
+func fluentForms(t be.TestingT, x, n int) {
+	be.Expect(t, x).To(be.Gt(n))      // want `prefer be\.Gt\(n\)`
+	be.Expect(t, x).To(be.Lte(n))   // want `prefer be\.Lte\(n\)`
+	be.Require(t, x).To(be.Eq(n))    // want `prefer be\.Eq\(n\)`
+	be.RequireThat(t, x, be.Ne(n))   // want `prefer be\.Ne\(n\)`
+}
+
+func composites(t be.TestingT, xs []int, x int) {
+	be.AssertThat(t, xs, be.NotNil())         // want `prefer be\.NotNil\(\) over be\.Not\(be\.Nil\(\)\)`
+	be.AssertThat(t, xs, be.Empty())         // want `prefer be\.Empty\(\) over be\.HaveLength\(0\)`
+	be.AssertThat(t, xs, be.NotEmpty()) // want `prefer be\.NotEmpty\(\) over be\.Not\(be\.HaveLength\(0\)\)`
+	be.AssertThat(t, xs, be.NotEmpty())       // want `prefer be\.NotEmpty\(\) over be\.Not\(be\.Empty\(\)\)`
+	be.AssertThat(t, x, be.NonZero())          // want `prefer be\.NonZero\(\) over be\.Not\(be\.Eq\(0\)\)`
+	be.Expect(t, xs).To(be.NotNil())          // want `prefer be\.NotNil\(\)`
+
+	// not zero-valued / not composable — not flagged
+	be.AssertThat(t, xs, be.Not(be.Eq(x)))
+	be.AssertThat(t, xs, be.HaveLength(3))
+}

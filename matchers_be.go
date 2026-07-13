@@ -29,7 +29,14 @@ func Any(ms ...any) types.BeMatcher {
 	return psi_matchers.NewAnyMatcher(ms...)
 }
 
-// Eq is like gomega.Equal()
+// Eq succeeds if actual equals expected by VALUE (deep equality, like
+// gomega.Equal):
+//
+//	be.Expect(t, got).To(be.Eq(want))
+//
+// Footgun to know: two different pointers to equal structs satisfy be.Eq.
+// When you mean "the same instance" (pointer identity, Go's ==), use
+// be.Identical instead. For "unset / zero value" prefer be.Zero over be.Eq(0).
 func Eq(expected any) types.BeMatcher {
 	return psi_matchers.NewEqMatcher(expected)
 }
@@ -39,9 +46,17 @@ func Not(expected any) types.BeMatcher {
 	return psi_matchers.NewNotMatcher(Psi(expected))
 }
 
-// HaveLength is like gomega.HaveLen()
-// HaveLength succeeds if the actual value has a length that matches the provided conditions.
-// It accepts either a count value or one or more Gomega matchers to specify the desired length conditions.
+// HaveLength succeeds if the actual value (string, slice, array, map or
+// channel) has a length matching the provided condition — either an exact
+// count, or one or more matchers applied to the length (unlike gomega.HaveLen,
+// which only takes a count):
+//
+//	be.Expect(t, items).To(be.HaveLength(3))
+//	be.Expect(t, items).To(be.HaveLength(be.Gte(3)))          // composable form
+//	be.Expect(t, name).To(be.HaveLength(be.InRange(1, true, 64, true)))
+//
+// Prefer be.HaveLength(be.Gte(n)) over be.True(len(xs) >= n). For zero /
+// non-zero length prefer be.Empty / be.NotEmpty.
 func HaveLength(args ...any) types.BeMatcher {
 	return psi_matchers.NewHaveLengthMatcher(args...)
 }

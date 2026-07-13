@@ -15,3 +15,7 @@ godocdown be_time > be_time/README.md
 godocdown be_url > be_url/README.md
 godocdown be_struct > be_struct/README.md
 godocdown . > core-be-matchers.md
+
+# MATCHERS.md: the flat, all-packages catalog grouped by intent (the primary
+# discovery surface — per-package READMEs require knowing the package exists).
+go run ./internal/docgen > MATCHERS.md

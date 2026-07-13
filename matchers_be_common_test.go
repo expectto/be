@@ -3,6 +3,7 @@ package be_test
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/expectto/be"
@@ -64,6 +65,101 @@ func TestEmptyAndNe(t *testing.T) {
 func TestContainSubstring(t *testing.T) {
 	be.Expect(t, "hello world").To(be.ContainSubstring("o w"))
 	be.Expect(t, "hello").NotTo(be.ContainSubstring("xyz"))
+}
+
+func TestMatchErrorAs(t *testing.T) {
+	sentinel := &pathErr{path: "/etc/passwd"}
+	wrapped := fmt.Errorf("opening: %w", sentinel)
+
+	be.Expect(t, wrapped).To(be.MatchErrorAs[*pathErr]())                // wrapped typed error matches
+	be.Expect(t, sentinel).To(be.MatchErrorAs[*pathErr]())               // direct match
+	be.Expect(t, errors.New("plain")).NotTo(be.MatchErrorAs[*pathErr]()) // unrelated error fails
+
+	var nilErr error
+	be.Expect(t, nilErr).NotTo(be.MatchErrorAs[*pathErr]()) // nil fails
+
+	// failure message names the type
+	rt := &recT{}
+	be.Expect(rt, errors.New("plain")).To(be.MatchErrorAs[*pathErr]())
+	if len(rt.errs) != 1 || !strings.Contains(rt.errs[0], "*be_test.pathErr") {
+		t.Fatalf("failure should name the target type, got: %v", rt.errs)
+	}
+
+	// non-error actual is an error, not a mismatch
+	rt = &recT{}
+	be.Expect(rt, 42).To(be.MatchErrorAs[*pathErr]())
+	if len(rt.errs) != 1 || !strings.Contains(rt.errs[0], "expects an error") {
+		t.Fatalf("non-error actual should produce a clear error, got: %v", rt.errs)
+	}
+}
+
+type pathErr struct{ path string }
+
+func (e *pathErr) Error() string { return "path error: " + e.path }
+
+func TestHaveField(t *testing.T) {
+	type address struct{ City string }
+	type user struct {
+		Name    string
+		Age     int
+		Address address
+	}
+	u := user{Name: "Alice", Age: 30, Address: address{City: "Lisbon"}}
+
+	be.Expect(t, u).To(be.HaveField("Name", "Alice"))
+	be.Expect(t, u).To(be.HaveField("Age", be.Gte(18)))        // matcher value
+	be.Expect(t, u).To(be.HaveField("Address.City", "Lisbon")) // nesting
+	be.Expect(t, &u).To(be.HaveField("Name", "Alice"))         // pointer to struct
+	be.Expect(t, u).NotTo(be.HaveField("Name", "Bob"))
+
+	// method form
+	be.Expect(t, &pathErr{path: "/x"}).To(be.HaveField("Error()", "path error: /x"))
+
+	// field mismatch names the field
+	rt := &recT{}
+	be.Expect(rt, u).To(be.HaveField("Name", "Bob"))
+	if len(rt.errs) != 1 || !strings.Contains(rt.errs[0], "Name") {
+		t.Fatalf("failure should name the field, got: %v", rt.errs)
+	}
+}
+
+func TestHaveFields(t *testing.T) {
+	type user struct {
+		Name string
+		Age  int
+	}
+	u := user{Name: "Alice", Age: 30}
+
+	be.Expect(t, u).To(be.HaveFields(map[string]any{
+		"Name": "Alice",
+		"Age":  be.Gt(18),
+	}))
+	be.Expect(t, u).NotTo(be.HaveFields(map[string]any{
+		"Name": "Alice",
+		"Age":  be.Gt(50),
+	}))
+
+	// deterministic failure output: with two mismatching fields, the first
+	// (sorted) key is always the one reported
+	for range 10 {
+		rt := &recT{}
+		be.Expect(rt, u).To(be.HaveFields(map[string]any{
+			"Name": "Bob",
+			"Age":  99,
+		}))
+		if len(rt.errs) != 1 || !strings.Contains(rt.errs[0], "Age") {
+			t.Fatalf("sorted-key order should make Age fail first, got: %v", rt.errs)
+		}
+	}
+}
+
+func TestHaveLengthComposable(t *testing.T) {
+	// HaveLength accepts a count...
+	be.Expect(t, []int{1, 2, 3}).To(be.HaveLength(3))
+	// ...or a matcher for the length
+	be.Expect(t, []int{1, 2, 3}).To(be.HaveLength(be.Gte(2)))
+	be.Expect(t, "hello").To(be.HaveLength(be.InRange(1, true, 10, true)))
+	be.Expect(t, []int{1}).NotTo(be.HaveLength(be.Gte(2)))
 }
 
 func TestIdenticalAndVia(t *testing.T) {

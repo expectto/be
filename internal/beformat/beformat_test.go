@@ -12,6 +12,20 @@ func TestCompactCollapsesScalars(t *testing.T) {
 	}
 }
 
+func TestCompactKeepsComparisonOperators(t *testing.T) {
+	// "<=" sits right before a "<int>:" tag; a greedy type-tag regex would
+	// swallow the operator along with the tag.
+	in := "Expected\n    <int>: 3\nto be <=\n    <int>: 2"
+	if got := Compact(in); got != "Expected 3 to be <= 2" {
+		t.Errorf("operator must survive compaction, got %q", got)
+	}
+
+	in = "Expected\n    <int>: 3\nto be <\n    <int>: 2"
+	if got := Compact(in); got != "Expected 3 to be < 2" {
+		t.Errorf("operator must survive compaction, got %q", got)
+	}
+}
+
 func TestCompactPreservesLargeMultiline(t *testing.T) {
 	// A long slice mismatch must keep gomega's multi-line, diff-friendly layout
 	// rather than collapsing into one unreadable line.

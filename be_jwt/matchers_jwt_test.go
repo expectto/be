@@ -132,7 +132,6 @@ var _ = Describe("BeJwt", func() {
 		// Tampered token parsed without verification, then signature-checked.
 		Entry("tampered token is not SignedVia(secret)",
 			be_jwt.Token(be_jwt.TransformJwtFromString, be_jwt.SignedVia(secret)), tamperedHS256),
-
 	)
 
 	// When the signed transform itself can't verify (wrong/another secret, tampered

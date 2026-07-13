@@ -8,6 +8,47 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Work toward a stable **v1**: a framework-agnostic matcher core with opt-in drivers.
 
+### Added (rc.7)
+- **Error shortcuts at root** — `be.NoError(t, err)`, `be.Error(t, err)`,
+  `be.ErrorIs(t, err, target)`: the testify `require` trio as hard (Fatalf)
+  assertions. Soft spelling stays `be.AssertThat(t, err, be.Succeed())`.
+- **`be.Eventually` / `be.Consistently`** — native async assertions: a be-owned
+  poll loop against `TestingT` (not a gomega wrapper, so failures keep the
+  compact native format). Actual may be a value, `func() T` or
+  `func() (T, error)`; options: `be.WithTimeout`, `be.WithPolling`,
+  `be.WithContext`.
+- **`be.Zero` / `be.NonZero`** — general zero-value matchers (reflect-based,
+  any type). The numeric-only `be_math.Zero` stays namespaced.
+- **`be.HaveField` / `be.HaveFields`** — struct-field matching at root
+  (wraps `gomega.HaveField`: dotted paths and `"Method()"` specs; the map form
+  checks fields in sorted-key order for deterministic failures). The generic
+  compile-time-typed `be_struct.HavingField[T]` remains for pinned struct types.
+- **`be.MatchErrorAs[T]`** — the matcher spelling of `errors.As`, complementing
+  `be.MatchError` (errors.Is / message / matcher).
+- **Root numeric aliases** — `be.Gt/Gte/Lt/Lte`, `be.GreaterThan(Equal)`,
+  `be.LessThan(Equal)`, `be.InRange`, `be.Positive`, `be.Negative` (aliases of
+  `be_math`; rule: root alias only if collision-free and high-frequency —
+  `be_time` is never aliased).
+- **`be_string.HavingPrefix` / `HavingSuffix`** — matcher spellings of
+  `strings.HasPrefix/HasSuffix`.
+- **`x/belint`** — new module: a `go/analysis` linter (with `-fix` and
+  golangci-lint module-plugin registration) that flags raw expressions wrapped
+  in `be.True()/be.False()` and `be.Not(...)` compositions with a dedicated
+  matcher (`be.Not(be.Nil())` → `be.NotNil()`, `be.True(len(xs) >= n)` →
+  `be.HaveLength(be.Gte(n))`, ...).
+- **`MATCHERS.md`** — generated flat catalog of every matcher across all
+  packages, grouped by intent, with an "instead of" anti-pattern column
+  (`internal/docgen`, wired into `generate-docs.sh`). Plus a root `doc.go`
+  package comment (assertion spellings + anti-pattern table) and a
+  doc-comment pass over the everyday matchers.
+
+### Fixed (rc.7)
+- `HaveLength(matcher)` negated failure message rendered the positive inner
+  message ("length to be") instead of the negated one ("length not to be").
+- Compact failure formatting swallowed a `<=`/`<` comparison operator standing
+  right before a `<type>:` tag ("Expected 3 to be 2" instead of
+  "Expected 3 to be <= 2").
+
 ### Added (rc.6)
 - **`be.AssertThat` / `be.RequireThat`** — flat, testify-style spellings of
   `be.Expect(t, x).To(m)` / `be.Require(t, x).To(m)`, in the core module (no
