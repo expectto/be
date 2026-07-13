@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 99" width="144" height="99" xml:space="preserve">
+  <style>
+    text { font-family: 'Menlo','Consolas','DejaVu Sans Mono',monospace; font-size: 26px; font-weight: 700; white-space: pre; }
+  </style>
+  <rect width="144" height="99" fill="transparent"/>
+  <!-- B -->
+  <text x="8" y="26" fill="#FBBF24">░█▀▄</text>
+  <text x="8" y="48" fill="#FBBF24">░█▀▄</text>
+  <text x="8" y="70" fill="#FBBF24">░▀▀░</text>
+  <!-- E (dropped) -->
+  <text x="74" y="46" fill="#EA580C">░█▀▀</text>
+  <text x="74" y="68" fill="#EA580C">░█▀▀</text>
+  <text x="74" y="90" fill="#EA580C">░▀▀▀</text>
+</svg>
