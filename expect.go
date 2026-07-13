@@ -121,6 +121,18 @@ func (e *Expectation) fail(msg string, msgAndArgs ...any) bool {
 // formatMsgAndArgs renders an optional assertion message: a leading format string
 // is applied to the remaining args (testify-style), otherwise the values are
 // concatenated.
+//
+// The message contract for every assertion func taking msgAndArgs: the first
+// value MAY be a Printf format string for the rest — but go vet cannot validate
+// it (vet's printf checker only understands an explicit `format string` param).
+// To keep vet from misclassifying the whole assertion chain as fmt.Sprint-style
+// "print wrappers" — which makes any message containing a '%' directive fail
+// `go vet` (and therefore `go test`) with "possible Printf formatting directive"
+// — msgAndArgs must never be ellipsis-forwarded straight into a fmt print
+// function from here or anywhere up the chain. The `vals` indirection below is
+// what breaks vet's forwarding heuristic; the directive-bearing messages in
+// expect_shortcuts_test.go are the regression guard (go test runs vet, so a
+// regression here fails the build).
 func formatMsgAndArgs(msgAndArgs ...any) string {
 	switch len(msgAndArgs) {
 	case 0:
@@ -134,6 +146,7 @@ func formatMsgAndArgs(msgAndArgs ...any) string {
 		if format, ok := msgAndArgs[0].(string); ok {
 			return fmt.Sprintf(format, msgAndArgs[1:]...)
 		}
-		return fmt.Sprint(msgAndArgs...)
+		vals := msgAndArgs // see doc-comment: intentionally not forwarded directly
+		return fmt.Sprint(vals...)
 	}
 }

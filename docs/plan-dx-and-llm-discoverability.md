@@ -1,7 +1,13 @@
 # Plan: DX + LLM discoverability
 
-**Status:** implemented in v1.0.0-rc.7 (§1–§3; §4 happens in the r3 repo).
-Originally verified against working tree at `eda23f4`.
+**Status:** implemented in v1.0.0-rc.7 (§1–§3). §4 (the r3 pass) is **done** —
+`betestify` dropped, `belint -fix` dogfooded, shortcuts/matchers adopted; residual
+`be.True(<raw>)` / `Not(Nil()|HaveLength(0)|Eq(zero))` count is **0**. That pass
+surfaced two rc.8 follow-ups — **§1.9** (go-vet printf recognition) and the belint
+`MatchErrorAs` suppression in **§3** — both **implemented in v1.0.0-rc.8** (§1.9
+via option (b): vet's print-wrapper misclassification is broken at the source;
+note vet *validation* of `...any` messages is impossible without `…f` variants).
+Originally verified against `eda23f4`.
 
 **Context:** the amberpixels/r3 dogfooding migration (~770 assertions) showed the
 main defect is **discoverability, not missing matchers**: when a matcher isn't
@@ -80,6 +86,30 @@ InRange, Positive, Negative`.
 `internal/psi_matchers/have_length_matcher_test.go:44`. Restore that test, add a
 `be.HaveLength(be.Gte(n))` test + doc example. No production change.
 
+### 1.9 go-vet printf recognition for the assertion funcs (found in the §4 dogfooding)
+`AssertThat`/`RequireThat`/`NoError`/`Error`/`ErrorIs`/`Eventually` take testify-style
+`msgAndArgs ...any` (the first may be a format string, `Sprintf`'d via `beformat`).
+But **go vet does not recognize them as printf wrappers** — its wrapper
+auto-detection only fires for a `format string, args ...any` shape, not `...any`. So
+any call with a directive in the message — `be.NoError(t, err, "seed %d", i)` — trips
+vet's *"possible Printf formatting directive"*, and because `go test` runs vet, it
+**fails the build**. This cost 16 fixups in the r3 pass (every `%v`/`%q` message had
+to be pre-`fmt.Sprintf`'d).
+
+Options (pick one; document the message contract either way):
+- **(a) Add `…f` variants** with an explicit `format string` param
+  (`NoErrorf`, `AssertThatf`, …) — vet auto-detects these (the testify `Equal`/`Equalf`
+  split). Most compatible; grows the API a little.
+- **(b) Make the existing funcs auto-detectable**: route messages through an internal
+  `func(format string, args ...any)` that the public funcs forward
+  `msgAndArgs[0].(string), msgAndArgs[1:]...` into, so vet's wrapper heuristic fires.
+  No API growth; silent fix.
+- **(c) Declare the contract "plain values, not printf"** and document it — pair with
+  (b) since a literal `%` in a message can still trip vet.
+
+Recommend **(b)** if achievable, else **(a)**. Add a `go vet` regression case in
+`expect_test.go` asserting a directive-bearing message stays clean.
+
 ---
 
 ## 2. Docs (the primary LLM surface — agents read `go doc`, not the README)
@@ -104,7 +134,7 @@ target / string / matcher), `Eq` vs `Identical` (pointer-identity footgun).
 | `x >= n → be.True()` | `be.Gte(n)` |
 | `len(xs) >= n → be.True()` | `be.HaveLength(be.Gte(n))` |
 | `errors.Is(err, X) → be.True()/False()` | `be.MatchError(X)` / `be.Not(be.MatchError(X))` |
-| `errors.As(err, &v) → be.True()` | `be.MatchErrorAs[V]()` |
+| `errors.As(err, &v) → be.True()` | `be.MatchErrorAs[V]()` — *only when `v` is unused afterward* |
 | `t1.Equal(t2) → be.True()` | `be_time.SameExactSecond(t2)` / `be_time.Approx(...)` |
 | `strings.HasPrefix(s, p) → be.True()` | `be_string.HavingPrefix(p)` |
 
@@ -137,17 +167,28 @@ belint rule.
   `be.AssertThat(t, x >= 0, be.True())` — match on that when the matcher-arg is
   `be.True()`/`be.False()`; also `be.Not(be.Nil())` etc. in matcher position.
 - Point-of-use feedback is what makes LLM agents self-correct without reading docs.
+- **Suppress `MatchErrorAs[T]` when the `errors.As(err, &v)` target `v` is used later**
+  (found in the §4 pass): 3 sites stayed flagged where `v` is referenced after the
+  check (`v.HasField(...)`, `v.Errors`), so the conversion is impossible —
+  `MatchErrorAs` doesn't bind. belint should check whether the `&v` ident is
+  referenced after the assertion and, if so, downgrade to report-only-with-note (or
+  skip) rather than emit an un-appliable `-fix` suggestion.
 
 ---
 
-## 4. Close the loop in r3
+## 4. Close the loop in r3 — DONE
 
-1. Drop `x/testify` (renamed to `x/mock` in `ecdeb9f`): `betestify.Assert/Require`
-   → `be.AssertThat/RequireThat`.
-2. `belint -fix` as mechanical first pass, then hand-review the ~77
-   `be.True(rawExpr)` sites and ~250 error checks (→ 1.1 shortcuts).
-3. Success metric: near-zero `be.True(<raw comparison/contains/len>)` and
-   `be.Not(be.Nil()|be.HaveLength(0)|be.Eq(zero))` left.
+Executed against amberpixels/r3 (36 test files). Results:
+1. Dropped `x/testify` (renamed to `x/mock` in `ecdeb9f`): all `betestify.Assert/Require`
+   → core `be.AssertThat/RequireThat`; upgraded to `be v1.0.0-rc.7`.
+2. `belint -fix` applied **58** matcher fixes automatically; a hand pass then adopted
+   the shortcuts (`NoError` ×212, `ErrorIs` ×46, `Error` ×16), `HaveFields` ×11,
+   `Eventually` ×2, `be_time` ×2.
+3. **Success metric met: 0** residual `be.True(<raw>)` /
+   `Not(Nil()|HaveLength(0)|Eq(zero))`. The pass also caught a real r3 bug (`be.Ne`
+   used for a pointer-identity check → `be.NotIdentical`) and produced the two rc.8
+   follow-ups above (§1.9, §3). Build/vet/test/lint all clean; `Eventually` verified
+   under `-race` + 10× repeats.
 
 ---
 

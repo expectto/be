@@ -85,9 +85,11 @@ func TestExpectMessageContext(t *testing.T) {
 		t.Fatalf("message context should be prepended, got: %q", rt.errs[0])
 	}
 
-	// format-string form (built with fmt to avoid go vet's printf heuristic on To)
+	// format-string form; the inline %d doubles as a vet regression guard —
+	// go test runs vet, and this line fails the build if the assertion chain
+	// is ever again classified as a print wrapper (see formatMsgAndArgs)
 	rt2 := &recT{}
-	be.Expect(rt2, 3).To(be_math.GreaterThan(5), fmt.Sprintf("case %d", 7))
+	be.Expect(rt2, 3).To(be_math.GreaterThan(5), "case %d", 7)
 	if !strings.HasPrefix(rt2.errs[0], "case 7: ") {
 		t.Fatalf("formatted context should be prepended, got: %q", rt2.errs[0])
 	}

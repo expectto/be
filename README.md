@@ -131,7 +131,7 @@ flags automatically):
 | `strings.HasPrefix(s, p) → be.True()` | `be_string.HavingPrefix(p)` |
 | `_, ok := m[k]; ok → be.True()` | `be.HaveKey(k)` |
 | `errors.Is(err, X) → be.True()/False()` | `be.MatchError(X)` / `be.Not(be.MatchError(X))` |
-| `errors.As(err, &v) → be.True()` | `be.MatchErrorAs[V]()` |
+| `errors.As(err, &v) → be.True()` | `be.MatchErrorAs[V]()` — *only when `v` is unused afterward* |
 | `t1.Equal(t2) → be.True()` | `be_time.SameExactSecond(t2)` / `be_time.Approx(...)` |
 
 The full flat catalog of every matcher across all packages lives in

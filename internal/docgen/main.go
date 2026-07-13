@@ -58,7 +58,7 @@ var insteadOf = map[string]string{
 	"be.ContainSubstring":     "`be.True(strings.Contains(s, q))`",
 	"be.HaveKey":              "`_, ok := m[k]` + `be.True(ok)`",
 	"be.MatchError":           "`be.True(errors.Is(err, X))`",
-	"be.MatchErrorAs":         "`var v E` + `be.True(errors.As(err, &v))`",
+	"be.MatchErrorAs":         "`var v E` + `be.True(errors.As(err, &v))` — only when `v` is unused afterward (the matcher does not bind it)",
 	"be.HaveField":            "`be.Eq(x.Field)` on a projected value",
 	"be.NoError":              "`if err != nil { t.Fatal(err) }`",
 	"be_string.HavingPrefix":  "`be.True(strings.HasPrefix(s, p))`",

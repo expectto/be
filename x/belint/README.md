@@ -18,7 +18,7 @@ them mechanically.
 | `be.True(strings.Contains(s, q))` | `be.ContainSubstring(q)` |
 | `be.True(strings.HasPrefix(s, p))` | `be_string.HavingPrefix(p)` (report-only) |
 | `be.True(errors.Is(err, X))` | `be.MatchError(X)` |
-| `be.True(errors.As(err, &v))` | `be.MatchErrorAs[V]()` (report-only) |
+| `be.True(errors.As(err, &v))` | `be.MatchErrorAs[V]()` (report-only; suppressed when `v` is used after the assertion — the matcher doesn't bind it) |
 | `be.Not(be.Nil())` | `be.NotNil()` |
 | `be.HaveLength(0)` / `be.Not(be.HaveLength(0))` | `be.Empty()` / `be.NotEmpty()` |
 | `be.Not(be.Empty())` | `be.NotEmpty()` |

@@ -8,6 +8,28 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Work toward a stable **v1**: a framework-agnostic matcher core with opt-in drivers.
 
+### Fixed (rc.8)
+- **`go vet` no longer fails on assertion messages containing `%` directives**
+  (found in the r3 dogfooding pass, 16 fixups' worth). Vet's printf checker
+  classified the whole assertion chain (`NoError`, `AssertThat`, `.To(...)`, …)
+  as fmt.Sprint-style "print wrappers" via its forwarding heuristic, so
+  `be.NoError(t, err, "seed %d", i)` tripped *possible Printf formatting
+  directive* — and because `go test` runs vet, it failed the build. The
+  forwarding chain is now broken at its single source (`formatMsgAndArgs`);
+  messages keep testify semantics (leading format string is `Sprintf`-applied).
+  Note vet cannot *validate* these format strings — its printf-wrapper
+  detection requires an explicit `format string` parameter, which
+  `msgAndArgs ...any` can never have. Directive-bearing messages in the test
+  suite act as the regression guard.
+
+### Changed (rc.8)
+- **`x/belint`: the `MatchErrorAs[T]` suggestion is suppressed when the
+  `errors.As(err, &v)` target `v` is referenced after the assertion** — the
+  matcher does not bind the concrete error value, so the conversion is
+  impossible there (3 such false positives in the r3 pass). Doc surfaces
+  (doc.go, README, MATCHERS.md, `MatchErrorAs` doc-comment) now carry the
+  "only when the target goes unused afterward" caveat.
+
 ### Added (rc.7)
 - **Error shortcuts at root** — `be.NoError(t, err)`, `be.Error(t, err)`,
   `be.ErrorIs(t, err, target)`: the testify `require` trio as hard (Fatalf)

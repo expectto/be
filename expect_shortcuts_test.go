@@ -31,9 +31,11 @@ func TestNoError(t *testing.T) {
 		t.Fatalf("failure should mention the error, got: %v", rt.fatals)
 	}
 
-	// message passthrough (built with fmt to avoid go vet's printf heuristic)
+	// message passthrough; the inline %q doubles as a vet regression guard —
+	// go test runs vet, and this line fails the build if the assertion chain
+	// is ever again classified as a print wrapper (see formatMsgAndArgs)
 	rt = &recT{}
-	be.NoError(rt, errors.New("boom"), fmt.Sprintf("loading config %q", "app.yaml"))
+	be.NoError(rt, errors.New("boom"), "loading config %q", "app.yaml")
 	if len(rt.fatals) != 1 || !strings.HasPrefix(rt.fatals[0], `loading config "app.yaml": `) {
 		t.Fatalf("message context should be prepended, got: %v", rt.fatals)
 	}
@@ -87,9 +89,9 @@ func TestErrorIs(t *testing.T) {
 		t.Fatalf("nil error must not match a target")
 	}
 
-	// message passthrough (built with fmt to avoid go vet's printf heuristic)
+	// message passthrough with an inline directive (vet regression guard)
 	rt = &recT{}
-	be.ErrorIs(rt, nil, sentinel, fmt.Sprintf("checking case %d", 7))
+	be.ErrorIs(rt, nil, sentinel, "checking case %d", 7)
 	if len(rt.fatals) != 1 || !strings.HasPrefix(rt.fatals[0], "checking case 7: ") {
 		t.Fatalf("message context should be prepended, got: %v", rt.fatals)
 	}

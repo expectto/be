@@ -55,9 +55,21 @@ func stdlibIdioms(t be.TestingT, xs []int, x int, s string, err error) {
 	// report-only (fix would need a new import / a type name):
 	be.AssertThat(t, strings.HasPrefix(s, "he"), be.True()) // want `prefer be_string\.HavingPrefix\("he"\)`
 	be.AssertThat(t, strings.HasSuffix(s, "lo"), be.True()) // want `prefer be_string\.HavingSuffix\("lo"\)`
+
+	// errors.As with the target unused afterward: flagged
 	var target *myErr
-	be.AssertThat(t, errors.As(err, &target), be.True()) // want `prefer be\.MatchErrorAs\[\*myErr\]\(\)`
 	_ = target
+	be.AssertThat(t, errors.As(err, &target), be.True()) // want `prefer be\.MatchErrorAs\[\*myErr\]\(\)`
+}
+
+func errorsAsTargetUsedAfter(t be.TestingT, err error) {
+	// MatchErrorAs does not bind the target, so when it is referenced after
+	// the assertion the conversion is impossible — no diagnostic.
+	var target *myErr
+	be.AssertThat(t, errors.As(err, &target), be.True())
+	if target != nil {
+		_ = target.Error()
+	}
 }
 
 func fluentForms(t be.TestingT, x, n int) {

@@ -36,7 +36,7 @@
 //	be.True(strings.HasPrefix(s, p)) -> be_string.HavingPrefix(p)
 //	_, ok := m[k]; be.True(ok)       -> be.HaveKey(k)
 //	be.True(errors.Is(err, target))  -> be.MatchError(target)
-//	var e E; be.True(errors.As(err, &e)) -> be.MatchErrorAs[E]()
+//	var e E; be.True(errors.As(err, &e)) -> be.MatchErrorAs[E]() (if e unused after)
 //	be.True(t1.Equal(t2))            -> be_time.SameExactSecond(t2)
 //
 // The full catalog of matchers across all packages lives in MATCHERS.md at the

@@ -45,7 +45,7 @@ so matchers compose: `be.HaveLength(be.Gte(3))`, `be.ContainElement(be.HaveField
 | `be.Succeed()` | Succeed succeeds if actual is a nil error. |  |
 | `be.HaveOccurred()` | HaveOccurred succeeds if actual is a non-nil error. |  |
 | `be.MatchError(expected any)` | MatchError succeeds if actual is an error matching expected. | `be.True(errors.Is(err, X))` |
-| `be.MatchErrorAs[T error]()` | MatchErrorAs succeeds if actual is an error that matches type T via errors.As — the matcher spelling of `var target T; errors.As(err, &target)` | `var v E` + `be.True(errors.As(err, &v))` |
+| `be.MatchErrorAs[T error]()` | MatchErrorAs succeeds if actual is an error that matches type T via errors.As — the matcher spelling of `var target T; errors.As(err, &target)` | `var v E` + `be.True(errors.As(err, &v))` — only when `v` is unused afterward (the matcher does not bind it) |
 
 ## Booleans, nil & panics
 

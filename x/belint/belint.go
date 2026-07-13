@@ -41,12 +41,16 @@ func run(pass *analysis.Pass) (any, error) {
 	// be.HaveLength(0) inside be.Not(be.HaveLength(0))): don't double-report.
 	covered := map[ast.Node]bool{}
 
-	insp.Preorder([]ast.Node{(*ast.CallExpr)(nil)}, func(n ast.Node) {
+	insp.WithStack([]ast.Node{(*ast.CallExpr)(nil)}, func(n ast.Node, push bool, stack []ast.Node) bool {
+		if !push {
+			return false
+		}
 		call := n.(*ast.CallExpr)
 		if a, ok := asAssertion(pass, call); ok {
-			checkRawActual(pass, a)
+			checkRawActual(pass, a, call, stack)
 		}
 		checkComposite(pass, call, covered)
+		return true
 	})
 	return nil, nil
 }
@@ -123,7 +127,7 @@ func beQual(expr ast.Expr) string {
 
 // ---- raw expression in actual position -------------------------------------
 
-func checkRawActual(pass *analysis.Pass, a assertion) {
+func checkRawActual(pass *analysis.Pass, a assertion, outer *ast.CallExpr, stack []ast.Node) {
 	matcherCall, ok := ast.Unparen(a.matcher).(*ast.CallExpr)
 	if !ok {
 		return
@@ -140,6 +144,13 @@ func checkRawActual(pass *analysis.Pass, a assertion) {
 	qual := beQual(matcherCall.Fun)
 	r, ok := rewriteExpr(pass, a.actual, want, qual)
 	if !ok {
+		return
+	}
+
+	// errors.As binds its target; MatchErrorAs does not. If the target is
+	// referenced after the assertion the conversion is impossible — stay quiet
+	// rather than emit an un-appliable suggestion.
+	if r.asTarget != nil && usedAfter(pass, stack, r.asTarget, outer.End()) {
 		return
 	}
 
@@ -165,10 +176,13 @@ func checkRawActual(pass *analysis.Pass, a assertion) {
 // rewrite is the matcher spelling of a raw boolean expression: assert `actual`
 // against `matcher`. fixable is false when applying it would need a new import
 // (e.g. be_string) or a type name (MatchErrorAs) — those are report-only.
+// asTarget carries the `&v` identifier of an errors.As rewrite so the caller
+// can suppress the suggestion entirely when v is still used afterward.
 type rewrite struct {
-	actual  string
-	matcher string
-	fixable bool
+	actual   string
+	matcher  string
+	fixable  bool
+	asTarget *ast.Ident
 }
 
 func rewriteExpr(pass *analysis.Pass, expr ast.Expr, want bool, qual string) (rewrite, bool) {
@@ -305,8 +319,9 @@ func rewriteCall(pass *analysis.Pass, e *ast.CallExpr, want bool, qual string) (
 		}
 		// report-only: naming the type may require adding an import
 		return rewrite{
-			actual:  render(pass, e.Args[0]),
-			matcher: maybeNot(fmt.Sprintf("%s.MatchErrorAs[%s]()", qual, target)),
+			actual:   render(pass, e.Args[0]),
+			matcher:  maybeNot(fmt.Sprintf("%s.MatchErrorAs[%s]()", qual, target)),
+			asTarget: asAddrOfIdent(e.Args[1]),
 		}, true
 	case "strings.HasPrefix":
 		if len(e.Args) != 2 {
@@ -439,6 +454,54 @@ func orderedMatcher(op token.Token) string {
 		return "Lte"
 	}
 	return ""
+}
+
+// asAddrOfIdent unwraps `&v` to the v identifier (nil for anything else, e.g.
+// `&resp.err` — those are never suppressible, so they keep the diagnostic).
+func asAddrOfIdent(expr ast.Expr) *ast.Ident {
+	unary, ok := ast.Unparen(expr).(*ast.UnaryExpr)
+	if !ok || unary.Op != token.AND {
+		return nil
+	}
+	id, _ := ast.Unparen(unary.X).(*ast.Ident)
+	return id
+}
+
+// usedAfter reports whether target's object is referenced after pos within the
+// innermost enclosing function on the traversal stack. When no enclosing
+// function is found (e.g. a package-level expression) it conservatively
+// reports false, keeping the diagnostic.
+func usedAfter(pass *analysis.Pass, stack []ast.Node, target *ast.Ident, pos token.Pos) bool {
+	obj := pass.TypesInfo.ObjectOf(target)
+	if obj == nil {
+		return false
+	}
+	var body *ast.BlockStmt
+	for i := len(stack) - 1; i >= 0; i-- {
+		switch fn := stack[i].(type) {
+		case *ast.FuncDecl:
+			body = fn.Body
+		case *ast.FuncLit:
+			body = fn.Body
+		}
+		if body != nil {
+			break
+		}
+	}
+	if body == nil {
+		return false
+	}
+	used := false
+	ast.Inspect(body, func(n ast.Node) bool {
+		if used {
+			return false
+		}
+		if id, ok := n.(*ast.Ident); ok && id.Pos() > pos && pass.TypesInfo.ObjectOf(id) == obj {
+			used = true
+		}
+		return true
+	})
+	return used
 }
 
 func asLenCall(pass *analysis.Pass, expr ast.Expr) (ast.Expr, bool) {

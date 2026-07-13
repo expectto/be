@@ -60,9 +60,11 @@ func MatchError(expected any) types.BeMatcher { return Psi(gomega.MatchError(exp
 //
 //	be.Expect(t, err).To(be.MatchErrorAs[*fs.PathError]())
 //
-// Prefer this over projecting through errors.As into be.True(). A nil or
-// non-matching error fails; a non-error actual is an error (not a mismatch).
-// To match by errors.Is target, message or matcher, use MatchError.
+// Prefer this over projecting through errors.As into be.True() — but only when
+// the target goes unused afterward: unlike errors.As, the matcher does NOT
+// bind the concrete error value, so keep errors.As when you need target later.
+// A nil or non-matching error fails; a non-error actual is an error (not a
+// mismatch). To match by errors.Is target, message or matcher, use MatchError.
 func MatchErrorAs[T error]() types.BeMatcher {
 	typeName := reflect.TypeFor[T]().String()
 	return Psi(func(actual any) (bool, error) {
