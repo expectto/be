@@ -1,11 +1,12 @@
 package be_struct_test
 
 import (
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+
 	"github.com/expectto/be/be_math"
 	"github.com/expectto/be/be_string"
 	"github.com/expectto/be/be_struct"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("BeStructs", func() {
@@ -15,7 +16,7 @@ var _ = Describe("BeStructs", func() {
 			Field2 int
 		}
 
-		var result = TestStruct{
+		result := TestStruct{
 			Field1: "hello1",
 		}
 

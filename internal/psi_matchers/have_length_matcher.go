@@ -6,18 +6,19 @@ import (
 
 	"github.com/amberpixels/k1/cast"
 	"github.com/amberpixels/k1/reflectish"
+	"github.com/onsi/gomega/format"
+
 	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega/format"
 )
 
 // HaveLengthMatcher is an Omega-format matcher that matches length of the given list
 // in comparison to either a given int value, or matching to other given matchers
 type HaveLengthMatcher struct {
+	*MixinMatcherGomock
+
 	count    *int
 	matching types.BeMatcher
-
-	*MixinMatcherGomock
 }
 
 var _ types.BeMatcher = &HaveLengthMatcher{}
@@ -42,10 +43,13 @@ func NewHaveLengthMatcher(args ...any) *HaveLengthMatcher {
 	return matcher
 }
 
-func (matcher *HaveLengthMatcher) Match(actual any) (success bool, err error) {
+func (matcher *HaveLengthMatcher) Match(actual any) (bool, error) {
 	length, ok := reflectish.LengthOf(actual)
 	if !ok {
-		return false, fmt.Errorf("HaveLen matcher expects a string/array/map/channel/slice.  Got:\n%s", format.Object(actual, 1))
+		return false, fmt.Errorf(
+			"HaveLen matcher expects a string/array/map/channel/slice.  Got:\n%s",
+			format.Object(actual, 1),
+		)
 	}
 
 	if matcher.count != nil {
@@ -55,7 +59,7 @@ func (matcher *HaveLengthMatcher) Match(actual any) (success bool, err error) {
 	return matcher.matching.Match(length)
 }
 
-func (matcher *HaveLengthMatcher) FailureMessage(actual any) (message string) {
+func (matcher *HaveLengthMatcher) FailureMessage(actual any) string {
 	if matcher.count != nil {
 		return fmt.Sprintf("Expected\n%s\nto have length = %d", format.Object(actual, 1), *matcher.count)
 	}
@@ -70,7 +74,7 @@ func (matcher *HaveLengthMatcher) FailureMessage(actual any) (message string) {
 	return failureMessage
 }
 
-func (matcher *HaveLengthMatcher) NegatedFailureMessage(actual any) (message string) {
+func (matcher *HaveLengthMatcher) NegatedFailureMessage(actual any) string {
 	if matcher.count != nil {
 		return fmt.Sprintf("Expected\n%s\nnot to have length = %d", format.Object(actual, 1), *matcher.count)
 	}

@@ -15,9 +15,9 @@ type GomockMatcher interface {
 // and is likely to remain as a dependency for the time being.
 // Interface source: https://github.com/onsi/gomega/blob/master/types/types.go#L37
 type GomegaMatcher interface {
-	Match(actual interface{}) (success bool, err error)
-	FailureMessage(actual interface{}) (message string)
-	NegatedFailureMessage(actual interface{}) (message string)
+	Match(actual any) (success bool, err error)
+	FailureMessage(actual any) (message string)
+	NegatedFailureMessage(actual any) (message string)
 }
 
 // BeMatcher is the main matcher interface for the `be` library.

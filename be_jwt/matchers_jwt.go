@@ -8,11 +8,12 @@ import (
 	"strings"
 
 	"github.com/amberpixels/k1/cast"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/onsi/gomega"
+
 	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/onsi/gomega"
 )
 
 // TransformSignedJwtFromString returns a transform function (string->*jwt.Token) for a given secret.
@@ -97,7 +98,10 @@ func HavingClaims(args ...any) types.BeMatcher {
 func HavingClaim(key string, args ...any) types.BeMatcher {
 	return psi_matchers.NewJwtTokenMatcher(
 		fmt.Sprintf("Claim[%s]", key),
-		func(u *jwt.Token) any { return u.Claims.(jwt.MapClaims)[key] },
+		func(u *jwt.Token) any {
+			claims, _ := u.Claims.(jwt.MapClaims) // nil map on other claim types: claim simply not found
+			return claims[key]
+		},
 		Psi(args...),
 	)
 }

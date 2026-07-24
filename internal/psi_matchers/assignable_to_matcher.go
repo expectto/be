@@ -1,24 +1,24 @@
 package psi_matchers
 
 import (
-	"fmt"
 	"reflect"
+
+	"github.com/onsi/gomega/format"
 
 	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega/format"
 )
 
 type AssignableToMatcher struct {
-	assignableTo reflect.Type
-
 	*MixinMatcherGomock
+
+	assignableTo reflect.Type
 }
 
 var _ types.BeMatcher = &AssignableToMatcher{}
 
 func NewAssignableToMatcher[T any]() *AssignableToMatcher {
-	t := reflect.TypeOf((*T)(nil)).Elem()
+	t := reflect.TypeFor[T]()
 
 	im := &AssignableToMatcher{assignableTo: t}
 	im.MixinMatcherGomock = NewMixinMatcherGomock(im, "AssignableTo")
@@ -26,7 +26,7 @@ func NewAssignableToMatcher[T any]() *AssignableToMatcher {
 	return im
 }
 
-func (matcher *AssignableToMatcher) Match(actual any) (success bool, err error) {
+func (matcher *AssignableToMatcher) Match(actual any) (bool, error) {
 	if actual == nil {
 		return false, nil
 	}
@@ -35,9 +35,9 @@ func (matcher *AssignableToMatcher) Match(actual any) (success bool, err error) 
 }
 
 func (matcher *AssignableToMatcher) FailureMessage(actual any) string {
-	return format.Message(actual, fmt.Sprintf("to be assignable to: %s", matcher.assignableTo.String()))
+	return format.Message(actual, "to be assignable to: "+matcher.assignableTo.String())
 }
 
 func (matcher *AssignableToMatcher) NegatedFailureMessage(actual any) string {
-	return format.Message(actual, fmt.Sprintf("not to be assignable to: %s", matcher.assignableTo.String()))
+	return format.Message(actual, "not to be assignable to: "+matcher.assignableTo.String())
 }

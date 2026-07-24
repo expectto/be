@@ -22,10 +22,8 @@ type upgradedOmegaMatcher struct {
 	*MixinMatcherGomock
 }
 
-var (
-	// ExpectedStr2LinesRegex matches first 2 lines of standard gomega failure message
-	ExpectedStr2LinesRegex = regexp.MustCompile(`Expected\n.*\n`)
-)
+// ExpectedStr2LinesRegex matches first 2 lines of standard gomega failure message
+var ExpectedStr2LinesRegex = regexp.MustCompile(`Expected\n.*\n`)
 
 // MixinMatcherGomock should be used for embedding to create a matcher that fits Gomock interface
 type MixinMatcherGomock struct {
@@ -33,6 +31,16 @@ type MixinMatcherGomock struct {
 	messagePrefix *string
 
 	omega types.GomegaMatcher
+}
+
+func NewMixinMatcherGomock(omega types.GomegaMatcher, messagePrefixArg ...string) *MixinMatcherGomock {
+	igm := &MixinMatcherGomock{omega: omega}
+	if len(messagePrefixArg) > 0 {
+		igm.messagePrefix = new(string)
+		*igm.messagePrefix = messagePrefixArg[0]
+	}
+
+	return igm
 }
 
 func (igm *MixinMatcherGomock) Matches(v any) bool {
@@ -69,14 +77,4 @@ func (igm *MixinMatcherGomock) String() string {
 	}
 	gomegaFailureMessage = strings.TrimPrefix(gomegaFailureMessage, " ")
 	return messagePrefix + gomegaFailureMessage
-}
-
-func NewMixinMatcherGomock(Ω types.GomegaMatcher, messagePrefixArg ...string) *MixinMatcherGomock {
-	igm := &MixinMatcherGomock{omega: Ω}
-	if len(messagePrefixArg) > 0 {
-		igm.messagePrefix = new(string)
-		*igm.messagePrefix = messagePrefixArg[0]
-	}
-
-	return igm
 }

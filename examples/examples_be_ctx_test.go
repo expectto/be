@@ -3,9 +3,10 @@ package examples
 import (
 	"context"
 
-	"github.com/expectto/be/be_ctx"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	"github.com/expectto/be/be_ctx"
 )
 
 var _ = Describe("MatchersCtx", func() {

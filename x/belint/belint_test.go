@@ -3,8 +3,9 @@ package belint_test
 import (
 	"testing"
 
-	"github.com/expectto/be/x/belint"
 	"golang.org/x/tools/go/analysis/analysistest"
+
+	"github.com/expectto/be/x/belint"
 )
 
 func TestBelint(t *testing.T) {

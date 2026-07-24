@@ -14,18 +14,20 @@ type upgradedGomockMatcher struct {
 	types.GomockMatcher
 
 	// todo: fixme
-	//gomegaMatchFunc                 func(any) (bool, error)
-	//gomegaFailureMessageFunc        func(any) string
-	//gomegaNegatedFailureMessageFunc func(any) string
+	// gomegaMatchFunc                 func(any) (bool, error)
+	// gomegaFailureMessageFunc        func(any) string
+	// gomegaNegatedFailureMessageFunc func(any) string
 }
 
 func (cm *upgradedGomockMatcher) Match(x any) (bool, error) {
 	return cm.Matches(x), nil
 }
+
 func (cm *upgradedGomockMatcher) FailureMessage(actual any) string {
 	// todo Expected <>: {expected} to equal <> {received}
 	return cm.String()
 }
+
 func (cm *upgradedGomockMatcher) NegatedFailureMessage(actual any) string {
 	// todo Expected <>: {expected} not to equal <> {received}
 	return "not " + cm.String()

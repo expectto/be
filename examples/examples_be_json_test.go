@@ -1,11 +1,12 @@
 package examples_test
 
 import (
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+
 	"github.com/expectto/be"
 	"github.com/expectto/be/be_json"
 	"github.com/expectto/be/be_reflected"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 )
 
 type Foobar struct {
@@ -14,7 +15,6 @@ type Foobar struct {
 
 var _ = Describe("Examples on matching JSON", func() {
 	Context("Valid JSON string", func() {
-
 		It("should match against valid JSON string", func() {
 			Expect(`{"foo":"bar"}`).To(be.JSON(
 				be_json.JsonAsString,

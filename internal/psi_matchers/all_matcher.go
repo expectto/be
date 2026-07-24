@@ -5,9 +5,10 @@ package psi_matchers
 import (
 	"fmt"
 
+	"github.com/onsi/gomega/format"
+
 	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega/format"
 )
 
 // AllMatcher is the same as Gomega's AndMatcher
@@ -30,7 +31,7 @@ func NewAllMatcher(ms ...any) *AllMatcher {
 	return &AllMatcher{Matchers: matchers}
 }
 
-func (m *AllMatcher) Match(actual any) (success bool, err error) {
+func (m *AllMatcher) Match(actual any) (bool, error) {
 	m.firstFailedMatcher = nil
 	for _, matcher := range m.Matchers {
 		success, err := matcher.Match(actual)
@@ -42,11 +43,11 @@ func (m *AllMatcher) Match(actual any) (success bool, err error) {
 	return true, nil
 }
 
-func (m *AllMatcher) FailureMessage(actual any) (message string) {
+func (m *AllMatcher) FailureMessage(actual any) string {
 	return m.firstFailedMatcher.FailureMessage(actual)
 }
 
-func (m *AllMatcher) NegatedFailureMessage(actual any) (message string) {
+func (m *AllMatcher) NegatedFailureMessage(actual any) string {
 	// not the most beautiful list of matchers, but not bad either...
 	return format.Message(actual, fmt.Sprintf("To not satisfy all of these matchers: %s", m.Matchers))
 }

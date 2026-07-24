@@ -16,7 +16,7 @@ func NewNotMatcher(m any) *NotMatcher {
 	return &NotMatcher{Matcher: AsMatcher(m)}
 }
 
-func (m *NotMatcher) Match(actual interface{}) (bool, error) {
+func (m *NotMatcher) Match(actual any) (bool, error) {
 	success, err := m.Matcher.Match(actual)
 	if err != nil {
 		return false, err
@@ -25,11 +25,11 @@ func (m *NotMatcher) Match(actual interface{}) (bool, error) {
 	return !success, nil
 }
 
-func (m *NotMatcher) FailureMessage(actual interface{}) (message string) {
+func (m *NotMatcher) FailureMessage(actual any) string {
 	return m.Matcher.NegatedFailureMessage(actual) // works beautifully
 }
 
-func (m *NotMatcher) NegatedFailureMessage(actual interface{}) (message string) {
+func (m *NotMatcher) NegatedFailureMessage(actual any) string {
 	return m.Matcher.FailureMessage(actual) // works beautifully
 }
 
@@ -38,7 +38,8 @@ func (m *NotMatcher) Matches(actual any) bool {
 	return res
 }
 
-// Todo: inaccurate behavior should be fixed
+// String returns the failure message for the last matched value.
+// Todo: inaccurate behavior should be fixed.
 func (m *NotMatcher) String() string {
 	mes := m.FailureMessage(m.lastActualValue)
 	return mes

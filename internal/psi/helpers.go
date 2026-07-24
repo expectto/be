@@ -1,8 +1,9 @@
 package psi
 
 import (
-	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
+
+	"github.com/expectto/be/types"
 )
 
 // IsMatcher returns true if given input is either Omega or Gomock or a Psi matcher

@@ -11,9 +11,10 @@ import (
 	"reflect"
 	"slices"
 
+	"github.com/onsi/gomega"
+
 	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // dot-import is the established style here
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega"
 )
 
 // Nil succeeds if actual is nil. It is typed-nil aware (a nil *T inside an
@@ -217,6 +218,6 @@ func HaveFields(fields map[string]any) types.BeMatcher {
 //
 // transform must be a function of one argument returning one value (and
 // optionally an error).
-func Via(transform any, matcher any) types.BeMatcher {
+func Via(transform, matcher any) types.BeMatcher {
 	return Psi(gomega.WithTransform(transform, Psi(matcher)))
 }

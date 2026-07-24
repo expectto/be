@@ -4,10 +4,11 @@ import (
 	"context"
 	"time"
 
-	"github.com/expectto/be/be_ctx"
-	"github.com/expectto/be/types"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	"github.com/expectto/be/be_ctx"
+	"github.com/expectto/be/types"
 )
 
 // helpers building context.Context actuals for the tables below.
@@ -54,71 +55,73 @@ func deadlineExceededCtx() context.Context {
 }
 
 var _ = Describe("BeCtx", func() {
+	DescribeTable(
+		"should positively match",
+		func(matcher types.BeMatcher, actual any) {
+			// check gomega-compatible matching:
+			success, err := matcher.Match(actual)
+			Expect(err).Should(Succeed())
+			Expect(success).To(BeTrue())
 
-	DescribeTable("should positively match", func(matcher types.BeMatcher, actual any) {
-		// check gomega-compatible matching:
-		success, err := matcher.Match(actual)
-		Expect(err).Should(Succeed())
-		Expect(success).To(BeTrue())
-
-		// check gomock-compatible matching:
-		success = matcher.Matches(actual)
-		Expect(success).To(BeTrue())
-	},
+			// check gomock-compatible matching:
+			success = matcher.Matches(actual)
+			Expect(success).To(BeTrue())
+		},
 		// Ctx() with no args matches any context.Context:
 		Entry("background ctx is a ctx", be_ctx.Ctx(), plainCtx()),
 		Entry("TODO ctx is a ctx", be_ctx.Ctx(), context.TODO()),
 		Entry("value ctx is a ctx", be_ctx.Ctx(), valueCtx("k", "v")),
 		Entry("canceled ctx is a ctx", be_ctx.Ctx(), canceledCtx()),
-
 		// CtxWithValue: existence-only matching (no value arg):
 		Entry("ctx has value for key `foobar`", be_ctx.CtxWithValue("foobar"), valueCtx("foobar", 100)),
 		Entry("ctx has value for key `name`", be_ctx.CtxWithValue("name"), valueCtx("name", "alice")),
-
 		// CtxWithValue: exact value matching:
 		Entry("ctx value foobar==100", be_ctx.CtxWithValue("foobar", 100), valueCtx("foobar", 100)),
 		Entry("ctx value name==alice", be_ctx.CtxWithValue("name", "alice"), valueCtx("name", "alice")),
-
 		// CtxWithDeadline: exact deadline matching against the actual time.Time:
 		Entry("ctx deadline matches fixed deadline", be_ctx.CtxWithDeadline(fixedDeadline), deadlineCtx()),
-
 		// CtxWithError: cancellation / deadline-exceeded errors:
 		Entry("canceled ctx err is context.Canceled", be_ctx.CtxWithError(context.Canceled), canceledCtx()),
-		Entry("expired ctx err is context.DeadlineExceeded", be_ctx.CtxWithError(context.DeadlineExceeded), deadlineExceededCtx()),
+		Entry(
+			"expired ctx err is context.DeadlineExceeded",
+			be_ctx.CtxWithError(context.DeadlineExceeded),
+			deadlineExceededCtx(),
+		),
 		Entry("live ctx err is nil", be_ctx.CtxWithError(nil), plainCtx()),
 	)
 
-	DescribeTable("should negatively match", func(matcher types.BeMatcher, actual any) {
-		// check gomega-compatible matching:
-		success, err := matcher.Match(actual)
-		Expect(err).Should(Succeed())
-		Expect(success).To(BeFalse())
+	DescribeTable(
+		"should negatively match",
+		func(matcher types.BeMatcher, actual any) {
+			// check gomega-compatible matching:
+			success, err := matcher.Match(actual)
+			Expect(err).Should(Succeed())
+			Expect(success).To(BeFalse())
 
-		// check gomock-compatible matching:
-		success = matcher.Matches(actual)
-		Expect(success).To(BeFalse())
-	},
+			// check gomock-compatible matching:
+			success = matcher.Matches(actual)
+			Expect(success).To(BeFalse())
+		},
 		// not a context.Context at all:
 		Entry("string is not a ctx", be_ctx.CtxWithValue("k"), "not-a-ctx"),
 		Entry("int is not a ctx", be_ctx.CtxWithError(nil), 42),
-
 		// CtxWithValue: missing key:
 		Entry("ctx misses key `absent`", be_ctx.CtxWithValue("absent"), valueCtx("foobar", 100)),
 		Entry("background ctx has no values", be_ctx.CtxWithValue("foobar"), plainCtx()),
-
 		// CtxWithValue: wrong value:
 		Entry("ctx value foobar!=200", be_ctx.CtxWithValue("foobar", 200), valueCtx("foobar", 100)),
 		Entry("ctx value name!=bob", be_ctx.CtxWithValue("name", "bob"), valueCtx("name", "alice")),
-
 		// CtxWithDeadline: no deadline present:
 		Entry("background ctx has no deadline", be_ctx.CtxWithDeadline(fixedDeadline), plainCtx()),
 		// CtxWithDeadline: wrong deadline:
-		Entry("ctx deadline differs from expected", be_ctx.CtxWithDeadline(fixedDeadline.Add(time.Hour)), deadlineCtx()),
-
+		Entry(
+			"ctx deadline differs from expected",
+			be_ctx.CtxWithDeadline(fixedDeadline.Add(time.Hour)),
+			deadlineCtx(),
+		),
 		// CtxWithError: wrong / unexpected error state:
 		Entry("live ctx err is not context.Canceled", be_ctx.CtxWithError(context.Canceled), plainCtx()),
 		Entry("canceled ctx err is not DeadlineExceeded", be_ctx.CtxWithError(context.DeadlineExceeded), canceledCtx()),
-
 		// timeoutCtx does have a deadline but is still live (err == nil), so it
 		// must NOT match an expectation of context.Canceled:
 		Entry("timeout ctx err is not context.Canceled", be_ctx.CtxWithError(context.Canceled), timeoutCtx()),
@@ -134,8 +137,10 @@ var _ = Describe("BeCtx", func() {
 			be_ctx.CtxWithError(nil), "not-a-ctx",
 			"Expected\n    <string>: not-a-ctx\nto be a ctx",
 		),
-		Entry("missing ctx value key",
-			be_ctx.CtxWithValue("absent"), plainCtx(),
+		Entry(
+			"missing ctx value key",
+			be_ctx.CtxWithValue("absent"),
+			plainCtx(),
 			"Expected\n    <context.backgroundCtx>: {\n        emptyCtx: <suppressed context>,\n    }\nto have the ctx.value key=`absent`",
 		),
 	)

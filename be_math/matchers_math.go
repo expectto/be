@@ -6,12 +6,13 @@ import (
 	"math"
 
 	"github.com/amberpixels/k1/cast"
+	"github.com/onsi/gomega"
+	"github.com/onsi/gomega/gcustom"
+
 	"github.com/expectto/be/be_reflected"
 	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega"
-	"github.com/onsi/gomega/gcustom"
 )
 
 // GreaterThan succeeds if actual is numerically greater than the passed-in value.
@@ -142,13 +143,18 @@ func DivisibleBy(divisor any) types.BeMatcher {
 // asFloatSafe converts a value to float64 like cast.AsFloat, but recovers from the
 // panic cast raises on non-numeric input so matchers can fail gracefully instead
 // of crashing the test run. The second return reports whether conversion succeeded.
-func asFloatSafe(a any) (f float64, ok bool) {
-	defer func() {
-		if recover() != nil {
-			f, ok = 0, false
-		}
+func asFloatSafe(a any) (float64, bool) {
+	var f float64
+	ok := true
+	func() {
+		defer func() {
+			if recover() != nil {
+				f, ok = 0, false
+			}
+		}()
+		f = cast.AsFloat(a)
 	}()
-	return cast.AsFloat(a), true
+	return f, ok
 }
 
 // Shorter Names:

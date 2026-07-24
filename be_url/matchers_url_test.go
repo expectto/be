@@ -3,10 +3,11 @@ package be_url_test
 import (
 	"net/url"
 
-	"github.com/expectto/be/be_url"
-	"github.com/expectto/be/types"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	"github.com/expectto/be/be_url"
+	"github.com/expectto/be/types"
 )
 
 // mustParse is a tiny helper to build *url.URL fixtures for the tables.
@@ -17,17 +18,18 @@ func mustParse(rawURL string) *url.URL {
 }
 
 var _ = Describe("BeUrl", func() {
+	DescribeTable(
+		"should positively match",
+		func(matcher types.BeMatcher, actual any) {
+			// check gomega-compatible matching:
+			success, err := matcher.Match(actual)
+			Expect(err).Should(Succeed())
+			Expect(success).To(BeTrue())
 
-	DescribeTable("should positively match", func(matcher types.BeMatcher, actual any) {
-		// check gomega-compatible matching:
-		success, err := matcher.Match(actual)
-		Expect(err).Should(Succeed())
-		Expect(success).To(BeTrue())
-
-		// check gomock-compatible matching:
-		success = matcher.Matches(actual)
-		Expect(success).To(BeTrue())
-	},
+			// check gomock-compatible matching:
+			success = matcher.Matches(actual)
+			Expect(success).To(BeTrue())
+		},
 		// URL with TransformUrlFromString (raw string -> *url.URL)
 		Entry("URL transforms a raw string and matches its scheme",
 			be_url.URL(be_url.TransformUrlFromString, be_url.HavingScheme("https")),
@@ -44,30 +46,27 @@ var _ = Describe("BeUrl", func() {
 		Entry("URL with no args matches any valid *url.URL",
 			be_url.URL(),
 			mustParse("https://example.com")),
-
 		// HavingScheme / WithHttps / WithHttp
 		Entry("HavingScheme https", be_url.HavingScheme("https"), mustParse("https://example.com")),
 		Entry("WithHttps", be_url.WithHttps(), mustParse("https://example.com")),
 		Entry("WithHttp", be_url.WithHttp(), mustParse("http://example.com")),
-
 		// HavingHost / HavingHostname
 		Entry("HavingHost with port", be_url.HavingHost("example.com:8080"), mustParse("http://example.com:8080/x")),
-		Entry("HavingHostname without port", be_url.HavingHostname("example.com"), mustParse("http://example.com:8080/x")),
-
+		Entry(
+			"HavingHostname without port",
+			be_url.HavingHostname("example.com"),
+			mustParse("http://example.com:8080/x"),
+		),
 		// HavingPath
 		Entry("HavingPath", be_url.HavingPath("/path/to/page"), mustParse("https://example.com/path/to/page")),
-
 		// HavingPort / NotHavingPort
 		Entry("HavingPort", be_url.HavingPort("8080"), mustParse("http://example.com:8080/x")),
 		Entry("NotHavingPort on a port-less url", be_url.NotHavingPort(), mustParse("https://example.com/x")),
-
 		// HavingSearchParam
 		Entry("HavingSearchParam exact value", be_url.HavingSearchParam("status", "active"),
 			mustParse("https://example.com?status=active")),
-
 		// HavingRawQuery
 		Entry("HavingRawQuery", be_url.HavingRawQuery("a=1&b=2"), mustParse("https://example.com?a=1&b=2")),
-
 		// HavingUsername / HavingPassword / HavingUserinfo
 		Entry("HavingUsername", be_url.HavingUsername("user"), mustParse("https://user:pass@example.com")),
 		Entry("HavingPassword", be_url.HavingPassword("pass"), mustParse("https://user:pass@example.com")),

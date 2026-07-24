@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/onsi/gomega/gcustom"
+
 	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega/gcustom"
 )
 
 // HavingField succeeds if the actual value is a struct of exactly type StructT

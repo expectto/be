@@ -1,10 +1,11 @@
 package examples
 
 import (
-	"github.com/expectto/be/be_jwt"
 	"github.com/golang-jwt/jwt/v5"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	"github.com/expectto/be/be_jwt"
 )
 
 var _ = Describe("Examples on Matching JWT", func() {
@@ -23,7 +24,6 @@ var _ = Describe("Examples on Matching JWT", func() {
 	})
 
 	Context("parsed token as actual value", func() {
-
 		It("should expect parsed token to be a token", func() {
 			Expect(token).To(be_jwt.Token())
 		})
@@ -52,7 +52,6 @@ var _ = Describe("Examples on Matching JWT", func() {
 	})
 
 	Context("String token as actual value", func() {
-
 		It("should not expect a string token to be a jwt token (without transforming)", func() {
 			Expect(tokenStr).NotTo(be_jwt.Token())
 		})
@@ -111,5 +110,4 @@ var _ = Describe("Examples on Matching JWT", func() {
 			})
 		})
 	})
-
 })

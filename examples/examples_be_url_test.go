@@ -3,18 +3,18 @@ package examples_test
 import (
 	"net/url"
 
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+	"go.uber.org/mock/gomock"
+
 	"github.com/expectto/be/be_json"
 	"github.com/expectto/be/be_reflected"
 	"github.com/expectto/be/be_url"
 	"github.com/expectto/be/internal/testing/mocks"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
-	"go.uber.org/mock/gomock"
 )
 
 var _ = Describe("Examples on matching URL", func() {
 	Context("*url.URL as a result of function being tested", func() {
-
 		It("should match against all parts of *url.URL", func() {
 			u, err := url.Parse(`https://example.com/path/to/?foo=bar_123&v=1&payload={"hello":"world"}`)
 			Expect(err).Should(Succeed())

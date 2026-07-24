@@ -4,8 +4,9 @@ import (
 	"testing"
 
 	"github.com/expectto/be/be_math"
-	bemock "github.com/expectto/be/x/mock"
 	"github.com/stretchr/testify/mock"
+
+	bemock "github.com/expectto/be/x/mock"
 )
 
 // fakeService is a hand-written testify mock (mockery would generate the same shape).

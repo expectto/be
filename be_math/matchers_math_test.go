@@ -3,14 +3,14 @@ package be_math_test
 import (
 	"strings"
 
-	"github.com/expectto/be/be_math"
-	"github.com/expectto/be/types"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	"github.com/expectto/be/be_math"
+	"github.com/expectto/be/types"
 )
 
 var _ = Describe("BeMath", func() {
-
 	DescribeTable("should positively match", func(matcher types.BeMatcher, actual any) {
 		// check gomega-compatible matching:
 		success, err := matcher.Match(actual)
@@ -140,13 +140,15 @@ var _ = Describe("BeMath", func() {
 		Entry("18 is not divisible by -4", be_math.DivisibleBy(-4), 18),
 	)
 
-	DescribeTable("should fail gracefully (error, no panic) on non-numeric input", func(matcher types.BeMatcher, actual any) {
-		Expect(func() {
-			success, err := matcher.Match(actual)
-			Expect(err).To(HaveOccurred())
-			Expect(success).To(BeFalse())
-		}).NotTo(Panic())
-	},
+	DescribeTable(
+		"should fail gracefully (error, no panic) on non-numeric input",
+		func(matcher types.BeMatcher, actual any) {
+			Expect(func() {
+				success, err := matcher.Match(actual)
+				Expect(err).To(HaveOccurred())
+				Expect(success).To(BeFalse())
+			}).NotTo(Panic())
+		},
 		Entry("Integral on a non-numeric string", be_math.Integral(), "xyz"),
 		Entry("Integral on a struct", be_math.Integral(), struct{}{}),
 		Entry("DivisibleBy on a non-numeric string", be_math.DivisibleBy(2), "xyz"),

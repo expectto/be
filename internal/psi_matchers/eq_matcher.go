@@ -2,11 +2,12 @@ package psi_matchers
 
 import (
 	"bytes"
-	"fmt"
+	"errors"
 	"reflect"
 
-	"github.com/expectto/be/types"
 	"github.com/onsi/gomega/format"
+
+	"github.com/expectto/be/types"
 )
 
 type EqMatcher struct {
@@ -20,9 +21,11 @@ func NewEqMatcher(expected any) *EqMatcher {
 	return &EqMatcher{Expected: expected}
 }
 
-func (matcher *EqMatcher) Match(actual any) (success bool, err error) {
+func (matcher *EqMatcher) Match(actual any) (bool, error) {
 	if actual == nil && matcher.Expected == nil {
-		return false, fmt.Errorf("refusing to compare <nil> to <nil> - Be explicit and use BeNil() instead.  This is to avoid mistakes where both sides of an assertion are erroneously uninitialized")
+		return false, errors.New(
+			"refusing to compare <nil> to <nil> - Be explicit and use BeNil() instead.  This is to avoid mistakes where both sides of an assertion are erroneously uninitialized",
+		)
 	}
 	// Shortcut for byte slices
 	// Comparing long byte slices with reflect.DeepEqual is slow,
@@ -36,7 +39,7 @@ func (matcher *EqMatcher) Match(actual any) (success bool, err error) {
 	return reflect.DeepEqual(actual, matcher.Expected), nil
 }
 
-func (matcher *EqMatcher) FailureMessage(actual any) (message string) {
+func (matcher *EqMatcher) FailureMessage(actual any) string {
 	actualString, actualOK := actual.(string)
 	expectedString, expectedOK := matcher.Expected.(string)
 	if actualOK && expectedOK {
@@ -46,7 +49,7 @@ func (matcher *EqMatcher) FailureMessage(actual any) (message string) {
 	return format.Message(actual, "to equal", matcher.Expected)
 }
 
-func (matcher *EqMatcher) NegatedFailureMessage(actual any) (message string) {
+func (matcher *EqMatcher) NegatedFailureMessage(actual any) string {
 	return format.Message(actual, "not to equal", matcher.Expected)
 }
 

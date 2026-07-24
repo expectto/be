@@ -6,22 +6,23 @@ import (
 	"net/http/httptest"
 	"strings"
 
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+
 	"github.com/expectto/be"
 	"github.com/expectto/be/be_ctx"
 	"github.com/expectto/be/be_http"
 	"github.com/expectto/be/be_json"
 	"github.com/expectto/be/be_url"
 	"github.com/expectto/be/types"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 )
 
 // newRequest builds a *http.Request via http.NewRequest, failing the spec on error.
-func newRequest(method, url string, body string) *http.Request {
+func newRequest(method, url, body string) *http.Request {
 	var r *http.Request
 	var err error
 	if body == "" {
-		r, err = http.NewRequest(method, url, nil)
+		r, err = http.NewRequest(method, url, http.NoBody)
 	} else {
 		r, err = http.NewRequest(method, url, strings.NewReader(body))
 	}
@@ -29,15 +30,14 @@ func newRequest(method, url string, body string) *http.Request {
 	return r
 }
 
-// jsonRequest builds a request with a JSON body and a proper content-type header.
-func jsonRequest(method, url, body string) *http.Request {
-	r := newRequest(method, url, body)
+// jsonRequest builds a POST request with a JSON body and a proper content-type header.
+func jsonRequest(url, body string) *http.Request {
+	r := newRequest(http.MethodPost, url, body)
 	r.Header.Set("Content-Type", "application/json")
 	return r
 }
 
 var _ = Describe("MatchersHttp", func() {
-
 	DescribeTable("should positively match", func(matcher types.BeMatcher, actual any) {
 		// check gomega-compatible matching:
 		success, err := matcher.Match(actual)
@@ -79,7 +79,7 @@ var _ = Describe("MatchersHttp", func() {
 
 		// Proto matching
 		Entry("HavingProto matches HTTP/1.1 (httptest default)",
-			be_http.HavingProto("HTTP/1.1"), httptest.NewRequest(http.MethodGet, "https://example.com", nil)),
+			be_http.HavingProto("HTTP/1.1"), httptest.NewRequest(http.MethodGet, "https://example.com", http.NoBody)),
 
 		// URL matching composed with be_url matchers
 		Entry("HavingURL+be_url.HavingPath matches path",
@@ -97,13 +97,13 @@ var _ = Describe("MatchersHttp", func() {
 		// Header matching
 		Entry("HavingHeader by key only matches presence",
 			be_http.HavingHeader("Content-Type"),
-			jsonRequest(http.MethodPost, "https://example.com", `{}`)),
+			jsonRequest("https://example.com", `{}`)),
 		Entry("HavingHeader by key+value matches",
 			be_http.HavingHeader("Content-Type", "application/json"),
-			jsonRequest(http.MethodPost, "https://example.com", `{}`)),
+			jsonRequest("https://example.com", `{}`)),
 		Entry("HavingHeader by key+matcher matches",
 			be_http.HavingHeader("Content-Type", HavePrefix("application/")),
-			jsonRequest(http.MethodPost, "https://example.com", `{}`)),
+			jsonRequest("https://example.com", `{}`)),
 
 		// Body matching composed with be.JSON / be_json.HaveKeyValue
 		Entry("HavingBody+be.JSON+HaveKeyValue matches body field",
@@ -111,14 +111,14 @@ var _ = Describe("MatchersHttp", func() {
 				be_json.JsonAsReader,
 				be_json.HaveKeyValue("hello", "world"),
 			)),
-			jsonRequest(http.MethodPost, "https://example.com", `{"hello":"world"}`)),
+			jsonRequest("https://example.com", `{"hello":"world"}`)),
 		Entry("HavingBody+be.JSON multiple key/values",
 			be_http.HavingBody(be.JSON(
 				be_json.JsonAsReader,
 				be_json.HaveKeyValue("hello", "world"),
 				be_json.HaveKeyValue("active", true),
 			)),
-			jsonRequest(http.MethodPost, "https://example.com", `{"hello":"world","active":true}`)),
+			jsonRequest("https://example.com", `{"hello":"world","active":true}`)),
 
 		// Combined request matcher
 		Entry("Request(...) composes method+url+header",
@@ -127,7 +127,7 @@ var _ = Describe("MatchersHttp", func() {
 				be_http.HavingURL(be_url.HavingPath("/path")),
 				be_http.HavingHeader("Content-Type", "application/json"),
 			),
-			jsonRequest(http.MethodPost, "https://example.com/path", `{}`)),
+			jsonRequest("https://example.com/path", `{}`)),
 	)
 
 	DescribeTable("should negatively match", func(matcher types.BeMatcher, actual any) {
@@ -163,20 +163,20 @@ var _ = Describe("MatchersHttp", func() {
 			newRequest(http.MethodGet, "https://example.com", "")),
 		Entry("HavingHeader does not match a wrong header value",
 			be_http.HavingHeader("Content-Type", "text/plain"),
-			jsonRequest(http.MethodPost, "https://example.com", `{}`)),
+			jsonRequest("https://example.com", `{}`)),
 
 		Entry("HavingBody+be.JSON does not match a wrong field value",
 			be_http.HavingBody(be.JSON(
 				be_json.JsonAsReader,
 				be_json.HaveKeyValue("hello", "mars"),
 			)),
-			jsonRequest(http.MethodPost, "https://example.com", `{"hello":"world"}`)),
+			jsonRequest("https://example.com", `{"hello":"world"}`)),
 		Entry("HavingBody+be.JSON does not match a missing field",
 			be_http.HavingBody(be.JSON(
 				be_json.JsonAsReader,
 				be_json.HaveKeyValue("missing"),
 			)),
-			jsonRequest(http.MethodPost, "https://example.com", `{"hello":"world"}`)),
+			jsonRequest("https://example.com", `{"hello":"world"}`)),
 	)
 
 	DescribeTable("should fail (no match) on non-*http.Request input", func(matcher types.BeMatcher, actual any) {
@@ -194,6 +194,7 @@ var _ = Describe("MatchersHttp", func() {
 	// (req.Body == nil, e.g. a GET built with a nil body).
 	It("HavingBody does not panic on a nil-body request", func() {
 		req := newRequest(http.MethodGet, "https://example.com", "")
+		req.Body = nil // force the nil-body case this regression guards (helper uses http.NoBody)
 		Expect(req.Body).To(BeNil())
 		Expect(func() {
 			success, _ := be_http.HavingBody(

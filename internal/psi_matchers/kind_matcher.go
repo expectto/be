@@ -1,14 +1,14 @@
 package psi_matchers
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 
 	"github.com/amberpixels/k1/cast"
+	"github.com/onsi/gomega/format"
+
 	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega/format"
 )
 
 //
@@ -16,11 +16,11 @@ import (
 //
 
 type KindMatcher struct {
+	*MixinMatcherGomock
+
 	kind *reflect.Kind
 
 	matching types.BeMatcher
-
-	*MixinMatcherGomock
 }
 
 var _ types.BeMatcher = &KindMatcher{}
@@ -42,7 +42,7 @@ func NewKindMatcher(args ...any) *KindMatcher {
 	return matcher
 }
 
-func (matcher *KindMatcher) Match(actual any) (success bool, err error) {
+func (matcher *KindMatcher) Match(actual any) (bool, error) {
 	if actual == nil {
 		return false, nil
 	}
@@ -56,7 +56,7 @@ func (matcher *KindMatcher) Match(actual any) (success bool, err error) {
 
 func (matcher *KindMatcher) FailureMessage(actual any) string {
 	if matcher.kind != nil {
-		return format.Message(actual, fmt.Sprintf("to be kind of %s", matcher.kind.String()))
+		return format.Message(actual, "to be kind of "+matcher.kind.String())
 	}
 
 	// Assuming that underlying message will be the same format
@@ -72,7 +72,7 @@ func (matcher *KindMatcher) FailureMessage(actual any) string {
 
 func (matcher *KindMatcher) NegatedFailureMessage(actual any) string {
 	if matcher.kind != nil {
-		return format.Message(actual, fmt.Sprintf("not to be kind of %s", matcher.kind.String()))
+		return format.Message(actual, "not to be kind of "+matcher.kind.String())
 	}
 
 	failureMessage := matcher.matching.NegatedFailureMessage(actual)

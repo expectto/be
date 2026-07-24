@@ -10,6 +10,7 @@ A large collection of composable test matchers for Go -<br>
 works with stdlib `testing`, [Ginkgo](https://github.com/onsi/ginkgo)/[Gomega](https://github.com/onsi/gomega), [Gomock](https://github.com/uber-go/mock), and [testify](https://github.com/stretchr/testify).
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/expectto/be.svg)](https://pkg.go.dev/github.com/expectto/be)
+[![CI](https://github.com/expectto/be/actions/workflows/ci.yml/badge.svg)](https://github.com/expectto/be/actions/workflows/ci.yml)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/expectto/be)](go.mod)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
@@ -41,7 +42,7 @@ testify/mockery. The core module imports no test framework.
 - [Matching an HTTP Request](#matching-an-http-request)
 - [Test Framework Integration](#test-framework-integration)
 - [Matchers](#matchers) - flat catalog in [MATCHERS.md](MATCHERS.md)
-- [Contributing](#contributing)
+- [Feedback](#feedback)
 - [License](#license)
 
 ## Install
@@ -320,10 +321,11 @@ Matchers on `http.Request`. [Detailed docs](be_http/README.md)
 - `Request`, `HavingMethod`, `GET`, `HEAD`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS`, `CONNECT`, `TRACE`
 - `HavingURL`, `HavingBody`, `HavingHost`, `HavingProto`, `HavingCtx`, `HavingHeader`, `HavingHeaders`
 
-## Contributing
+## Feedback
 
-Issues, ideas, and pull requests are welcome - see [CONTRIBUTING.md](CONTRIBUTING.md).
+be is a solo-maintained project - but if you stumbled upon it and have ideas,
+questions, or bug reports, an [issue](https://github.com/expectto/be/issues) is always welcome :)
 
 ## License
 
-MIT - see [LICENSE](LICENSE).
+[MIT](LICENSE) © [expectto](https://github.com/expectto)

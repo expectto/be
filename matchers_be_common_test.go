@@ -68,34 +68,34 @@ func TestContainSubstring(t *testing.T) {
 }
 
 func TestMatchErrorAs(t *testing.T) {
-	sentinel := &pathErr{path: "/etc/passwd"}
+	sentinel := &pathError{path: "/etc/passwd"}
 	wrapped := fmt.Errorf("opening: %w", sentinel)
 
-	be.Expect(t, wrapped).To(be.MatchErrorAs[*pathErr]())                // wrapped typed error matches
-	be.Expect(t, sentinel).To(be.MatchErrorAs[*pathErr]())               // direct match
-	be.Expect(t, errors.New("plain")).NotTo(be.MatchErrorAs[*pathErr]()) // unrelated error fails
+	be.Expect(t, wrapped).To(be.MatchErrorAs[*pathError]())                // wrapped typed error matches
+	be.Expect(t, sentinel).To(be.MatchErrorAs[*pathError]())               // direct match
+	be.Expect(t, errors.New("plain")).NotTo(be.MatchErrorAs[*pathError]()) // unrelated error fails
 
 	var nilErr error
-	be.Expect(t, nilErr).NotTo(be.MatchErrorAs[*pathErr]()) // nil fails
+	be.Expect(t, nilErr).NotTo(be.MatchErrorAs[*pathError]()) // nil fails
 
 	// failure message names the type
 	rt := &recT{}
-	be.Expect(rt, errors.New("plain")).To(be.MatchErrorAs[*pathErr]())
-	if len(rt.errs) != 1 || !strings.Contains(rt.errs[0], "*be_test.pathErr") {
+	be.Expect(rt, errors.New("plain")).To(be.MatchErrorAs[*pathError]())
+	if len(rt.errs) != 1 || !strings.Contains(rt.errs[0], "*be_test.pathError") {
 		t.Fatalf("failure should name the target type, got: %v", rt.errs)
 	}
 
 	// non-error actual is an error, not a mismatch
 	rt = &recT{}
-	be.Expect(rt, 42).To(be.MatchErrorAs[*pathErr]())
+	be.Expect(rt, 42).To(be.MatchErrorAs[*pathError]())
 	if len(rt.errs) != 1 || !strings.Contains(rt.errs[0], "expects an error") {
 		t.Fatalf("non-error actual should produce a clear error, got: %v", rt.errs)
 	}
 }
 
-type pathErr struct{ path string }
+type pathError struct{ path string }
 
-func (e *pathErr) Error() string { return "path error: " + e.path }
+func (e *pathError) Error() string { return "path error: " + e.path }
 
 func TestHaveField(t *testing.T) {
 	type address struct{ City string }
@@ -113,7 +113,7 @@ func TestHaveField(t *testing.T) {
 	be.Expect(t, u).NotTo(be.HaveField("Name", "Bob"))
 
 	// method form
-	be.Expect(t, &pathErr{path: "/x"}).To(be.HaveField("Error()", "path error: /x"))
+	be.Expect(t, &pathError{path: "/x"}).To(be.HaveField("Error()", "path error: /x"))
 
 	// field mismatch names the field
 	rt := &recT{}

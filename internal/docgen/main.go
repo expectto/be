@@ -170,7 +170,9 @@ func main() {
 	b.WriteString("matcher supersedes — prefer the matcher: its failure message shows the\n")
 	b.WriteString("values involved, `be.True(<expr>)` only reports \"expected true\".\n\n")
 	b.WriteString("Matcher arguments may be raw values **or other matchers** (Be/Gomega/Gomock),\n")
-	b.WriteString("so matchers compose: `be.HaveLength(be.Gte(3))`, `be.ContainElement(be.HaveField(\"Name\", \"X\"))`.\n\n")
+	b.WriteString(
+		"so matchers compose: `be.HaveLength(be.Gte(3))`, `be.ContainElement(be.HaveField(\"Name\", \"X\"))`.\n\n",
+	)
 
 	claimed := map[string]bool{}
 	for _, sec := range sections {

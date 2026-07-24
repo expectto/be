@@ -1,0 +1,19 @@
+version: 2
+
+updates:
+  # All three modules: the root (which carries the amberpixels/k1 dependency -
+  # bumps here keep be on the latest k1), plus the x/ submodules.
+  - package-ecosystem: gomod
+    directories:
+      - /
+      - /x/mock
+      - /x/belint
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "deps"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

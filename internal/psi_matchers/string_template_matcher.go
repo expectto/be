@@ -6,9 +6,10 @@ import (
 	"strings"
 
 	"github.com/amberpixels/k1/cast"
+	"github.com/onsi/gomega/format"
+
 	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega/format"
 )
 
 type Value struct {
@@ -71,7 +72,7 @@ func NewStringTemplateMatcher(template string, values ...*Value) *StringTemplate
 	}
 }
 
-func (matcher *StringTemplateMatcher) Match(actual any) (success bool, err error) {
+func (matcher *StringTemplateMatcher) Match(actual any) (bool, error) {
 	match := matcher.regex.FindStringSubmatch(cast.AsString(actual))
 	if len(match) != len(matcher.regex.SubexpNames()) {
 		matcher.failedMessage = fmt.Sprintf(

@@ -11,10 +11,11 @@ import (
 	"strconv"
 
 	"github.com/amberpixels/k1/cast"
+	"github.com/onsi/gomega"
+
 	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega"
 )
 
 // AsKind succeeds if actual is assignable to any of the specified kinds or matches the provided matchers.
@@ -103,6 +104,7 @@ func AsObject() types.BeMatcher {
 		AsKind(reflect.Map), AssignableTo[map[string]any](),
 	), "be an object")
 }
+
 func AsObjects() types.BeMatcher {
 	return Psi(AsSliceOf[map[string]any](), "be objects")
 }

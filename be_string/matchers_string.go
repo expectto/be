@@ -10,13 +10,14 @@ import (
 
 	"github.com/IGLOU-EU/go-wildcard" // used specifically for MatchWildcard matcher
 	"github.com/amberpixels/k1/cast"
+	"github.com/onsi/gomega"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
+
 	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/internal/psi_matchers"
 	. "github.com/expectto/be/options" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 // psiString is a convenient wrapper for creating every be_string matcher
@@ -81,7 +82,7 @@ func Only(option StringOption) types.BeMatcher {
 		// Check if it contains only letters
 		for _, char := range str {
 			// we're OK until there is a char that doesn't satisfy ANY option:
-			var valid = false
+			valid := false
 			for _, opt := range options {
 				valid = valid || validateStringOption(opt, char)
 			}
@@ -151,7 +152,7 @@ func UpperCaseOnly() types.BeMatcher {
 func ContainingSubstring(substr string) types.BeMatcher {
 	return psiString(func(actual any) (bool, error) {
 		return strings.Contains(cast.AsString(actual), substr), nil
-	}, fmt.Sprintf(`contain "%s" substring`, substr))
+	}, fmt.Sprintf(`contain %q substring`, substr))
 }
 
 // HavingPrefix succeeds if actual is a string starting with the given prefix —
@@ -164,7 +165,7 @@ func ContainingSubstring(substr string) types.BeMatcher {
 func HavingPrefix(prefix string) types.BeMatcher {
 	return psiString(func(actual any) (bool, error) {
 		return strings.HasPrefix(cast.AsString(actual), prefix), nil
-	}, fmt.Sprintf(`have prefix "%s"`, prefix))
+	}, fmt.Sprintf(`have prefix %q`, prefix))
 }
 
 // HavingSuffix succeeds if actual is a string ending with the given suffix —
@@ -176,7 +177,7 @@ func HavingPrefix(prefix string) types.BeMatcher {
 func HavingSuffix(suffix string) types.BeMatcher {
 	return psiString(func(actual any) (bool, error) {
 		return strings.HasSuffix(cast.AsString(actual), suffix), nil
-	}, fmt.Sprintf(`have suffix "%s"`, suffix))
+	}, fmt.Sprintf(`have suffix %q`, suffix))
 }
 
 // ContainingOnlyCharacters succeeds if actual is a string containing only characters from a given set
@@ -208,7 +209,7 @@ func ContainingOnlyCharacters(characters string) types.BeMatcher {
 // ContainingCharacters succeeds if actual is a string containing all characters from a given set
 func ContainingCharacters(characters string) types.BeMatcher {
 	return psiString(func(actual any) (bool, error) {
-		if len(characters) == 0 {
+		if characters == "" {
 			return true, nil
 		}
 
@@ -245,7 +246,7 @@ func ContainingCharacters(characters string) types.BeMatcher {
 func MatchWildcard(pattern string) types.BeMatcher {
 	return psiString(func(actual any) (bool, error) {
 		return wildcard.Match(pattern, cast.AsString(actual)), nil
-	}, fmt.Sprintf(`match wildcard "%s"`, pattern))
+	}, fmt.Sprintf(`match wildcard %q`, pattern))
 }
 
 // ValidEmail succeeds if actual is a valid email.

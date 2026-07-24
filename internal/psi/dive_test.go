@@ -3,8 +3,9 @@ package psi_test
 import (
 	"testing"
 
-	"github.com/expectto/be/internal/psi"
 	"github.com/onsi/gomega"
+
+	"github.com/expectto/be/internal/psi"
 )
 
 // gt0 is a real matcher (actual > 0). A raw func(any)(bool,error) cannot be used
@@ -18,9 +19,9 @@ func TestDiveModes(t *testing.T) {
 	g.Expect(every.Match([]int{1, 2, 3})).To(gomega.BeTrue())
 	g.Expect(every.Match([]int{1, -2, 3})).To(gomega.BeFalse())
 
-	any := psi.NewDiveMatcher(gt0(), psi.DiveModeAny)
-	g.Expect(any.Match([]int{-1, -2, 3})).To(gomega.BeTrue())
-	g.Expect(any.Match([]int{-1, -2, -3})).To(gomega.BeFalse())
+	anyOf := psi.NewDiveMatcher(gt0(), psi.DiveModeAny)
+	g.Expect(anyOf.Match([]int{-1, -2, 3})).To(gomega.BeTrue())
+	g.Expect(anyOf.Match([]int{-1, -2, -3})).To(gomega.BeFalse())
 
 	first := psi.NewDiveMatcher(gt0(), psi.DiveModeFirst)
 	g.Expect(first.Match([]int{5, -1})).To(gomega.BeTrue())
@@ -38,8 +39,8 @@ func TestDiveOverMapValues(t *testing.T) {
 	g.Expect(every.Match(map[string]int{"a": 1, "b": 2})).To(gomega.BeTrue())
 	g.Expect(every.Match(map[string]int{"a": 1, "b": -2})).To(gomega.BeFalse())
 
-	any := psi.NewDiveMatcher(gt0(), psi.DiveModeAny)
-	g.Expect(any.Match(map[string]int{"a": -1, "b": 3})).To(gomega.BeTrue())
+	anyOf := psi.NewDiveMatcher(gt0(), psi.DiveModeAny)
+	g.Expect(anyOf.Match(map[string]int{"a": -1, "b": 3})).To(gomega.BeTrue())
 
 	first := psi.NewDiveMatcher(gt0(), psi.DiveModeFirst)
 	_, err := first.Match(map[string]int{"a": 1})

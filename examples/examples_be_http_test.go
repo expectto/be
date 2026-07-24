@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"net/http"
 
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+
 	"github.com/expectto/be"
 	"github.com/expectto/be/be_http"
 	"github.com/expectto/be/be_json"
@@ -11,15 +14,20 @@ import (
 	"github.com/expectto/be/be_reflected"
 	"github.com/expectto/be/be_string"
 	"github.com/expectto/be/be_url"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("matchers_http", func() {
 	It("should match an HTTP request", func() {
-		req, _ := http.NewRequest("POST", "https://example.com/path?foo=bar", bytes.NewReader([]byte("hello world")))
+		req, _ := http.NewRequest(
+			http.MethodPost,
+			"https://example.com/path?foo=bar",
+			bytes.NewReader([]byte("hello world")),
+		)
 		req.Header.Set("X-Something", "something")
-		req.Header.Set("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.EpM5XBzTJZ4J8AfoJEcJrjth8pfH28LWdjLo90sYb9g")
+		req.Header.Set(
+			"Authorization",
+			"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.EpM5XBzTJZ4J8AfoJEcJrjth8pfH28LWdjLo90sYb9g",
+		)
 
 		Expect(req).To(be.HttpRequest(
 			be_http.HavingURL(be.URL(
@@ -60,7 +68,10 @@ var _ = Describe("matchers_http", func() {
 			}`)),
 		)
 		req.Header.Set("X-Custom", "Hey-There")
-		req.Header.Set("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
+		req.Header.Set(
+			"Authorization",
+			"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+		)
 
 		// 2. Let's match everything about the request
 		Expect(req).To(be_http.Request(
@@ -84,7 +95,7 @@ var _ = Describe("matchers_http", func() {
 					// TODO: AsInteger should work here, but it's not (as from payload via string, it's float)
 					be_json.HaveKeyValue("n", be_reflected.AsFloat()), // any int number
 					// TODO: fix me
-					//be_json.HaveKeyValue("ids", be_reflected.AsSliceOf[string]),
+					// be_json.HaveKeyValue("ids", be_reflected.AsSliceOf[string]),
 					be_json.HaveKeyValue("details", And(
 						be_reflected.AsObjects(),
 						be.HaveLength(2),

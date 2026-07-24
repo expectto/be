@@ -8,11 +8,12 @@ import (
 	"net/http"
 
 	"github.com/amberpixels/k1/cast"
+	"github.com/onsi/gomega"
+
 	"github.com/expectto/be/be_json"
 	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/internal/psi_matchers"
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega"
 )
 
 // Request matches an actual value to be a valid *http.Request corresponding to given inputs.

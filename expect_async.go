@@ -62,7 +62,7 @@ func WithContext(ctx context.Context) EventuallyOption {
 //
 // The failure message reports the last mismatch in the same compact format as
 // be.Expect. Returns true on success.
-func Eventually(t TestingT, actual any, matcher any, opts ...EventuallyOption) bool {
+func Eventually(t TestingT, actual, matcher any, opts ...EventuallyOption) bool {
 	t.Helper()
 	cfg := newAsyncConfig(defaultEventuallyTimeout, opts)
 	e := &Expectation{t: t, actual: actual}
@@ -94,7 +94,7 @@ func Eventually(t TestingT, actual any, matcher any, opts ...EventuallyOption) b
 
 		select {
 		case <-ctxDone:
-			return e.fail(fmt.Sprintf("context done while waiting: %s", lastMsg))
+			return e.fail("context done while waiting: " + lastMsg)
 		case <-deadline:
 			return e.fail(fmt.Sprintf("timed out after %s: %s", cfg.timeout, lastMsg))
 		case <-time.After(cfg.polling):
@@ -108,7 +108,7 @@ func Eventually(t TestingT, actual any, matcher any, opts ...EventuallyOption) b
 // same forms as in Eventually. Returns true if the matcher held throughout.
 //
 //	be.Consistently(t, queue.Len, be.Zero())
-func Consistently(t TestingT, actual any, matcher any, opts ...EventuallyOption) bool {
+func Consistently(t TestingT, actual, matcher any, opts ...EventuallyOption) bool {
 	t.Helper()
 	cfg := newAsyncConfig(defaultConsistentlyDuration, opts)
 	e := &Expectation{t: t, actual: actual}
@@ -175,13 +175,17 @@ func asPoller(actual any) (func() (any, error), error) {
 		return nil, fmt.Errorf("Eventually/Consistently poll function must return (T) or (T, error), got %s", ft)
 	}
 	if ft.NumOut() == 2 && !ft.Out(1).Implements(errType) {
-		return nil, fmt.Errorf("Eventually/Consistently poll function's second return value must be an error, got %s", ft)
+		return nil, fmt.Errorf(
+			"Eventually/Consistently poll function's second return value must be an error, got %s",
+			ft,
+		)
 	}
 
 	return func() (any, error) {
 		out := v.Call(nil)
 		if len(out) == 2 && !out[1].IsNil() {
-			return nil, out[1].Interface().(error)
+			pollErr, _ := out[1].Interface().(error) // always an error: Out(1) is checked above
+			return nil, pollErr
 		}
 		return out[0].Interface(), nil
 	}, nil

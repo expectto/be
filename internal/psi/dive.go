@@ -1,6 +1,7 @@
 package psi
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 
@@ -17,13 +18,13 @@ const (
 )
 
 type DiveMatcher struct {
+	*MixinMatcherGomock
+
 	matcher any
 	mode    DiveMode
 
 	// when mode is DiveModeNth, then we keep nth element
 	n int
-
-	*MixinMatcherGomock
 }
 
 func NewDiveMatcher(matcher any, mode DiveMode, args ...any) *DiveMatcher {
@@ -66,10 +67,11 @@ func (dm *DiveMatcher) Match(actual any) (bool, error) {
 		if dm.mode == DiveModeFirst || dm.mode == DiveModeNth {
 			return false, fmt.Errorf("dive[%s] is not supported on a map (maps are unordered)", dm.mode)
 		}
-		slice = make([]any, 0, rv.Len())
+		values := make([]any, 0, rv.Len())
 		for _, k := range rv.MapKeys() {
-			slice = append(slice, rv.MapIndex(k).Interface())
+			values = append(values, rv.MapIndex(k).Interface())
 		}
+		slice = values
 	default:
 		return false, fmt.Errorf("dive[%s] expects a slice, array or map, got %T", dm.mode, actual)
 	}
@@ -109,15 +111,15 @@ func (dm *DiveMatcher) Match(actual any) (bool, error) {
 		return false, nil
 	case DiveModeFirst:
 		if len(slice) == 0 {
-			return false, fmt.Errorf("dive[first] expects non-empty slice")
+			return false, errors.New("dive[first] expects non-empty slice")
 		}
 		return matcher.Match(slice[0])
 	case DiveModeNth:
 		if len(slice) == 0 {
-			return false, fmt.Errorf("dive[nth] expects non-empty slice")
+			return false, errors.New("dive[nth] expects non-empty slice")
 		}
 		if dm.n >= len(slice) {
-			return false, fmt.Errorf("dive[nth] expects `n` to be less than length of slice")
+			return false, errors.New("dive[nth] expects `n` to be less than length of slice")
 		}
 		return matcher.Match(slice[dm.n])
 	}
@@ -128,6 +130,7 @@ func (dm *DiveMatcher) Match(actual any) (bool, error) {
 func (dm *DiveMatcher) FailureMessage(actual any) string {
 	return fmt.Sprintf("to %s on %s of given list", Psi(dm.matcher).FailureMessage(actual), dm.mode)
 }
+
 func (dm *DiveMatcher) NegatedFailureMessage(actual any) string {
 	return "not " + dm.FailureMessage(actual)
 }

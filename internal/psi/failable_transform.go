@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
 	"github.com/onsi/gomega/format"
+
+	"github.com/expectto/be/types"
 )
 
 // IsTransformFunc checks if given thing is a Gomega-compatible transform
@@ -56,7 +57,7 @@ func WithTransformError() *TransformErrorMatcher {
 	return &TransformErrorMatcher{}
 }
 
-func (matcher *TransformErrorMatcher) Match(actual any) (success bool, err error) {
+func (matcher *TransformErrorMatcher) Match(actual any) (bool, error) {
 	// reset state so a reused matcher instance does not leak a prior error
 	matcher.err = nil
 	matcher.actual = nil
@@ -93,6 +94,7 @@ func (matcher *TransformErrorMatcher) NegatedFailureMessage(actual any) string {
 // TransformError is used to store error + actual value which caused the error
 type TransformError struct {
 	error
+
 	actual any
 }
 

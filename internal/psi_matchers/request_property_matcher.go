@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/onsi/gomega/format"
+
 	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega/format"
 )
 
 // ReqPropertyMatcher is a matcher for http.Request properties
@@ -38,14 +39,18 @@ func NewReqPropertyMatcher(publicName, fieldName string, cb func(r *http.Request
 	return Psi(matcher)
 }
 
-func (matcher *ReqPropertyMatcher) Match(actual any) (success bool, err error) {
+func (matcher *ReqPropertyMatcher) Match(actual any) (bool, error) {
 	if actual == nil {
 		return false, fmt.Errorf("%s() expects actual value not to be nil", matcher.publicName)
 	}
 
 	actualReq, ok := actual.(*http.Request)
 	if !ok {
-		return false, fmt.Errorf("%s() expects actual value mast be a <*http.Request> received <%T>", matcher.publicName, actual)
+		return false, fmt.Errorf(
+			"%s() expects actual value mast be a <*http.Request> received <%T>",
+			matcher.publicName,
+			actual,
+		)
 	}
 
 	if matcher.cb == nil {
@@ -65,10 +70,11 @@ func (matcher *ReqPropertyMatcher) Match(actual any) (success bool, err error) {
 }
 
 func (matcher *ReqPropertyMatcher) FailureMessage(actual any) string {
-	v := matcher.cb(actual.(*http.Request))
+	req, _ := actual.(*http.Request) // FailureMessage is only reached after Match saw a *http.Request
+	v := matcher.cb(req)
 
 	if matcher.matching == nil {
-		return format.Message(v, fmt.Sprintf(`to be a non-empty %s`, matcher.property))
+		return format.Message(v, "to be a non-empty "+matcher.property)
 	}
 	return matcher.matching.FailureMessage(v)
 }

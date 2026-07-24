@@ -3,10 +3,10 @@ package psi_matchers
 import (
 	"fmt"
 
+	"github.com/onsi/gomega/format"
+
 	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/types"
-
-	"github.com/onsi/gomega/format"
 )
 
 // AnyMatcher is the psi upgrade for gomega's OrMatcher
@@ -28,7 +28,7 @@ func NewAnyMatcher(ms ...any) *AnyMatcher {
 	return &AnyMatcher{Matchers: matchers}
 }
 
-func (m *AnyMatcher) Match(actual any) (success bool, err error) {
+func (m *AnyMatcher) Match(actual any) (bool, error) {
 	m.firstSuccessfulMatcher = nil
 	for _, matcher := range m.Matchers {
 		currentSuccess, err := matcher.Match(actual)
@@ -43,12 +43,12 @@ func (m *AnyMatcher) Match(actual any) (success bool, err error) {
 	return false, nil
 }
 
-func (m *AnyMatcher) FailureMessage(actual any) (message string) {
+func (m *AnyMatcher) FailureMessage(actual any) string {
 	// not the most beautiful list of matchers, but not bad either...
 	return format.Message(actual, fmt.Sprintf("To satisfy at least one of these matchers: %s", m.Matchers))
 }
 
-func (m *AnyMatcher) NegatedFailureMessage(actual any) (message string) {
+func (m *AnyMatcher) NegatedFailureMessage(actual any) string {
 	return m.firstSuccessfulMatcher.NegatedFailureMessage(actual)
 }
 

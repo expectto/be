@@ -4,19 +4,20 @@ import (
 	"fmt"
 	"strings"
 
-	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
-	"github.com/expectto/be/types"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/onsi/gomega/format"
+
+	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
+	"github.com/expectto/be/types"
 )
 
 type JwtTokenMatcher struct {
+	// todo: adjust gomock methods work as intended
+	*MixinMatcherGomock
+
 	publicName string // e.g. HaveClaims
 	cb         func(t *jwt.Token) any
 	matching   types.BeMatcher
-
-	// todo: adjust gomock methods work as intended
-	*MixinMatcherGomock
 }
 
 var _ types.BeMatcher = &JwtTokenMatcher{}
@@ -41,7 +42,7 @@ func NewJwtTokenMatcher(publicName string, cb func(token *jwt.Token) any, args .
 	return matcher
 }
 
-func (matcher *JwtTokenMatcher) Match(actual any) (success bool, err error) {
+func (matcher *JwtTokenMatcher) Match(actual any) (bool, error) {
 	if actual == nil {
 		return false, fmt.Errorf("%s() expects actual value not to be nil", "jwt.Match")
 	}
@@ -68,10 +69,11 @@ func (matcher *JwtTokenMatcher) Match(actual any) (success bool, err error) {
 }
 
 func (matcher *JwtTokenMatcher) FailureMessage(actual any) string {
-	v := matcher.cb(actual.(*jwt.Token))
+	token, _ := actual.(*jwt.Token) // FailureMessage is only reached after Match saw a *jwt.Token
+	v := matcher.cb(token)
 
 	if matcher.matching == nil {
-		return format.Message(v, fmt.Sprintf(`to be a non-empty %s`, "foo"))
+		return format.Message(v, "to be a non-empty "+"foo")
 	}
 	return matcher.matching.FailureMessage(v)
 }

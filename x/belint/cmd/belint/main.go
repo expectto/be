@@ -7,8 +7,9 @@
 package main
 
 import (
-	"github.com/expectto/be/x/belint"
 	"golang.org/x/tools/go/analysis/singlechecker"
+
+	"github.com/expectto/be/x/belint"
 )
 
 func main() {

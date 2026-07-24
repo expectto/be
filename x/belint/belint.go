@@ -16,6 +16,7 @@ import (
 	"go/printer"
 	"go/token"
 	"go/types"
+	"slices"
 
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
@@ -35,7 +36,10 @@ var Analyzer = &analysis.Analyzer{
 }
 
 func run(pass *analysis.Pass) (any, error) {
-	insp := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
+	insp, ok := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
+	if !ok {
+		return nil, nil
+	}
 
 	// Nodes already covered by an enclosing composite fix (e.g. the
 	// be.HaveLength(0) inside be.Not(be.HaveLength(0))): don't double-report.
@@ -45,7 +49,10 @@ func run(pass *analysis.Pass) (any, error) {
 		if !push {
 			return false
 		}
-		call := n.(*ast.CallExpr)
+		call, ok := n.(*ast.CallExpr)
+		if !ok {
+			return true
+		}
 		if a, ok := asAssertion(pass, call); ok {
 			checkRawActual(pass, a, call, stack)
 		}
@@ -163,10 +170,13 @@ func checkRawActual(pass *analysis.Pass, a assertion, outer *ast.CallExpr, stack
 		}
 		if a.negated {
 			// the rewritten matcher already carries the negation
-			edits = append(edits, analysis.TextEdit{Pos: a.methodSel.Pos(), End: a.methodSel.End(), NewText: []byte("To")})
+			edits = append(
+				edits,
+				analysis.TextEdit{Pos: a.methodSel.Pos(), End: a.methodSel.End(), NewText: []byte("To")},
+			)
 		}
 		diag.SuggestedFixes = []analysis.SuggestedFix{{
-			Message:   fmt.Sprintf("replace with %s", r.matcher),
+			Message:   "replace with " + r.matcher,
 			TextEdits: edits,
 		}}
 	}
@@ -231,21 +241,34 @@ func rewriteBinary(pass *analysis.Pass, e *ast.BinaryExpr, want bool, qual strin
 			return rewrite{actual: render(pass, lhs), matcher: qual + ".Nil()", fixable: true}, true
 		case token.NEQ:
 			return rewrite{actual: render(pass, lhs), matcher: qual + ".NotNil()", fixable: true}, true
+		default:
+			return rewrite{}, false
 		}
-		return rewrite{}, false
 	}
 
 	switch op {
 	case token.EQL:
-		return rewrite{actual: render(pass, lhs), matcher: fmt.Sprintf("%s.Eq(%s)", qual, render(pass, rhs)), fixable: true}, true
+		return rewrite{
+			actual:  render(pass, lhs),
+			matcher: fmt.Sprintf("%s.Eq(%s)", qual, render(pass, rhs)),
+			fixable: true,
+		}, true
 	case token.NEQ:
-		return rewrite{actual: render(pass, lhs), matcher: fmt.Sprintf("%s.Ne(%s)", qual, render(pass, rhs)), fixable: true}, true
+		return rewrite{
+			actual:  render(pass, lhs),
+			matcher: fmt.Sprintf("%s.Ne(%s)", qual, render(pass, rhs)),
+			fixable: true,
+		}, true
 	default:
 		// ordered comparisons: only rewrite numerics (be.Gt is numeric-only)
 		if !isNumeric(pass, lhs) && !isNumeric(pass, rhs) {
 			return rewrite{}, false
 		}
-		return rewrite{actual: render(pass, lhs), matcher: fmt.Sprintf("%s.%s(%s)", qual, orderedMatcher(op), render(pass, rhs)), fixable: true}, true
+		return rewrite{
+			actual:  render(pass, lhs),
+			matcher: fmt.Sprintf("%s.%s(%s)", qual, orderedMatcher(op), render(pass, rhs)),
+			fixable: true,
+		}, true
 	}
 }
 
@@ -258,11 +281,23 @@ func rewriteLen(pass *analysis.Pass, lenArg ast.Expr, op token.Token, rhs ast.Ex
 	case (op == token.NEQ || op == token.GTR) && zero:
 		return rewrite{actual: actual, matcher: qual + ".NotEmpty()", fixable: true}, true
 	case op == token.EQL:
-		return rewrite{actual: actual, matcher: fmt.Sprintf("%s.HaveLength(%s)", qual, render(pass, rhs)), fixable: true}, true
+		return rewrite{
+			actual:  actual,
+			matcher: fmt.Sprintf("%s.HaveLength(%s)", qual, render(pass, rhs)),
+			fixable: true,
+		}, true
 	case op == token.NEQ:
-		return rewrite{actual: actual, matcher: fmt.Sprintf("%s.Not(%s.HaveLength(%s))", qual, qual, render(pass, rhs)), fixable: true}, true
+		return rewrite{
+			actual:  actual,
+			matcher: fmt.Sprintf("%s.Not(%s.HaveLength(%s))", qual, qual, render(pass, rhs)),
+			fixable: true,
+		}, true
 	default:
-		return rewrite{actual: actual, matcher: fmt.Sprintf("%s.HaveLength(%s.%s(%s))", qual, qual, orderedMatcher(op), render(pass, rhs)), fixable: true}, true
+		return rewrite{
+			actual:  actual,
+			matcher: fmt.Sprintf("%s.HaveLength(%s.%s(%s))", qual, qual, orderedMatcher(op), render(pass, rhs)),
+			fixable: true,
+		}, true
 	}
 }
 
@@ -362,7 +397,7 @@ func checkComposite(pass *analysis.Pass, call *ast.CallExpr, covered map[ast.Nod
 			End:     call.End(),
 			Message: fmt.Sprintf("prefer %s over %s", repl, render(pass, call)),
 			SuggestedFixes: []analysis.SuggestedFix{{
-				Message:   fmt.Sprintf("replace with %s", repl),
+				Message:   "replace with " + repl,
 				TextEdits: []analysis.TextEdit{{Pos: call.Pos(), End: call.End(), NewText: []byte(repl)}},
 			}},
 		})
@@ -424,8 +459,9 @@ func negateOp(op token.Token) token.Token {
 		return token.LEQ
 	case token.GEQ:
 		return token.LSS
+	default:
+		return op
 	}
-	return op
 }
 
 func mirrorOp(op token.Token) token.Token {
@@ -438,8 +474,9 @@ func mirrorOp(op token.Token) token.Token {
 		return token.LSS
 	case token.GEQ:
 		return token.LEQ
+	default:
+		return op
 	}
-	return op
 }
 
 func orderedMatcher(op token.Token) string {
@@ -452,8 +489,9 @@ func orderedMatcher(op token.Token) string {
 		return "Lt"
 	case token.LEQ:
 		return "Lte"
+	default:
+		return ""
 	}
-	return ""
 }
 
 // asAddrOfIdent unwraps `&v` to the v identifier (nil for anything else, e.g.
@@ -477,8 +515,8 @@ func usedAfter(pass *analysis.Pass, stack []ast.Node, target *ast.Ident, pos tok
 		return false
 	}
 	var body *ast.BlockStmt
-	for i := len(stack) - 1; i >= 0; i-- {
-		switch fn := stack[i].(type) {
+	for _, s := range slices.Backward(stack) {
+		switch fn := s.(type) {
 		case *ast.FuncDecl:
 			body = fn.Body
 		case *ast.FuncLit:
@@ -532,8 +570,9 @@ func isZeroConst(pass *analysis.Pass, expr ast.Expr) bool {
 	switch tv.Value.Kind() {
 	case constant.Int, constant.Float:
 		return constant.Sign(tv.Value) == 0
+	default:
+		return false
 	}
-	return false
 }
 
 func isNilIdent(pass *analysis.Pass, expr ast.Expr) bool {

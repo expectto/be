@@ -4,13 +4,14 @@ import (
 	"io"
 	"strings"
 
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+
 	"github.com/expectto/be/be_json"
 	"github.com/expectto/be/be_math"
 	"github.com/expectto/be/be_reflected"
 	"github.com/expectto/be/be_string"
 	"github.com/expectto/be/types"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 )
 
 // sampleJSON is a JSON document exercised across several test entries.
@@ -28,7 +29,6 @@ const sampleJSON = `{
 // and only succeeds for Go integer kinds). See the report for details.
 
 var _ = Describe("BeJson", func() {
-
 	DescribeTable("should positively match (string-like input)", func(matcher types.BeMatcher, actual any) {
 		// check gomega-compatible matching:
 		success, err := matcher.Match(actual)
@@ -167,23 +167,28 @@ var _ = Describe("BeJson", func() {
 	// Reader-mode is tested with a fresh io.Reader factory per call: an io.Reader is
 	// single-use, so it cannot be matched twice (Match then Matches). We only call
 	// Match once here, recreating the reader for each entry via the factory.
-	DescribeTable("should match (io.Reader input)", func(matcher types.BeMatcher, newReader func() io.Reader, expected bool) {
-		success, err := matcher.Match(newReader())
-		Expect(err).Should(Succeed())
-		Expect(success).To(Equal(expected))
-	},
+	DescribeTable(
+		"should match (io.Reader input)",
+		func(matcher types.BeMatcher, newReader func() io.Reader, expected bool) {
+			success, err := matcher.Match(newReader())
+			Expect(err).Should(Succeed())
+			Expect(success).To(Equal(expected))
+		},
 		Entry("reader mode -- simple string value matches",
 			be_json.Matcher(be_json.JsonAsReader, be_json.HaveKeyValue("name", "gopher")),
 			func() io.Reader { return strings.NewReader(sampleJSON) }, true),
-
 		Entry("reader mode -- numeric value matched by AsFloat",
 			be_json.Matcher(be_json.JsonAsReader, be_json.HaveKeyValue("n", be_reflected.AsFloat())),
 			func() io.Reader { return strings.NewReader(sampleJSON) }, true),
-
-		Entry("reader mode -- nested object matches",
-			be_json.Matcher(be_json.JsonAsReader, be_json.HaveKeyValue("nested", be_json.HaveKeyValue("inner", "value"))),
-			func() io.Reader { return strings.NewReader(sampleJSON) }, true),
-
+		Entry(
+			"reader mode -- nested object matches",
+			be_json.Matcher(
+				be_json.JsonAsReader,
+				be_json.HaveKeyValue("nested", be_json.HaveKeyValue("inner", "value")),
+			),
+			func() io.Reader { return strings.NewReader(sampleJSON) },
+			true,
+		),
 		Entry("reader mode -- wrong value does not match",
 			be_json.Matcher(be_json.JsonAsReader, be_json.HaveKeyValue("name", "wrong")),
 			func() io.Reader { return strings.NewReader(sampleJSON) }, false),

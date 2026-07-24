@@ -1,13 +1,13 @@
 package psi_matchers_test
 
 import (
-	. "github.com/expectto/be/internal/psi_matchers"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	. "github.com/expectto/be/internal/psi_matchers"
 )
 
 var _ = Describe("EqMatcher", func() {
-
 	DescribeTable("Match",
 		func(expected, actual any, expectedResult, shouldFail bool) {
 			matcher := NewEqMatcher(expected)

@@ -1,11 +1,12 @@
 package be_jwt_test
 
 import (
-	"github.com/expectto/be/be_jwt"
-	"github.com/expectto/be/types"
 	"github.com/golang-jwt/jwt/v5"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	"github.com/expectto/be/be_jwt"
+	"github.com/expectto/be/types"
 )
 
 const (
@@ -60,7 +61,6 @@ func tamper(token string) string {
 }
 
 var _ = Describe("BeJwt", func() {
-
 	DescribeTable("should positively match", func(matcher types.BeMatcher, actual any) {
 		// gomega-compatible matching:
 		success, err := matcher.Match(actual)
@@ -76,16 +76,34 @@ var _ = Describe("BeJwt", func() {
 			be_jwt.Token(be_jwt.TransformSignedJwtFromString(secret), be_jwt.Valid()), validHS256),
 
 		// HavingClaim with the correct value.
-		Entry("token has claim name=John Doe",
-			be_jwt.Token(be_jwt.TransformSignedJwtFromString(secret), be_jwt.HavingClaim("name", "John Doe")), validHS256),
+		Entry(
+			"token has claim name=John Doe",
+			be_jwt.Token(
+				be_jwt.TransformSignedJwtFromString(secret),
+				be_jwt.HavingClaim("name", "John Doe"),
+			),
+			validHS256,
+		),
 		Entry("token has claim admin=true",
 			be_jwt.Token(be_jwt.TransformSignedJwtFromString(secret), be_jwt.HavingClaim("admin", true)), validHS256),
-		Entry("token has claim sub=1234567890",
-			be_jwt.Token(be_jwt.TransformSignedJwtFromString(secret), be_jwt.HavingClaim("sub", "1234567890")), validHS256),
+		Entry(
+			"token has claim sub=1234567890",
+			be_jwt.Token(
+				be_jwt.TransformSignedJwtFromString(secret),
+				be_jwt.HavingClaim("sub", "1234567890"),
+			),
+			validHS256,
+		),
 
 		// HavingClaims: match the whole claims map.
-		Entry("token claims contain name key",
-			be_jwt.Token(be_jwt.TransformSignedJwtFromString(secret), be_jwt.HavingClaims(HaveKeyWithValue("name", "John Doe"))), validHS256),
+		Entry(
+			"token claims contain name key",
+			be_jwt.Token(
+				be_jwt.TransformSignedJwtFromString(secret),
+				be_jwt.HavingClaims(HaveKeyWithValue("name", "John Doe")),
+			),
+			validHS256,
+		),
 
 		// HavingMethodAlg.
 		Entry("HS256 token has method alg HS256",
@@ -116,8 +134,14 @@ var _ = Describe("BeJwt", func() {
 		Expect(success).To(BeFalse())
 	},
 		// Wrong claim value.
-		Entry("claim name is not Jane Doe",
-			be_jwt.Token(be_jwt.TransformSignedJwtFromString(secret), be_jwt.HavingClaim("name", "Jane Doe")), validHS256),
+		Entry(
+			"claim name is not Jane Doe",
+			be_jwt.Token(
+				be_jwt.TransformSignedJwtFromString(secret),
+				be_jwt.HavingClaim("name", "Jane Doe"),
+			),
+			validHS256,
+		),
 		Entry("claim admin is not false",
 			be_jwt.Token(be_jwt.TransformSignedJwtFromString(secret), be_jwt.HavingClaim("admin", false)), validHS256),
 
@@ -137,13 +161,15 @@ var _ = Describe("BeJwt", func() {
 	// When the signed transform itself can't verify (wrong/another secret, tampered
 	// signature) there is no token to match, so the matcher surfaces the signature
 	// error (v1 contract: un-evaluatable input -> error) and must not panic.
-	DescribeTable("should error (no panic) when the signed transform can't verify", func(matcher types.BeMatcher, actual any) {
-		Expect(func() {
-			success, err := matcher.Match(actual)
-			Expect(err).To(HaveOccurred())
-			Expect(success).To(BeFalse())
-		}).NotTo(Panic())
-	},
+	DescribeTable(
+		"should error (no panic) when the signed transform can't verify",
+		func(matcher types.BeMatcher, actual any) {
+			Expect(func() {
+				success, err := matcher.Match(actual)
+				Expect(err).To(HaveOccurred())
+				Expect(success).To(BeFalse())
+			}).NotTo(Panic())
+		},
 		Entry("verifying with the wrong secret",
 			be_jwt.Token(be_jwt.TransformSignedJwtFromString(wrongSecret), be_jwt.Valid()), validHS256),
 		Entry("token signed with another secret",

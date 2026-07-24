@@ -5,22 +5,23 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/onsi/gomega/format"
+
 	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega/format"
 )
 
 // UrlFieldMatcher is a helper for matching url fields
 // It's considered to be used in matchers_url.go
 type UrlFieldMatcher struct {
+	// todo: adjust gomock methods work as intended
+	*MixinMatcherGomock
+
 	publicName string // e.g. UrlHavingHost
 	fieldName  string // e.g. "host"
 	cb         func(*url.URL) any
 
 	matching types.BeMatcher
-
-	// todo: adjust gomock methods work as intended
-	*MixinMatcherGomock
 }
 
 var _ types.BeMatcher = &UrlFieldMatcher{}
@@ -46,14 +47,18 @@ func NewUrlFieldMatcher(publicName, fieldName string, cb func(*url.URL) any, arg
 	return matcher
 }
 
-func (matcher *UrlFieldMatcher) Match(actual any) (success bool, err error) {
+func (matcher *UrlFieldMatcher) Match(actual any) (bool, error) {
 	if actual == nil {
 		return false, fmt.Errorf("%s() expects actual value not to be nil", matcher.publicName)
 	}
 
 	actualUrl, ok := actual.(*url.URL)
 	if !ok {
-		return false, fmt.Errorf("%s() expects actual value mast be a <*url.URL> received <%T>", matcher.publicName, actual)
+		return false, fmt.Errorf(
+			"%s() expects actual value mast be a <*url.URL> received <%T>",
+			matcher.publicName,
+			actual,
+		)
 	}
 
 	if matcher.cb == nil {
@@ -73,10 +78,11 @@ func (matcher *UrlFieldMatcher) Match(actual any) (success bool, err error) {
 }
 
 func (matcher *UrlFieldMatcher) FailureMessage(actual any) string {
-	v := matcher.cb(actual.(*url.URL))
+	u, _ := actual.(*url.URL) // FailureMessage is only reached after Match saw a *url.URL
+	v := matcher.cb(u)
 
 	if matcher.matching == nil {
-		return format.Message(v, fmt.Sprintf(`to be a non-empty %s`, matcher.fieldName))
+		return format.Message(v, "to be a non-empty "+matcher.fieldName)
 	}
 	return matcher.matching.FailureMessage(v)
 }

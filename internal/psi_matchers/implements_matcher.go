@@ -1,24 +1,24 @@
 package psi_matchers
 
 import (
-	"fmt"
 	"reflect"
+
+	"github.com/onsi/gomega/format"
 
 	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
 	"github.com/expectto/be/types"
-	"github.com/onsi/gomega/format"
 )
 
 type ImplementsMatcher struct {
-	implements reflect.Type
-
 	*MixinMatcherGomock
+
+	implements reflect.Type
 }
 
 var _ types.BeMatcher = &ImplementsMatcher{}
 
 func NewImplementsMatcher[T any]() *ImplementsMatcher {
-	t := reflect.TypeOf((*T)(nil)).Elem()
+	t := reflect.TypeFor[T]()
 
 	if t.Kind() != reflect.Interface {
 		panic("ImplementsMatcher accepts interfaces to be given as T")
@@ -30,7 +30,7 @@ func NewImplementsMatcher[T any]() *ImplementsMatcher {
 	return im
 }
 
-func (matcher *ImplementsMatcher) Match(actual any) (success bool, err error) {
+func (matcher *ImplementsMatcher) Match(actual any) (bool, error) {
 	if actual == nil {
 		return false, nil
 	}
@@ -39,9 +39,9 @@ func (matcher *ImplementsMatcher) Match(actual any) (success bool, err error) {
 }
 
 func (matcher *ImplementsMatcher) FailureMessage(actual any) string {
-	return format.Message(actual, fmt.Sprintf("to implement: %s", matcher.implements.String()))
+	return format.Message(actual, "to implement: "+matcher.implements.String())
 }
 
 func (matcher *ImplementsMatcher) NegatedFailureMessage(actual any) string {
-	return format.Message(actual, fmt.Sprintf("not to implement: %s", matcher.implements.String()))
+	return format.Message(actual, "not to implement: "+matcher.implements.String())
 }

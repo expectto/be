@@ -2,14 +2,16 @@
 package be_time
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
 	"github.com/amberpixels/k1/cast"
-	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
-	"github.com/expectto/be/types"
 	"github.com/onsi/gomega"
 	"github.com/onsi/gomega/gcustom"
+
+	. "github.com/expectto/be/internal/psi" //nolint:staticcheck // should be moved to lintignore
+	"github.com/expectto/be/types"
 )
 
 // LaterThan succeeds if actual time is later than the specified time `compareTo`.
@@ -48,7 +50,11 @@ func Approx(compareTo time.Time, threshold time.Duration) types.BeMatcher {
 // Atomic matching of time parts
 //
 
-func atomicTimePartMatcher[T comparable](actualGetter func(t time.Time) T, compareTo T, customMessageArg ...string) types.BeMatcher {
+func atomicTimePartMatcher[T comparable](
+	actualGetter func(t time.Time) T,
+	compareTo T,
+	customMessageArg ...string,
+) types.BeMatcher {
 	message := fmt.Sprintf("%v", compareTo)
 	if len(customMessageArg) > 0 {
 		message = customMessageArg[0]
@@ -56,7 +62,7 @@ func atomicTimePartMatcher[T comparable](actualGetter func(t time.Time) T, compa
 
 	return Psi(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
-			return false, fmt.Errorf("invalid time type")
+			return false, errors.New("invalid time type")
 		}
 		return actualGetter(cast.AsTime(actual)) == compareTo, nil
 
@@ -68,20 +74,29 @@ func atomicTimePartMatcher[T comparable](actualGetter func(t time.Time) T, compa
 func Year(v int) types.BeMatcher {
 	return atomicTimePartMatcher(func(t time.Time) int { return t.Year() }, v)
 }
+
 func Month(monthCompareTo time.Month) types.BeMatcher {
 	return atomicTimePartMatcher(func(t time.Time) time.Month { return t.Month() }, monthCompareTo)
 }
+
 func Day(v int) types.BeMatcher {
 	return atomicTimePartMatcher(func(t time.Time) int { return t.Day() }, v, fmt.Sprintf("%d day of month", v))
 }
+
 func YearDay(v int) types.BeMatcher {
 	return atomicTimePartMatcher(func(t time.Time) int { return t.YearDay() }, v, fmt.Sprintf("%d day of the year", v))
 }
+
 func Weekday(v time.Weekday) types.BeMatcher {
 	return atomicTimePartMatcher(func(t time.Time) time.Weekday { return t.Weekday() }, v)
 }
+
 func Unix(v int64) types.BeMatcher {
-	return atomicTimePartMatcher(func(t time.Time) int64 { return t.Unix() }, v, fmt.Sprintf("equal to %d Unix timestamp", v))
+	return atomicTimePartMatcher(
+		func(t time.Time) int64 { return t.Unix() },
+		v,
+		fmt.Sprintf("equal to %d Unix timestamp", v),
+	)
 }
 
 // TODO: more atomic matchers
@@ -99,7 +114,7 @@ func Unix(v int64) types.BeMatcher {
 func sameExactDuration(compareTo time.Time, duration time.Duration) types.BeMatcher {
 	return Psi(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
-			return false, fmt.Errorf("invalid time type")
+			return false, errors.New("invalid time type")
 		}
 		actualTime := cast.AsTime(actual)
 
@@ -137,7 +152,7 @@ func SameExactHour(compareTo time.Time) types.BeMatcher {
 func SameExactDay(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
-			return false, fmt.Errorf("invalid time type")
+			return false, errors.New("invalid time type")
 		}
 		actualTime := cast.AsTime(actual)
 
@@ -151,7 +166,7 @@ func SameExactDay(compareTo time.Time) types.BeMatcher {
 func SameExactWeekday(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
-			return false, fmt.Errorf("invalid time type")
+			return false, errors.New("invalid time type")
 		}
 		actualTime := cast.AsTime(actual)
 
@@ -163,7 +178,7 @@ func SameExactWeekday(compareTo time.Time) types.BeMatcher {
 func SameExactWeek(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
-			return false, fmt.Errorf("invalid time type")
+			return false, errors.New("invalid time type")
 		}
 		actualTime := cast.AsTime(actual)
 
@@ -177,7 +192,7 @@ func SameExactWeek(compareTo time.Time) types.BeMatcher {
 func SameExactMonth(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
-			return false, fmt.Errorf("invalid time type")
+			return false, errors.New("invalid time type")
 		}
 		actualTime := cast.AsTime(actual)
 
@@ -195,7 +210,7 @@ func SameExactMonth(compareTo time.Time) types.BeMatcher {
 func SameSecond(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
-			return false, fmt.Errorf("invalid time type")
+			return false, errors.New("invalid time type")
 		}
 		actualTime := cast.AsTime(actual)
 
@@ -209,7 +224,7 @@ func SameSecond(compareTo time.Time) types.BeMatcher {
 func SameMinute(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
-			return false, fmt.Errorf("invalid time type")
+			return false, errors.New("invalid time type")
 		}
 		actualTime := cast.AsTime(actual)
 
@@ -223,7 +238,7 @@ func SameMinute(compareTo time.Time) types.BeMatcher {
 func SameHour(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
-			return false, fmt.Errorf("invalid time type")
+			return false, errors.New("invalid time type")
 		}
 		actualTime := cast.AsTime(actual)
 
@@ -237,7 +252,7 @@ func SameHour(compareTo time.Time) types.BeMatcher {
 func SameDay(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
-			return false, fmt.Errorf("invalid time type")
+			return false, errors.New("invalid time type")
 		}
 		actualTime := cast.AsTime(actual)
 
@@ -251,7 +266,7 @@ func SameDay(compareTo time.Time) types.BeMatcher {
 func SameYearDay(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
-			return false, fmt.Errorf("invalid time type")
+			return false, errors.New("invalid time type")
 		}
 		actualTime := cast.AsTime(actual)
 
@@ -266,7 +281,7 @@ func SameYearDay(compareTo time.Time) types.BeMatcher {
 func SameWeek(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
-			return false, fmt.Errorf("invalid time type")
+			return false, errors.New("invalid time type")
 		}
 		actualTime := cast.AsTime(actual)
 
@@ -282,7 +297,7 @@ func SameWeek(compareTo time.Time) types.BeMatcher {
 func SameMonth(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
-			return false, fmt.Errorf("invalid time type")
+			return false, errors.New("invalid time type")
 		}
 		actualTime := cast.AsTime(actual)
 
@@ -295,7 +310,7 @@ func SameMonth(compareTo time.Time) types.BeMatcher {
 func SameYear(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
-			return false, fmt.Errorf("invalid time type")
+			return false, errors.New("invalid time type")
 		}
 		actualTime := cast.AsTime(actual)
 
@@ -307,7 +322,7 @@ func SameYear(compareTo time.Time) types.BeMatcher {
 func SameTimezone(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
-			return false, fmt.Errorf("invalid time type")
+			return false, errors.New("invalid time type")
 		}
 		actualTime := cast.AsTime(actual)
 
@@ -320,7 +335,7 @@ func SameTimezone(compareTo time.Time) types.BeMatcher {
 func SameOffset(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
-			return false, fmt.Errorf("invalid time type")
+			return false, errors.New("invalid time type")
 		}
 		actualTime := cast.AsTime(actual)
 
@@ -334,7 +349,7 @@ func SameOffset(compareTo time.Time) types.BeMatcher {
 func IsDST(compareTo time.Time) types.BeMatcher {
 	return Psi(gcustom.MakeMatcher(func(actual any) (bool, error) {
 		if !cast.IsTime(actual) {
-			return false, fmt.Errorf("invalid time type")
+			return false, errors.New("invalid time type")
 		}
 		actualTime := cast.AsTime(actual)
 		return actualTime.IsDST(), nil
