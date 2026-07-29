@@ -8,6 +8,21 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Work toward a stable **v1**: a framework-agnostic matcher core with opt-in drivers.
 
+### Changed (rc.9)
+- **`go` directive lowered from 1.26 to 1.25.0** in all three modules. A
+  dependency's `go` directive raises its consumers' and `go mod tidy` never
+  lowers one again, so `be` was forcing every project that tested with it onto
+  the newest Go.
+- **standardgo is no longer a go.mod `tool` directive**: it runs via
+  `go run <mod>@<ver>` from the justfile. A tool directive publishes the tool's
+  own Go floor and its whole graph to consumers: this drops the indirect
+  requirements from 217 to 15 in the root, 217 to 12 in `x/mock`, and 213 to 3
+  in `x/belint`.
+- `amberpixels/k1` bumped to **v0.2.3**.
+- `just floor` builds and vets every module at the declared floor. CI runs it as
+  its own job, pinning the toolchain from the justfile rather than from go.mod,
+  so raising the `go` directive cannot silently satisfy the check.
+
 ### Fixed (rc.8)
 - **`go vet` no longer fails on assertion messages containing `%` directives**
   (found in the r3 dogfooding pass, 16 fixups' worth). Vet's printf checker

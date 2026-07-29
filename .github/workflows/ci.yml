@@ -9,24 +9,51 @@ permissions:
   contents: read
 
 jobs:
-  ci:
+  # Lint and test every module in the repo. All three declare the same floor, so
+  # go.mod picks the toolchain. The module list lives in the justfile.
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+
       - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
+          # Caches GOMODCACHE and GOCACHE, which is what keeps `just lint` from
+          # recompiling the golangci-lint engine inside standardgo on every run.
+          # The justfile is in the key because it pins the standardgo version:
+          # without it the key never changes, the cache is never re-saved, and a
+          # version bump would rebuild from scratch on every run forever after.
+          cache-dependency-path: |
+            go.sum
+            x/mock/go.sum
+            x/belint/go.sum
+            justfile
 
-      - name: Lint
-        run: |
-          for m in . x/mock x/belint; do
-            echo "== lint $m =="
-            (cd "$m" && go tool standardgo ./...)
-          done
+      - uses: extractions/setup-just@v2
 
-      - name: Test
-        run: |
-          for m in . x/mock x/belint; do
-            echo "== test $m =="
-            (cd "$m" && go test ./...)
-          done
+      - run: just lint test
+
+  # The floor check runs on its own so it never drags a second toolchain into the
+  # check job's cache. The version comes from the justfile, NOT from go.mod: go.mod is
+  # the thing under test, so deriving from it would make the check self-fulfilling -
+  # raising the go directive would just install a newer toolchain and pass. Pinning
+  # independently means a raised go.mod fails here until the promise is raised too.
+  floor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: extractions/setup-just@v2
+
+      - id: pin
+        run: echo "go=$(just --evaluate floor_go | sed 's/^go//')" >>"$GITHUB_OUTPUT"
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ steps.pin.outputs.go }}
+          cache: false
+
+      # GOTOOLCHAIN=local: use the toolchain just installed and refuse to upgrade past
+      # it, so a raised floor is an error here instead of a silent download.
+      - run: FLOOR_GO=local just floor
