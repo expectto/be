@@ -30,7 +30,7 @@ jobs:
             x/belint/go.sum
             justfile
 
-      - uses: extractions/setup-just@v2
+      - uses: extractions/setup-just@v4
 
       - run: just lint test
 
@@ -44,7 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: extractions/setup-just@v2
+      - uses: extractions/setup-just@v4
 
       - id: pin
         run: echo "go=$(just --evaluate floor_go | sed 's/^go//')" >>"$GITHUB_OUTPUT"
