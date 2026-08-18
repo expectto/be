@@ -9,7 +9,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.32.0 // latest
 	github.com/onsi/gomega v1.42.1 // latest
 	go.uber.org/mock v0.6.0 // latest
-	golang.org/x/text v0.40.0 // latest
+	golang.org/x/text v0.41.0 // latest
 )
 
 require (
