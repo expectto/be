@@ -1,15 +1,15 @@
 module github.com/expectto/be
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/IGLOU-EU/go-wildcard v1.0.3 // latest
-	github.com/amberpixels/k1 v0.2.3 // latest
+	github.com/amberpixels/k1 v0.3.0 // latest
 	github.com/golang-jwt/jwt/v5 v5.3.1 // latest
-	github.com/onsi/ginkgo/v2 v2.32.0 // latest
-	github.com/onsi/gomega v1.42.1 // latest
+	github.com/onsi/ginkgo/v2 v2.32.1 // latest
+	github.com/onsi/gomega v1.43.0 // latest
 	go.uber.org/mock v0.6.0 // latest
-	golang.org/x/text v0.40.0 // latest
+	golang.org/x/text v0.41.0 // latest
 )
 
 require (

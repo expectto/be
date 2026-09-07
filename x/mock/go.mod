@@ -1,6 +1,6 @@
 module github.com/expectto/be/x/mock
 
-go 1.25.0
+go 1.26.0
 
 // This adapter is a separate module so the core `github.com/expectto/be` module
 // never lists testify (or any mock framework) as a dependency. Users who want to
@@ -13,17 +13,17 @@ require (
 )
 
 require (
-	github.com/amberpixels/k1 v0.2.3 // indirect
+	github.com/amberpixels/k1 v0.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
-	github.com/onsi/gomega v1.42.1 // indirect
+	github.com/onsi/gomega v1.43.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/objx v0.5.3 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/net v0.57.0 // indirect
-	golang.org/x/text v0.40.0 // indirect
+	golang.org/x/text v0.41.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 

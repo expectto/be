@@ -33,7 +33,7 @@ func NewKindMatcher(args ...any) *KindMatcher {
 	matcher := &KindMatcher{}
 	if len(args) == 1 && !IsMatcher(args[0]) {
 		matcher.kind = new(reflect.Kind)
-		*(matcher.kind) = cast.AsKind(args[0])
+		*matcher.kind = cast.AsKind(args[0])
 		return matcher
 	}
 

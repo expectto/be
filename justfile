@@ -8,7 +8,7 @@
 # repo holds no lint config of its own. It is run via `go run`, not a go.mod tool
 # directive, to keep it out of this library's dependency graph.
 # The fmt/lint/fix/test fences are removed for the same reason - they must not resync.
-standardgo := "github.com/amberpixels/standardgo/cmd/standardgo@v0.1.1"
+standardgo := "github.com/amberpixels/standardgo/cmd/standardgo@v0.2.1"
 
 # Every module in this repo. Each has its own go.mod, so each needs its own run.
 modules := ". x/mock x/belint"
@@ -16,7 +16,7 @@ modules := ". x/mock x/belint"
 # The floor this library promises to support. Keep in sync with the `go` directive
 # in go.mod - that is the number consumers actually see. CI passes FLOOR_GO=local,
 # having already installed the floor toolchain, so it never downloads a second one.
-floor_go := env("FLOOR_GO", "go1.25.0")
+floor_go := env("FLOOR_GO", "go1.26.0")
 
 # Default recipe: format. Rewrites files, but decides nothing - every change it
 # makes is mechanical. `just fix` is the one that applies judgement.

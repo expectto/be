@@ -184,7 +184,7 @@ func asPoller(actual any) (func() (any, error), error) {
 	return func() (any, error) {
 		out := v.Call(nil)
 		if len(out) == 2 && !out[1].IsNil() {
-			pollErr, _ := out[1].Interface().(error) // always an error: Out(1) is checked above
+			pollErr, _ := reflect.TypeAssert[error](out[1]) // always an error: Out(1) is checked above
 			return nil, pollErr
 		}
 		return out[0].Interface(), nil

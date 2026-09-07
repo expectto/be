@@ -8,6 +8,18 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Work toward a stable **v1**: a framework-agnostic matcher core with opt-in drivers.
 
+### Changed (rc.10)
+- **`go` directive raised to 1.26.0** in all three modules, reverting the rc.9
+  lowering. Consumers inherit this floor: a dependency's `go` directive raises
+  its consumers' and `go mod tidy` never lowers one again, so any project that
+  imports `be` now needs Go 1.26 or newer.
+- `just floor` and the CI floor job track the same 1.26.0 pin via the justfile.
+- Dependencies updated: `amberpixels/k1` to **v0.3.0**, `onsi/ginkgo/v2` to
+  **v2.32.1**, `onsi/gomega` to **v1.43.0**, `golang.org/x/text` to **v0.41.0**.
+- standardgo bumped to **v0.2.1**.
+- `asPoller` now uses `reflect.TypeAssert[error]` instead of
+  `Value.Interface().(error)`, which the raised floor makes available.
+
 ### Changed (rc.9)
 - **`go` directive lowered from 1.26 to 1.25.0** in all three modules. A
   dependency's `go` directive raises its consumers' and `go mod tidy` never
