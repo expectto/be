@@ -6,7 +6,7 @@ require (
 	github.com/IGLOU-EU/go-wildcard v1.0.3 // latest
 	github.com/amberpixels/k1 v0.3.0 // latest
 	github.com/golang-jwt/jwt/v5 v5.3.1 // latest
-	github.com/onsi/ginkgo/v2 v2.32.1 // latest
+	github.com/onsi/ginkgo/v2 v2.32.2 // latest
 	github.com/onsi/gomega v1.43.0 // latest
 	go.uber.org/mock v0.6.0 // latest
 	golang.org/x/text v0.41.0 // latest
